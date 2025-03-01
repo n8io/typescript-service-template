@@ -134,3 +134,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# I hate MacOS, but they have a lot of extra files on *nix systems.
+.DS_Store
+Thumbs.db
