@@ -1,0 +1,9 @@
+{
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "cSpell.words": ["biomejs", "EDITMSG"],
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock,.nvmrc,lefthook.yml,biome.json*,.npmrs,tsconfig.json,.gitignore,validate-commit-message.mjs",
+    "Dockerfile": "docker-compose.yml,.dockerignore"
+  }
+}

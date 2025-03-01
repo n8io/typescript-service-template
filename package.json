@@ -1,0 +1,41 @@
+{
+  "name": "calendar-service",
+  "author": "Nate Clark <n8@n8io.com>",
+  "version": "1.0.0",
+  "description": "A service to manage calendar events",
+  "scripts": {
+    "lint": "biome check",
+    "format": "biome check --write",
+    "typecheck": "tsc --noEmit",
+    "dev": "node --watch --env-file-if-exists=.env src/index.ts",
+    "init": "lefthook install",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --env-file-if-exists==.env src/index.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "index.ts",
+  "keywords": [],
+  "license": "UNLICENSED",
+  "type": "module",
+  "validate-branch-name": {
+    "pattern": "^(develop|candidate|main){1}$|^(feat|fix|hotfix|chore|test)/([A-Z]+-\\d+)(-[A-Za-z0-9-]+)?$",
+    "errorMsg": "The current branch name does not match the required pattern. E.g. feat/abc-123"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1",
+    "@total-typescript/tsconfig": "^1",
+    "@types/node": "^22",
+    "lefthook": "^1",
+    "typescript": "^5",
+    "validate-branch-name": "^1"
+  },
+  "dependencies": {
+    "@opentelemetry/auto-instrumentations-node": "^0",
+    "@opentelemetry/sdk-metrics": "^1",
+    "@opentelemetry/sdk-node": "^0",
+    "@opentelemetry/sdk-trace-node": "^1",
+    "cspell": "^8"
+  }
+}
