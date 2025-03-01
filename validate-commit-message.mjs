@@ -22,16 +22,14 @@ const commitFilePath = join(rootDir, '.git', 'COMMIT_EDITMSG')
 const commitMessage = (readFileSync(commitFilePath, 'utf8') ?? '').trim()
 
 const regExp =
-  /^(feat|chore|fix|test|refactor)\(([a-zA-Z]+-\d+)\): (\p{Emoji_Presentation}) [A-Z]\s*[^\n]+(\n\n[\s\S]*)?$/u
+  /^(feat|chore|fix|test|refactor)\(([a-zA-Z]+-\d+)\)[:][ ](\p{Emoji_Presentation})[ ][A-Z]\s*[^\n]+(\n\n[\s\S]*)?$/u
 
 const valid = regExp.test(commitMessage)
-
-console.dir({ commitMessage, valid }, { depth: null })
 
 if (valid) {
   console.log('👍 Your commit message is valid ')
 } else {
-  console.log("COMMIT ABORTED: The commit message doesn't comply with conventional commits standard.")
+  console.log("COMMIT ABORTED: The commit message doesn't meet the required format. See below for examples.")
   console.log(exampleText)
   process.exitCode = 1
 }
