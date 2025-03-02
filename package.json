@@ -1,12 +1,15 @@
 {
-  "name": "calendar-service",
+  "name": "typescript-service-template",
   "author": "Nate Clark <n8@n8io.com>",
   "version": "1.0.0",
-  "description": "A service to manage calendar events",
+  "description": "A typescript service",
   "scripts": {
-    "lint": "biome check",
+    "docker:up": "docker compose up --build service",
+    "docker:build": "docker build --no-cache -t typescript-service-template .",
+    "lint": "npm run lint:style && npm run lint:types",
+    "lint:style": "biome check",
+    "lint:types": "tsc --noEmit",
     "format": "biome check --write",
-    "typecheck": "tsc --noEmit",
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",
     "init": "lefthook install",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,23 +22,30 @@
   "keywords": [],
   "license": "UNLICENSED",
   "type": "module",
+  "cspell": {
+    "words": ["biomejs", "EDITMSG", "lefthook", "Monitorable"]
+  },
   "validate-branch-name": {
-    "pattern": "^(develop|candidate|main){1}$|^(feat|fix|hotfix|chore|test)/([A-Z]+-\\d+)(-[A-Za-z0-9-]+)?$",
+    "pattern": "^(develop|candidate|main){1}$|^(?<type>feat|fix|hotfix|chore|test)[/](?<ticket>[A-Za-z]+-\\d+)(?<subject>(-[A-Za-z0-9]+)*)?$",
     "errorMsg": "The current branch name does not match the required pattern. E.g. feat/abc-123"
   },
   "devDependencies": {
     "@biomejs/biome": "^1",
     "@total-typescript/tsconfig": "^1",
     "@types/node": "^22",
+    "cspell": "^8",
     "lefthook": "^1",
+    "tsc-files": "^1",
     "typescript": "^5",
     "validate-branch-name": "^1"
   },
   "dependencies": {
+    "@hono/node-server": "^1",
     "@opentelemetry/auto-instrumentations-node": "^0",
     "@opentelemetry/sdk-metrics": "^1",
     "@opentelemetry/sdk-node": "^0",
     "@opentelemetry/sdk-trace-node": "^1",
-    "cspell": "^8"
+    "hono": "^4",
+    "zod": "^3"
   }
 }

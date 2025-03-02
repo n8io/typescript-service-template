@@ -1,26 +1,29 @@
 pre-commit:
   parallel: true
   commands:
-    lint-check:
+    lint:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
       skip: rebase
-    type-check:
+    types:
       glob: "*.{ts,tsx}"
-      run: npx tsc --noEmit {staged_files}
-      stage_fixed: true
+      run: npx tsc-files --noEmit
       skip: rebase
-    spell-check:
-      glob: '*.{js,ts,jsx,tsx,md}'
+    spelling:
+      glob: "*.{ts,tsx,md,txt,json,jsonc}"
       run: npx cspell {staged_files}
+      skip: rebase
 commit-msg:
   parallel: true
   commands: 
-    validate_commit: 
-      run: node ./validate-commit-message.mjs
+    validate-commit: 
+      run: node ./.extras/validate-commit-message.mjs
+      skip: rebase
 pre-push:
   parallel: true
   commands:
-    branchName:
+    validate-branch-name:
       run: npx validate-branch-name
+    dependency-check:
+      run: npm audit --omit=dev

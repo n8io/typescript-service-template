@@ -1,6 +1,3 @@
-console.log('Hello, world!')
+import { start } from './start.ts'
 
-console.log('Environment variable values:', {
-  // biome-ignore lint/style/useNamingConvention: <explanation>
-  KEY: process.env.KEY,
-})
+start()

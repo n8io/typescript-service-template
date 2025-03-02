@@ -8,7 +8,7 @@ USER node
 WORKDIR /app
 
 # Copy package.json and package-lock.json
-COPY package*.json lefthook.yml ./
+COPY package*.json ./
 
 # Install dependencies with production flag to keep the image small
 RUN npm ci --omit=dev
