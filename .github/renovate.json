@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "automergeStrategy": "rebase",
+  "branchPrefix": "renovate/",
+  "commitMessagePrefix": "chore(release): ⬆️",
+  "commitMessageAction": "Update {{depName}} {{updateType}} version",
+  "commitMessageSuffix": "(`{{currentVersion}}` to `{{newVersion}}`)",
+  "commitBody": "More details can be found in the [CHANGELOG]({{url}})",
+  "extends": [
+    "config:recommended",
+    "customManagers:biomeVersions",
+    "customManagers:githubActionsVersions",
+    "customManagers:dockerfileVersions"
+  ],
+  "labels": ["dependencies", "{{updateType}}"],
+  "packageRules": [
+    {
+      "automerge": true,
+      "matchUpdateTypes": ["patch", "minor"]
+    },
+    {
+      "automerge": false,
+      "matchUpdateTypes": ["major"]
+    }
+  ],
+  "rebaseWhen": "behind-base-branch",
+  "schedule": ["on sunday"]
+}
