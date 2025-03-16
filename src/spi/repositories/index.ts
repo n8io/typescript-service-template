@@ -1,4 +1,4 @@
-import type { Config } from '../../config.ts'
+import type { Config } from '../../utils/config.ts'
 import { ResourceRepository } from './resource/index.ts'
 
 const initRepositories = async (config: Config) => {

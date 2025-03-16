@@ -1,14 +1,14 @@
 import { serve } from '@hono/node-server'
-import type { Closable } from '../app-state-manager.ts'
-import type { Domain } from '../domain/init.ts'
-import { makeServer } from './http/server.ts'
+import type { Domain } from '../domain/index.ts'
+import type { Closable } from '../utils/app-state-manager.ts'
+import { makeApp } from './http/app.ts'
 
 type Api = {
   server: ReturnType<typeof serve>
 }
 
 const initApi = async (domain: Domain) => {
-  const app = makeServer(domain)
+  const app = makeApp(domain)
 
   const options: Parameters<typeof serve>[0] = {
     fetch: app.fetch,
@@ -18,7 +18,14 @@ const initApi = async (domain: Domain) => {
   const server = serve(options, (info) => console.log(`🚀 Server is running on http://localhost:${info.port}`))
 
   const closeableServer: Closable = {
-    close: server.close,
+    close: () =>
+      new Promise((resolve) => {
+        server.close(() => {
+          console.log('📕 Server closed.')
+
+          resolve(undefined)
+        })
+      }),
   }
 
   return { server: closeableServer }

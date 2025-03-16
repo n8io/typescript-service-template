@@ -1,4 +1,4 @@
-import type { Spi } from '../spi/init.ts'
+import type { Spi } from '../spi/index.ts'
 import { initServices } from './services/index.ts'
 
 type Domain = {

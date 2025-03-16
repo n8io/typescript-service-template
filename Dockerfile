@@ -1,6 +1,6 @@
-ARG NODE_VERSION=${NODE_VERSION:-22}
+ARG NODE_VERSION=${NODE_VERSION:-22}-alpine
 
-FROM node:${NODE_VERSION}-alpine
+FROM node:${NODE_VERSION}
 
 USER node
 
@@ -22,4 +22,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Set the command to start the application
-CMD ["node",  "--env-file", ".env", "--require", "./src/init/instrumentation.ts", "src/index.ts"]
+CMD ["node", "--env-file", ".env", "--require", "./src/utils/instrumentation.ts", "src/index.ts"]

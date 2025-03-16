@@ -16,7 +16,8 @@
     "start": "node --env-file-if-exists==.env src/index.ts"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22",
+    "npm": ">=10"
   },
   "main": "index.ts",
   "keywords": [],
@@ -29,6 +30,15 @@
     "pattern": "^(develop|candidate|main){1}$|^(?<type>feat|fix|hotfix|chore|test)[/](?<ticket>[A-Za-z]+-\\d+)(?<subject>(-[A-Za-z0-9]+)*)?$",
     "errorMsg": "The current branch name does not match the required pattern. E.g. feat/abc-123"
   },
+  "dependencies": {
+    "@hono/node-server": "^1",
+    "@opentelemetry/auto-instrumentations-node": "^0",
+    "@opentelemetry/sdk-metrics": "^1",
+    "@opentelemetry/sdk-node": "^0",
+    "@opentelemetry/sdk-trace-node": "^1",
+    "hono": "^4",
+    "zod": "^3"
+  },
   "devDependencies": {
     "@biomejs/biome": "^1",
     "@total-typescript/tsconfig": "^1",
@@ -38,14 +48,5 @@
     "tsc-files": "^1",
     "typescript": "^5",
     "validate-branch-name": "^1"
-  },
-  "dependencies": {
-    "@hono/node-server": "^1",
-    "@opentelemetry/auto-instrumentations-node": "^0",
-    "@opentelemetry/sdk-metrics": "^1",
-    "@opentelemetry/sdk-node": "^0",
-    "@opentelemetry/sdk-trace-node": "^1",
-    "hono": "^4",
-    "zod": "^3"
   }
 }

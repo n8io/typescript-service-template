@@ -1,7 +1,7 @@
-import type { ResourceService } from '../../../domain/services/resources.ts'
+import type { ResourceService } from '../../../domain/services/resource.ts'
 
 type Env = {
-  // biome-ignore lint/style/useNamingConvention: <explanation>
+  // biome-ignore lint/style/useNamingConvention: Hono uses PascalCase
   Variables: {
     services: {
       resource: ResourceService

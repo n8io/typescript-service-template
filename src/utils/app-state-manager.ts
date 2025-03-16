@@ -1,4 +1,4 @@
-const exitCodes = {
+const ExitCode = {
   ERROR: 1,
   OK: 0,
 } as const
@@ -28,6 +28,28 @@ class AppStateManager {
     this.closableDependencies = []
     this.monitorableDependencies = []
     this.initializeSignalHandlers()
+  }
+
+  private async attemptGracefulShutdown(signal: string): Promise<void> {
+    if (this.isShuttingDown) {
+      return
+    }
+
+    this.isShuttingDown = true
+
+    console.info(`\n❌ Received ${signal}, starting graceful shutdown...`)
+
+    try {
+      await Promise.all(this.closableDependencies.map((dependency) => dependency.close()))
+
+      console.info('🏁 Gracefully closed connections.')
+
+      process.exitCode = ExitCode.OK
+    } catch (error: unknown) {
+      console.warn('💥 Something went wrong. We failed to shutdown gracefully.', error as Error)
+
+      process.exitCode = ExitCode.ERROR
+    }
   }
 
   private initializeSignalHandlers() {
@@ -70,28 +92,6 @@ class AppStateManager {
     )
 
     return statusResults
-  }
-
-  async attemptGracefulShutdown(signal: string): Promise<void> {
-    if (this.isShuttingDown) {
-      return
-    }
-
-    this.isShuttingDown = true
-
-    console.info(`\n❌ Received ${signal}, starting graceful shutdown...`)
-
-    try {
-      await Promise.all(this.closableDependencies.map((dependency) => dependency.close()))
-
-      console.info('🏁 Gracefully closed connections')
-
-      process.exitCode = exitCodes.OK
-    } catch (error: unknown) {
-      console.warn('💥 Something went wrong. We failed to shutdown gracefully.', error as Error)
-
-      process.exitCode = exitCodes.ERROR
-    }
   }
 }
 

@@ -1,11 +1,12 @@
 import { z } from 'zod'
+import { validation } from '../utils/validation.ts'
 import { schemaAuditRecord } from './audit-record.ts'
 
 const schemaEntity = z.object({
-  createdAt: z.coerce.date(),
+  createdAt: validation.date,
   createdBy: schemaAuditRecord,
-  gid: z.string(),
-  updatedAt: z.coerce.date(),
+  gid: validation.string,
+  updatedAt: validation.date,
   updatedBy: schemaAuditRecord,
 })
 

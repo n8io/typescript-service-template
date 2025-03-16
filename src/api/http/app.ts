@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import type { Domain } from '../../domain/init.ts'
+import type { Domain } from '../../domain/index.ts'
 import { makeV1 } from './v1/index.ts'
 
 const makeApp = (domain: Domain) => {
@@ -10,4 +10,4 @@ const makeApp = (domain: Domain) => {
   return app
 }
 
-export { makeApp as makeServer }
+export { makeApp }

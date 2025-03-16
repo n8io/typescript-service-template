@@ -4,6 +4,8 @@ services:
       context: .
       args:
         NODE_VERSION: 22
+    init: true
+    stop_signal: SIGTERM
     restart: unless-stopped
     ports:
       - "3000:3000"
