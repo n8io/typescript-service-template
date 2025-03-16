@@ -1,5 +1,5 @@
-import type { Config } from '../config.ts'
-import { initRepositories } from './repositories/init.ts'
+import type { Config } from '../utils/config.ts'
+import { initRepositories } from './repositories/index.ts'
 
 type Spi = {
   repositories: Awaited<ReturnType<typeof initRepositories>>
@@ -11,5 +11,5 @@ const initSpi = async (config: Config): Promise<Spi> => {
   return { repositories }
 }
 
-export type { Spi }
 export { initSpi }
+export type { Spi }

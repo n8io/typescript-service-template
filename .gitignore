@@ -135,6 +135,10 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# I hate MacOS, but they have a lot of extra files on *nix systems.
+# Stupid MacOS
 .DS_Store
 Thumbs.db
+
+# env files
+.env*
+!.env.example

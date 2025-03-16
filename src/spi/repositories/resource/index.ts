@@ -1,7 +1,7 @@
 import type { z } from 'zod'
 import { schemaResource } from '../../../domain/models/resource.ts'
 import type { SpiResourceRepository } from '../../../domain/spi-ports/resource-repository.ts'
-import { schemaDbResource } from './model.ts'
+import { schemaDbRecord } from '../models.ts'
 
 type Dependencies = {
   db: {
@@ -12,8 +12,8 @@ type Dependencies = {
 }
 
 class ResourceRepository implements SpiResourceRepository {
-  private dbSchema = schemaDbResource
   private schema = schemaResource
+  private schemaDb = schemaDbRecord.merge(this.schema)
 
   private dependencies: Dependencies
 
@@ -21,16 +21,16 @@ class ResourceRepository implements SpiResourceRepository {
     this.dependencies = dependencies
   }
 
-  async getOne(id: string): Promise<Prettify<z.infer<typeof this.schema>>> {
-    const record = this.dbSchema.parse({
+  async getOne(gid: string): Promise<Prettify<z.infer<typeof this.schema>>> {
+    const dbRecord = this.schemaDb.parse({
       createdAt: new Date(),
       createdBy: {
         gid: '1',
         email: 'john.doe@example.com',
         type: 'USER',
       },
-      gid: 'gid',
-      id,
+      gid,
+      id: 'ID',
       name: 'Resource Name',
       timeZone: 'America/New_York',
       updatedAt: new Date(),
@@ -40,7 +40,7 @@ class ResourceRepository implements SpiResourceRepository {
       },
     })
 
-    return this.schema.parse(record)
+    return this.schema.parse(dbRecord)
   }
 }
 

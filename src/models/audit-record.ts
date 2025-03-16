@@ -25,4 +25,4 @@ const schemaAuditRecord = z.discriminatedUnion('type', [schemaAuditRecordSystem,
 type AuditRecord = Prettify<z.infer<typeof schemaAuditRecord>>
 
 export type { AuditRecord, AuditRecordSystem, AuditRecordUser }
-export { schemaAuditRecord, schemaAuditRecordSystem, schemaAuditRecordUser }
+export { schemaAuditRecord }

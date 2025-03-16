@@ -1,13 +1,9 @@
-import { Hono } from 'hono'
-import type { Domain } from '../../../domain/init.ts'
-import { initMiddleware } from './middleware.ts'
-import type { Env } from './models.ts'
+import type { Domain } from '../../../domain/index.ts'
+import { initMiddleware } from '../middleware/index.ts'
 import { resources } from './routes/resources.ts'
 
 const makeV1 = (domain: Domain) => {
-  const v1 = new Hono<Env>()
-
-  initMiddleware(v1, domain)
+  const v1 = initMiddleware(domain)
 
   v1.route('/resources', resources)
 

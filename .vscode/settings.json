@@ -4,6 +4,9 @@
   "explorer.fileNesting.patterns": {
     // cspell:disable-next-line
     "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock, .nvmrc, .lefthook.yml, biome.json*, .npmrc, tsconfig.json, .gitignore, .validate-commit-message.mjs, project-words.txt, .cspell.json",
-    "Dockerfile": "docker-compose.yml,.dockerignore"
+    "Dockerfile": "docker-compose.yml,.dockerignore",
+    ".env": ".env.*",
+    "*.ts": "$(capture).*.ts",
+    "*.tsx": "$(capture).*.tsx"
   }
 }
