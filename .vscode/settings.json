@@ -8,5 +8,8 @@
     ".env": ".env.*",
     "*.ts": "$(capture).*.ts",
     "*.tsx": "$(capture).*.tsx"
+  },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "explicit"
   }
 }

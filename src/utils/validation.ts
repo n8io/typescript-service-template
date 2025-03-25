@@ -5,7 +5,7 @@ const date = z.coerce.date()
 const email = string.email().transform((email) => email.toLowerCase())
 const number = z.coerce.number()
 const url = string.url()
-const uuid = z.string().uuid()
+const uuid = z.string().uuid().toLowerCase()
 
 const boolean = z.preprocess(
   (value) => ['1', 't', 'true', 'yes', 'y'].includes(value?.toString().toLowerCase().trim() ?? 'false'),
@@ -15,16 +15,12 @@ const boolean = z.preprocess(
 const locale = string
   .refine(
     (locale: string) => {
-      try {
-        const tmpLocal = new Intl.Segmenter(locale).resolvedOptions().locale
+      const tmpLocal = new Intl.Segmenter(locale).resolvedOptions().locale
 
-        return Boolean(tmpLocal.toLowerCase() === locale.toLowerCase() && tmpLocal.split('-').length >= 2)
-      } catch {
-        return false
-      }
+      return Boolean(tmpLocal.toLowerCase() === locale.toLowerCase() && tmpLocal.split('-').length >= 2)
     },
     (value) => ({
-      message: `The given value (${value || 'undefined'}) is not a valid locale`,
+      message: `The given value (${value}) is not a valid locale`,
     }),
   )
   .transform((locale) => new Intl.Segmenter(locale).resolvedOptions().locale)
@@ -41,7 +37,7 @@ const timeZone = string
       return true
     },
     (value) => ({
-      message: `The given value (${value || 'undefined'}) is not a valid IANA time zone`,
+      message: `The given value ${value}) is not a valid IANA time zone`,
     }),
   )
   .transform((timeZone) => Intl.DateTimeFormat(undefined, { timeZone }).resolvedOptions().timeZone)
