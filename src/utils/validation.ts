@@ -7,27 +7,10 @@ const number = z.coerce.number()
 const url = string.url()
 const uuid = z.string().uuid()
 
-const boolean = z.preprocess((value) => {
-  if (typeof value === 'boolean') {
-    return value
-  }
-
-  if (typeof value !== 'string') {
-    return value
-  }
-
-  const normalized = value.toLowerCase()
-
-  if (['1', 'true'].includes(normalized)) {
-    return true
-  }
-
-  if (['0', 'false'].includes(normalized)) {
-    return false
-  }
-
-  return value
-}, z.boolean())
+const boolean = z.preprocess(
+  (value) => ['1', 't', 'true', 'yes', 'y'].includes(value?.toString().toLowerCase().trim() ?? 'false'),
+  z.boolean(),
+)
 
 const locale = string
   .refine(

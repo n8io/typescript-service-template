@@ -15,8 +15,8 @@ class ResourceService {
     this.dependencies = dependencies
   }
 
-  async getOne(id: string): Promise<Prettify<z.infer<typeof this.schema>>> {
-    return this.dependencies.repository.getOne(id)
+  async getOne(gid: string): Promise<Prettify<z.infer<typeof this.schema>>> {
+    return this.dependencies.repository.getOne(gid)
   }
 }
 
