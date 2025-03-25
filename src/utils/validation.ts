@@ -41,7 +41,7 @@ const locale = string
       }
     },
     (value) => ({
-      message: `The given locale '${value}' is not valid. Please verify it is valid in the format of 'en-US'`,
+      message: `The given value (${value || 'undefined'}) is not a valid locale`,
     }),
   )
   .transform((locale) => new Intl.Segmenter(locale).resolvedOptions().locale)
@@ -57,9 +57,9 @@ const timeZone = string
 
       return true
     },
-    {
-      message: 'The given time zone is not valid',
-    },
+    (value) => ({
+      message: `The given value (${value || 'undefined'}) is not a valid IANA time zone`,
+    }),
   )
   .transform((timeZone) => Intl.DateTimeFormat(undefined, { timeZone }).resolvedOptions().timeZone)
 
@@ -73,9 +73,9 @@ const validation = {
   timeZone,
   url,
   uuid,
-}
+} as const
 
-const filterable = {
+const filterable: Record<keyof typeof validation, ZodSchema> = {
   boolean: boolean.array(),
   date: date.array(),
   email: email.array(),
@@ -83,8 +83,9 @@ const filterable = {
   number: number.array(),
   string: string.array(),
   timeZone: timeZone.array(),
+  url: url.array(),
   uuid: uuid.array(),
-}
+} as const
 
 const toPaginatedSchema = (schema: ZodSchema): ZodSchema =>
   z.object({
