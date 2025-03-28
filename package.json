@@ -8,7 +8,7 @@
     "docker:build": "docker build --no-cache -t typescript-service-template .",
     "lint": "npm run lint:style && npm run lint:types && npm run lint:dead-code && npm run lint:spelling",
     "lint:dead-code": "npx knip",
-    "lint:spelling": "npx cspell .",
+    "lint:spelling": "npx cspell --quiet .",
     "lint:style": "biome check",
     "lint:types": "tsc --noEmit",
     "format": "biome check --write",

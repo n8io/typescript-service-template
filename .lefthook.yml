@@ -2,12 +2,11 @@ pre-commit:
   parallel: true
   commands:
     dead-code:
-      glob: "*.{json,jsonc,js,jsx,mjs,mts,ts,tsx,yml,yaml}"
       run: npx knip
       skip: 
         - rebase
     spelling:
-      run: npx cspell {staged_files}
+      run: npx cspell --quiet {staged_files}
       skip: 
         - rebase
     style:
@@ -18,7 +17,7 @@ pre-commit:
         - rebase
     types:
       glob: "*.{ts,tsx}"
-      run: npx tsc-files --noEmit {staged_files}
+      run: npx tsc-files --noEmit
       skip: 
         - rebase
 commit-msg:

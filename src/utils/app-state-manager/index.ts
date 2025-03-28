@@ -39,17 +39,24 @@ class AppStateManager {
 
     console.info(`\n❌ Received ${signal}, starting graceful shutdown...`)
 
-    try {
-      await Promise.all(this.closableDependencies.map((dependency) => dependency.close()))
+    const results = await Promise.allSettled(this.closableDependencies.map((dependency) => dependency.close()))
+    const rejected = results.filter((result) => result.status === 'rejected')
 
-      console.info('🏁 Gracefully closed connections.')
-
-      process.exitCode = ExitCode.OK
-    } catch (error: unknown) {
-      console.warn('💥 Something went wrong. We failed to shutdown gracefully.', error as Error)
-
-      process.exitCode = ExitCode.ERROR
+    for (const rejection of rejected) {
+      console.warn(
+        '💥 Something went wrong. We failed to shutdown something gracefully. See the error for details.',
+        rejection,
+      )
     }
+
+    if (rejected.length > 0) {
+      process.exitCode = ExitCode.ERROR
+
+      return
+    }
+
+    console.info('🏁 Gracefully closed connections.')
+    process.exitCode = ExitCode.OK
   }
 
   private initializeSignalHandlers() {
@@ -95,5 +102,5 @@ class AppStateManager {
   }
 }
 
-export type { Closable }
+export type { Closable, Monitorable }
 export { AppStateManager }
