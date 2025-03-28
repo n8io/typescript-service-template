@@ -10,7 +10,4 @@ const schemaEntity = z.object({
   updatedBy: schemaAuditRecord,
 })
 
-type Entity = Prettify<z.infer<typeof schemaEntity>>
-
-export type { Entity }
 export { schemaEntity }

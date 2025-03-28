@@ -73,19 +73,6 @@ const validation = {
   uuid,
 } as const
 
-const filterable: Record<keyof typeof validation, ZodSchema> = {
-  boolean: boolean.array(),
-  country: country.array(),
-  date: date.array(),
-  email: email.array(),
-  locale: locale.array(),
-  number: number.array(),
-  string: string.array(),
-  timeZone: timeZone.array(),
-  url: url.array(),
-  uuid: uuid.array(),
-} as const
-
 const toPaginatedSchema = (schema: ZodSchema): ZodSchema =>
   z.object({
     hasMore: validation.boolean,
@@ -96,4 +83,4 @@ const toPaginatedSchema = (schema: ZodSchema): ZodSchema =>
     pagesTotal: validation.number,
   })
 
-export { filterable, toPaginatedSchema, validation }
+export { toPaginatedSchema, validation }

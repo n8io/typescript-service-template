@@ -3,7 +3,7 @@
   "editor.formatOnSave": true,
   "explorer.fileNesting.patterns": {
     // cspell:disable-next-line
-    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock, .nvmrc, .lefthook.yml, biome.json*, .npmrc, tsconfig.json, .gitignore, .validate-commit-message.mjs, project-words.txt, .cspell.json",
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock, knip.json*, .nvmrc, .lefthook.yml, biome.json*, .npmrc, tsconfig.json, .gitignore, .validate-commit-message.mjs, project-words.txt, .cspell.json",
     "Dockerfile": "docker-compose.yml,.dockerignore",
     ".env": ".env.*",
     "*.ts": "$(capture).*.ts",
@@ -11,5 +11,11 @@
   },
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }

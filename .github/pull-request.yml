@@ -6,7 +6,7 @@ on:
       - "!main"
 
 jobs:
-  build:
+  pull-requests:
     if: github.repository == 'n8io/typescript-service-template'
     permissions:
       contents: read
