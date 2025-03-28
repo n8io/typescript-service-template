@@ -3,12 +3,12 @@ import type { Env } from '../models.ts'
 
 const resources = new Hono<Env>()
 
-resources.get('/:id', async (c) => {
-  const id = c.req.param('id')
-  const services = c.get('services')
+resources.get('/:id', async (ctx) => {
+  const id = ctx.req.param('id')
+  const services = ctx.get('services')
   const resource = await services.resource.getOne(id)
 
-  return c.json(resource)
+  return ctx.json(resource)
 })
 
 export { resources }

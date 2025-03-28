@@ -7,8 +7,8 @@ const makeDomainMiddleware = (domain: Domain) => {
     resource: domain.services.resource,
   }
 
-  return createMiddleware<Env>(async (c, next) => {
-    c.set('services', services)
+  return createMiddleware<Env>(async (ctx, next) => {
+    ctx.set('services', services)
 
     await next()
   })
