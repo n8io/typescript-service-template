@@ -3,10 +3,6 @@ import type { Domain } from '../domain/index.ts'
 import type { Closable } from '../utils/app-state-manager.ts'
 import { makeApp } from './http/app.ts'
 
-type Api = {
-  server: ReturnType<typeof serve>
-}
-
 const initApi = async (domain: Domain) => {
   const app = makeApp(domain)
 
@@ -32,4 +28,3 @@ const initApi = async (domain: Domain) => {
 }
 
 export { initApi }
-export type { Api }

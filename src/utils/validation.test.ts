@@ -14,6 +14,7 @@ describe('validation', () => {
     })
 
     it('should return false for invalid boolean values', () => {
+      expect(schema.parse(undefined)).toBe(false)
       expect(schema.parse('0')).toBe(false)
       expect(schema.parse('f')).toBe(false)
       expect(schema.parse('false')).toBe(false)
@@ -42,7 +43,17 @@ describe('validation', () => {
     })
 
     it('should throw an error for invalid country codes', () => {
-      expect(() => schema.parse('hello')).toThrow()
+      const results = schema.safeParse('invalid')
+
+      expect(results.success).toBe(false)
+
+      if (results.error?.issues?.[0]) {
+        expect(results.error.issues[0].message).toBe('The given value (invalid) is not a valid two-letter country code')
+      }
+    })
+
+    it('should throw an error for invalid types', () => {
+      expect(() => schema.parse(123)).toThrow()
       expect(() => schema.parse({})).toThrow()
     })
   })

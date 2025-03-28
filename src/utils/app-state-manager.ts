@@ -95,5 +95,5 @@ class AppStateManager {
   }
 }
 
-export type { Closable, Monitorable }
+export type { Closable }
 export { AppStateManager }

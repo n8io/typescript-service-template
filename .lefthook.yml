@@ -1,6 +1,11 @@
 pre-commit:
   parallel: true
   commands:
+    dead-code:
+      glob: "*.{ts,tsx}"
+      run: npx knip
+      skip: 
+        - rebase
     lint:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
