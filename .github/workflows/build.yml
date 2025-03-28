@@ -12,13 +12,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    strategy:
-      matrix:
-        include:
-          - branch: main
-            artifact: main
-          - branch: ${{ github.head_ref }}
-            artifact: pull-request
     steps:
       - name: 🛒 Checkout code
         uses: actions/checkout@v4
@@ -38,26 +31,5 @@ jobs:
       - name: 📔 Report coverage
         if: always() # Also generate the report if tests are failing
         uses: davelosert/vitest-coverage-report-action@v2
-      - name: ⬆️ Upload new coverage
-        uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.artifact }}
-          path: coverage
-
-  report-coverage:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: ⬇️ Download previous coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-pull-request
-          path: coverage
-      - uses: actions/download-artifact@v4
-        with:
-          name: coverage-main
-          path: coverage-main
-      - name: "Report Coverage"
-        uses: davelosert/vitest-coverage-report-action@v2
-        with:
-          json-summary-compare-path: coverage-main/coverage-summary.json
+          pr-number: auto
