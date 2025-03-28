@@ -25,7 +25,7 @@
   "license": "UNLICENSED",
   "type": "module",
   "cspell": {
-    "words": ["biomejs", "EDITMSG", "lefthook", "Monitorable"]
+    "words": ["biomejs", "knip", "EDITMSG", "lefthook", "Monitorable"]
   },
   "validate-branch-name": {
     "pattern": "^(develop|candidate|main){1}$|^(?<type>feat|fix|hotfix|chore|test)[/](?<ticket>[A-Za-z]+-\\d+)(?<subject>(-[A-Za-z0-9]+)*)?$",
