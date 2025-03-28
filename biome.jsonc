@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": []
+    "ignore": ["coverage", "dist", "node_modules", "out", "build", "public", "tmp", "temp"]
   },
   "formatter": {
     "enabled": true,
