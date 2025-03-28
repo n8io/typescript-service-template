@@ -5,21 +5,25 @@ pre-commit:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
-      skip: rebase
+      skip: 
+        - rebase
     types:
       glob: "*.{ts,tsx}"
       run: npx tsc-files --noEmit
-      skip: rebase
+      skip: 
+        - rebase
     spelling:
       glob: "*.{ts,tsx,md,txt,json,jsonc}"
       run: npx cspell {staged_files}
-      skip: rebase
+      skip: 
+        - rebase
 commit-msg:
   parallel: true
   commands: 
     validate-commit: 
       run: node ./.extras/validate-commit-message.mjs
-      skip: rebase
+      skip: 
+        - rebase
 pre-push:
   parallel: true
   commands:
