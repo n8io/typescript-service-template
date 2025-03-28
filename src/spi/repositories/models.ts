@@ -1,7 +1,8 @@
 import { z } from 'zod'
+import { validation } from '../../utils/validation.ts'
 
 const schemaDbRecord = z.object({
-  id: z.string(),
+  id: validation.string,
 })
 
 export { schemaDbRecord }
