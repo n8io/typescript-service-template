@@ -12,6 +12,24 @@ const boolean = z.preprocess(
   z.boolean(),
 )
 
+const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+
+const country = string
+  .refine(
+    (value) => {
+      try {
+        const name = regionNames.of(value.toUpperCase())
+        return name !== undefined && name !== value.toUpperCase()
+      } catch {
+        return false
+      }
+    },
+    (value) => ({
+      message: `The given value (${value}) is not a valid two-letter country code`,
+    }),
+  )
+  .transform((value) => value.toUpperCase())
+
 const locale = string
   .refine(
     (locale: string) => {
@@ -37,13 +55,14 @@ const timeZone = string
       return true
     },
     (value) => ({
-      message: `The given value ${value}) is not a valid IANA time zone`,
+      message: `The given value (${value}) is not a valid IANA time zone`,
     }),
   )
   .transform((timeZone) => Intl.DateTimeFormat(undefined, { timeZone }).resolvedOptions().timeZone)
 
 const validation = {
   boolean,
+  country,
   date,
   email,
   locale,
@@ -56,6 +75,7 @@ const validation = {
 
 const filterable: Record<keyof typeof validation, ZodSchema> = {
   boolean: boolean.array(),
+  country: country.array(),
   date: date.array(),
   email: email.array(),
   locale: locale.array(),
@@ -68,6 +88,7 @@ const filterable: Record<keyof typeof validation, ZodSchema> = {
 
 const toPaginatedSchema = (schema: ZodSchema): ZodSchema =>
   z.object({
+    hasMore: validation.boolean,
     items: z.array(schema),
     itemsTotal: validation.number,
     page: validation.number,

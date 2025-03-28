@@ -33,6 +33,20 @@ describe('validation', () => {
     })
   })
 
+  describe('country', () => {
+    const schema = validation.country
+
+    it('should return a string for valid country codes', () => {
+      expect(schema.parse('US')).toBe('US')
+      expect(schema.parse('us')).toBe('US')
+    })
+
+    it('should throw an error for invalid country codes', () => {
+      expect(() => schema.parse('hello')).toThrow()
+      expect(() => schema.parse({})).toThrow()
+    })
+  })
+
   describe('date', () => {
     const schema = validation.date
 
@@ -143,10 +157,18 @@ describe('validation', () => {
       const paginatedSchema = toPaginatedSchema(schema)
 
       expect(
-        paginatedSchema.parse({ items: ['hello', 'world'], itemsTotal: 1, page: 0, pageSize: 10, pagesTotal: 1 }),
+        paginatedSchema.parse({
+          items: ['hello', 'world'],
+          hasMore: false,
+          itemsTotal: 2,
+          page: 0,
+          pageSize: 10,
+          pagesTotal: 1,
+        }),
       ).toEqual({
+        hasMore: false,
         items: ['hello', 'world'],
-        itemsTotal: 1,
+        itemsTotal: 2,
         page: 0,
         pageSize: 10,
         pagesTotal: 1,
