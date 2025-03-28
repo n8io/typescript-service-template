@@ -10,7 +10,8 @@
     "config:recommended",
     "customManagers:biomeVersions",
     "customManagers:githubActionsVersions",
-    "customManagers:dockerfileVersions"
+    "customManagers:dockerfileVersions",
+    "github>shinGangan/renovate-config-hono"
   ],
   "labels": ["dependencies", "{{updateType}}"],
   "packageRules": [
