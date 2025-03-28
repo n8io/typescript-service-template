@@ -24,5 +24,5 @@
     }
   ],
   "rebaseWhen": "behind-base-branch",
-  "schedule": ["on sunday"]
+  "schedule": ["on monday"]
 }
