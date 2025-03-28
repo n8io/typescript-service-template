@@ -4,7 +4,8 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     coverage: {
-      reporter: ['text', 'html', 'clover', 'lcov', 'cobertura', 'json'],
+      reporter: ['text', 'html', 'clover', 'lcov', 'json', 'json-summary'],
+      reportOnFailure: true,
       // thresholds: {
       //   branches: 80,
       //   functions: 80,

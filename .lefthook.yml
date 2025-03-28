@@ -2,24 +2,23 @@ pre-commit:
   parallel: true
   commands:
     dead-code:
-      glob: "*.{ts,tsx}"
+      glob: "*.{json,jsonc,js,jsx,mjs,mts,ts,tsx,yml,yaml}"
       run: npx knip
       skip: 
         - rebase
-    lint:
-      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+    spelling:
+      run: npx cspell {staged_files}
+      skip: 
+        - rebase
+    style:
+      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,yml,yaml}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
       skip: 
         - rebase
     types:
       glob: "*.{ts,tsx}"
-      run: npx tsc-files --noEmit
-      skip: 
-        - rebase
-    spelling:
-      glob: "*.{ts,tsx,md,txt,json,jsonc}"
-      run: npx cspell {staged_files}
+      run: npx tsc-files --noEmit {staged_files}
       skip: 
         - rebase
 commit-msg:
@@ -34,5 +33,5 @@ pre-push:
   commands:
     validate-branch-name:
       run: npx validate-branch-name
-    dependency-check:
+    audit-dependencies:
       run: npm audit --omit=dev

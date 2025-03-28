@@ -2,6 +2,6 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": ["src/main.ts"],
   "ignore": ["src/utils/instrumentation.ts", "src/utils/types.ts"],
-  "ignoreDependencies": ["@opentelemetry/*", "cspell", "tsc-files", "validate-branch-name"],
+  "ignoreDependencies": ["@opentelemetry/*", "tsc-files", "validate-branch-name"],
   "project": ["src/**/*.ts"]
 }

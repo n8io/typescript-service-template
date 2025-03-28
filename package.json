@@ -6,14 +6,15 @@
   "scripts": {
     "docker:up": "docker compose up --build service",
     "docker:build": "docker build --no-cache -t typescript-service-template .",
-    "lint": "npm run lint:style && npm run lint:types && npm run lint:dead-code",
+    "lint": "npm run lint:style && npm run lint:types && npm run lint:dead-code && npm run lint:spelling",
+    "lint:dead-code": "npx knip",
+    "lint:spelling": "npx cspell .",
     "lint:style": "biome check",
     "lint:types": "tsc --noEmit",
-    "lint:dead-code": "npx knip",
     "format": "biome check --write",
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",
     "init": "lefthook install",
-    "test": "vitest --coverage",
+    "test": "vitest --coverage.enabled true",
     "start": "node --env-file-if-exists==.env src/index.ts"
   },
   "engines": {
@@ -25,7 +26,8 @@
   "license": "UNLICENSED",
   "type": "module",
   "cspell": {
-    "words": ["biomejs", "knip", "EDITMSG", "lefthook", "Monitorable"]
+    "words": ["biomejs", "knip", "EDITMSG", "lefthook", "Monitorable"],
+    "ignorePaths": [".github", "node_modules", "dist", "coverage", "docker-compose.yml", "package*.json"]
   },
   "validate-branch-name": {
     "pattern": "^(develop|candidate|main){1}$|^(?<type>feat|fix|hotfix|chore|test)[/](?<ticket>[A-Za-z]+-\\d+)(?<subject>(-[A-Za-z0-9]+)*)?$",
