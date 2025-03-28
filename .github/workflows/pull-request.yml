@@ -8,6 +8,7 @@ on:
 jobs:
   pull-requests:
     if: github.repository == 'n8io/typescript-service-template'
+    name: 🎯 Pull Requests
     permissions:
       contents: read
       pull-requests: write
