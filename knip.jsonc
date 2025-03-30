@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": ["src/main.ts"],
-  "ignore": ["src/utils/instrumentation.ts", "src/utils/types.ts"],
+  "ignore": ["src/utils/instrumentation.ts", "src/utils/types.ts", "**/generated/**"],
   "ignoreDependencies": ["@opentelemetry/*", "tsc-files", "validate-branch-name"],
   "project": ["src/**/*.ts"]
 }

@@ -9,12 +9,42 @@ jobs:
   build:
     name: 🧱 Build & Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch:
+          - ${{ github.head_ref || github.ref_name }}
+          - main
+    outputs:
+      branchName: ${{ steps.env.outputs.SAFE_MATRIX_NAME }}
     permissions:
       contents: read
       pull-requests: write
     steps:
+      - name: 🌐 Setup environment
+        id: env
+        shell: bash
+        run: |
+          MATRIX_NAME=${{ matrix.branch }}
+
+          if [[ "${MATRIX_NAME}" == "main" ]]; then
+            # If the branch is main, we set the branch name to main
+            SAFE_MATRIX_NAME="main"
+          else
+            # For other branches, we use the branch name from the matrix
+            # This will be the name of the branch being pushed
+            SAFE_MATRIX_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+            echo "SAFE_MATRIX_NAME="${SAFE_MATRIX_NAME}"" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "SAFE_MATRIX_NAME="${SAFE_MATRIX_NAME}"" >> $GITHUB_ENV
+          echo "MATRIX_NAME="${MATRIX_NAME}"" >> $GITHUB_ENV
+
+          echo "The matrix name is currently ${MATRIX_NAME}"
+          echo "The safe matrix name is currently ${SAFE_MATRIX_NAME}"
       - name: 🛒 Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
       - name: 📗 Setup NodeJs
         uses: actions/setup-node@v4
         with:
@@ -33,3 +63,45 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           pr-number: auto
+      - name: ⬆️ Upload ${{ matrix.branch }} coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ env.SAFE_MATRIX_NAME }}
+          path: coverage
+
+  report-coverage:
+    name: 📈 Report Coverage
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: ⬇️ Download ${{ needs.build.outputs.branchName }} coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-${{ needs.build.outputs.branchName }}
+          path: coverage
+      - name: ⬇️ Download main coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-main
+          path: coverage-main
+      - name: 📈 Report Coverage
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          json-summary-compare-path: coverage-main/coverage-summary.json
+          pr-number: auto
+
+  build-status:
+    name: ✅ Successful build
+    needs: [build, report-coverage]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: 👍 Build Success
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: exit 0
+      - name: 👎 Build Failure
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
