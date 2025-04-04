@@ -1,11 +1,12 @@
 {
   "extends": "@total-typescript/tsconfig/bundler/no-dom/app",
   "compilerOptions": {
-    "erasableSyntaxOnly": true,
     "allowImportingTsExtensions": true,
-    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
     "module": "NodeNext",
     "noEmit": true,
-    "target": "ES2022"
+    "rewriteRelativeImportExtensions": false,
+    "target": "ES2022",
+    "types": ["vitest/globals"]
   }
 }

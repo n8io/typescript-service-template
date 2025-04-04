@@ -13,5 +13,7 @@ export default defineConfig({
       //   statements: 80,
       // },
     },
+    environment: 'node',
+    globals: true,
   },
 })
