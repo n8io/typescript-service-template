@@ -4,7 +4,7 @@ const string = z.string().trim().min(1)
 const date = z.coerce.date()
 const email = string.email().transform((email) => email.toLowerCase())
 const number = z.coerce.number()
-const url = string.url()
+const url = string.url().toLowerCase()
 const uuid = z.string().uuid().toLowerCase()
 
 const boolean = z.preprocess(

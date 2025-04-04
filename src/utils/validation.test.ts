@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest'
 import { toPaginatedSchema, validation } from './validation.ts'
 
 describe('validation', () => {
@@ -109,7 +108,7 @@ describe('validation', () => {
     const schema = validation.url
 
     it('should return a string for valid URLs', () => {
-      expect(schema.parse('https://example.com')).toBe('https://example.com')
+      expect(schema.parse('https://EXAMPLE.com')).toBe('https://example.com')
     })
 
     it('should throw an error for invalid URLs', () => {
@@ -153,10 +152,12 @@ describe('validation', () => {
     const schema = validation.timeZone
 
     it('should return a string for valid time zones', () => {
-      expect(schema.parse('America/New_York')).toBe('America/New_York')
+      expect(schema.parse('America/NEW_YORK')).toBe('America/New_York')
     })
 
     it('should throw an error for invalid time zones', () => {
+      expect(() => schema.parse(123)).toThrow()
+      expect(() => schema.parse(false)).toThrow()
       expect(() => schema.parse('hello')).toThrow()
       expect(() => schema.parse({})).toThrow()
     })
