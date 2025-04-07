@@ -6,12 +6,12 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'html', 'clover', 'lcov', 'json', 'json-summary'],
       reportOnFailure: true,
-      // thresholds: {
-      //   branches: 80,
-      //   functions: 80,
-      //   lines: 80,
-      //   statements: 80,
-      // },
+      thresholds: {
+        branches: 90,
+        functions: 70,
+        lines: 70,
+        statements: 70,
+      },
     },
     environment: 'node',
     globals: true,
