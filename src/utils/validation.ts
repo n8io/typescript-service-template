@@ -1,13 +1,13 @@
-import { ZodSchema, z } from 'zod'
+import { z } from 'zod'
 
 const string = z.string().trim().min(1)
 const date = z.coerce.date()
-const email = string.email().transform((email) => email.toLowerCase())
+const email = string.email().toLowerCase()
 const number = z.coerce.number()
 const url = string.url().toLowerCase()
 const uuid = z.string().uuid().toLowerCase()
 
-const boolean = z.preprocess(
+const bool = z.preprocess(
   (value) => ['1', 't', 'true', 'yes', 'y'].includes(value?.toString().toLowerCase().trim() ?? 'false'),
   z.boolean(),
 )
@@ -61,7 +61,7 @@ const timeZone = string
   .transform((timeZone) => Intl.DateTimeFormat(undefined, { timeZone }).resolvedOptions().timeZone)
 
 const validation = {
-  boolean,
+  bool,
   country,
   date,
   email,
@@ -73,14 +73,12 @@ const validation = {
   uuid,
 } as const
 
-const toPaginatedSchema = (schema: ZodSchema): ZodSchema =>
-  z.object({
-    hasMore: validation.boolean,
-    items: z.array(schema),
-    itemsTotal: validation.number,
-    page: validation.number,
-    pageSize: validation.number,
-    pagesTotal: validation.number,
-  })
+const paginate = z.object({
+  hasMore: validation.bool,
+  itemsTotal: validation.number,
+  page: validation.number,
+  pageSize: validation.number,
+  pagesTotal: validation.number,
+})
 
-export { toPaginatedSchema, validation }
+export { paginate, validation }

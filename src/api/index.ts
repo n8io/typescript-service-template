@@ -1,6 +1,6 @@
 import { serve } from '@hono/node-server'
 import type { Domain } from '../domain/index.ts'
-import type { Closable } from '../utils/app-state-manager/index.ts'
+import type { Closable } from '../utils/app-state-manager.ts'
 import { makeApp } from './http/app.ts'
 
 const initApi = async (domain: Domain) => {

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { AppStateManager, type Closable, type Monitorable } from './index.ts'
+import { AppStateManager, type Closable, type Monitorable } from './app-state-manager.ts'
 
 describe('AppState', () => {
   let asm: AppStateManager
