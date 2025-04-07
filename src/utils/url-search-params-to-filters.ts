@@ -1,0 +1,259 @@
+import { ZodObject, ZodSchema, type ZodTypeAny, z } from 'zod'
+
+type Options = {
+  // biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
+  baseSchema: ZodObject<any>
+}
+
+const Operator = {
+  eq: 'eq',
+  neq: 'neq',
+  gt: 'gt',
+  gte: 'gte',
+  lt: 'lt',
+  lte: 'lte',
+  in: 'in',
+  nin: 'nin',
+  search: 'search',
+} as const
+
+type Operator = (typeof Operator)[keyof typeof Operator]
+
+class CustomError extends Error {
+  code?: string
+
+  constructor(name: string, message: string, code?: string) {
+    super(message)
+    this.code = code
+    this.name = name
+  }
+}
+
+class UnsupportedOperatorError extends CustomError {
+  constructor(operator: string) {
+    super('UnsupportedOperatorError', `Unsupported operator: ${operator}`, 'UNSUPPORTED_OPERATOR')
+  }
+}
+
+class UnsupportedFieldOperatorError extends CustomError {
+  constructor(field: string, operator: string) {
+    super(
+      'UnsupportedFieldOperatorError',
+      `Operation "${operator}" is not valid for field "${field}"`,
+      'UNSUPPORTED_FIELD_OPERATOR',
+    )
+  }
+}
+
+class UnsupportedMultipleValueOperatorError extends CustomError {
+  constructor(operator: string) {
+    super(
+      'UnsupportedMultipleValueOperatorError',
+      `The "${operator}" does not support multiple values`,
+      'UNSUPPORTED_MULTIPLE_VALUE_OPERATOR_ERROR',
+    )
+  }
+}
+
+const getOperatorsForSchema = (schema: ZodSchema): Operator[] => {
+  const type = getBaseType(schema)
+
+  if (type === 'ZodString') {
+    return ['eq', 'in', 'neq', 'nin', 'search']
+  }
+
+  if (type === 'ZodNumber' || type === 'ZodDate') {
+    return ['eq', 'in', 'neq', 'nin', 'gt', 'gte', 'lt', 'lte']
+  }
+
+  if (type === 'ZodBoolean') {
+    return ['eq', 'neq', 'in', 'nin']
+  }
+
+  return ['eq', 'neq', 'in', 'nin']
+}
+
+const getBaseType = (schema: ZodSchema): string => {
+  if ('unwrap' in schema) {
+    // biome-ignore lint/suspicious/noExplicitAny: unwrap is not typed
+    return getBaseType((schema as any).unwrap())
+  }
+
+  // @ts-expect-error ???
+  return schema._def.typeName
+}
+
+const getBaseSchema = (schema: ZodSchema): ZodSchema => {
+  if ('unwrap' in schema) {
+    // biome-ignore lint/suspicious/noExplicitAny: dynamic unwrap chain
+    return getBaseSchema((schema as any).unwrap())
+  }
+
+  return schema
+}
+
+const isNullable = (schema: ZodSchema): boolean => {
+  if (schema.isNullable?.()) {
+    return true
+  }
+
+  return false
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
+const buildFilterSchema = <T extends ZodObject<any>>(baseSchema: T) => {
+  const shape = Object.entries(baseSchema.shape).reduce(
+    (acc, [key, schemaRaw]) => {
+      const schema = schemaRaw as ZodSchema
+      const ops = getOperatorsForSchema(schema)
+      const opShape: Record<string, ZodSchema> = {}
+
+      const base = getBaseSchema(schema)
+      const nullable = isNullable(schema)
+
+      for (const op of ops) {
+        if (op === 'in' || op === 'nin') {
+          const arrSchema = nullable ? base.nullable().array() : base.array()
+
+          opShape[op] = arrSchema.optional()
+        } else if (op === 'search') {
+          opShape[op] = z.string().min(1).optional()
+        } else {
+          opShape[op] = nullable ? base.nullable().optional() : base.optional()
+        }
+      }
+
+      acc[key] = z.object(opShape).partial().optional()
+
+      return acc
+    },
+    {} as Record<string, ZodTypeAny>,
+  )
+
+  return z.object(shape)
+}
+
+const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Options) => {
+  // biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
+  const filters: Record<string, any> = {}
+
+  const rawParamGroups: Record<string, string[]> = {}
+
+  for (const [rawKey, rawValue] of params.entries()) {
+    if (!rawParamGroups[rawKey]) {
+      rawParamGroups[rawKey] = []
+    }
+
+    rawParamGroups[rawKey].push(rawValue)
+  }
+
+  for (const [rawKey, rawValues] of Object.entries(rawParamGroups)) {
+    const [keyRaw, opRaw = 'eq'] = rawKey.split(':')
+    const op = opRaw as Operator
+    const key = (keyRaw as string).trim()
+
+    if (!Operator[op]) {
+      throw new UnsupportedOperatorError(op)
+    }
+
+    if (!(key in baseSchema.shape)) {
+      continue
+    }
+
+    const schemaOps = new Set(getOperatorsForSchema(baseSchema.shape[key]))
+
+    if (schemaOps.has(op) === false) {
+      throw new UnsupportedFieldOperatorError(key, op)
+    }
+
+    const schema = baseSchema.shape[key]
+    const type = getBaseType(schema)
+
+    const values = rawValues
+      .flatMap((v) => (op === 'search' ? v : v.split(',')))
+      .map((v) => (v === 'null' ? null : v.trim()))
+      .filter((v) => v !== '')
+
+    // biome-ignore lint/suspicious/noExplicitAny: coercion needs dynamic input
+    const coerceValue = (value: any) => {
+      if (value === null) return null
+
+      if (type === 'ZodDate') {
+        const d = new Date(value)
+        return Number.isNaN(d.getTime()) ? value : d
+      }
+
+      if (type === 'ZodNumber') {
+        const n = Number(value)
+        return Number.isNaN(n) ? value : n
+      }
+
+      if (type === 'ZodBoolean') {
+        return value === 'true'
+      }
+
+      if (type === 'ZodString' || type === 'ZodEnum') {
+        return value.toString().trim()
+      }
+
+      return value
+    }
+
+    const parsedValues = values.map(coerceValue)
+
+    if (!filters[key]) {
+      filters[key] = {}
+    }
+
+    const previousEq = structuredClone(filters[key].eq)
+    const previousNeq = structuredClone(filters[key].neq)
+    const previousIn = structuredClone(filters[key].in)
+    const previousNin = structuredClone(filters[key].nin)
+    const deduped = [...new Set(parsedValues)]
+
+    const nextIn = [
+      ...new Set([...(previousIn ?? []), previousEq, ...deduped].filter((v) => typeof v !== 'undefined')),
+    ].sort()
+
+    const nextNin = [
+      ...new Set([...(previousNin ?? []), previousNeq, ...deduped].filter((v) => typeof v !== 'undefined')),
+    ].sort()
+
+    // Handle eq
+    if (['eq', 'in'].includes(op)) {
+      filters[key].eq = undefined
+
+      if (nextIn && nextIn.length > 1) {
+        filters[key].in = nextIn
+      } else {
+        filters[key].eq = nextIn[0]
+      }
+    }
+
+    // Handle neq
+    else if (['neq', 'nin'].includes(op)) {
+      filters[key].neq = undefined
+
+      if (nextNin && nextNin.length > 1) {
+        filters[key].nin = nextNin
+      } else {
+        filters[key].neq = nextNin[0]
+      }
+    }
+
+    // Everything else (gt, lt, etc.)
+    else {
+      if (deduped.length > 1) {
+        throw new UnsupportedMultipleValueOperatorError(op)
+      }
+
+      filters[key][op] = deduped[0]
+    }
+  }
+
+  const filterSchema = buildFilterSchema(baseSchema)
+
+  return filterSchema.parse(filters)
+}
+
+export { urlSearchParamsToFilters }
