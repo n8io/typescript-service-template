@@ -27,7 +27,7 @@
   "type": "module",
   "cspell": {
     "words": ["biomejs", "knip", "EDITMSG", "lefthook", "Monitorable"],
-    "ignorePaths": [".github", "node_modules", "dist", "coverage", "docker-compose.yml", "package*.json"]
+    "ignorePaths": [".github", ".vscode", "node_modules", "dist", "coverage", "docker-compose.yml", "package*.json"]
   },
   "validate-branch-name": {
     "pattern": "^(develop|candidate|main){1}$|^(?<type>feat|fix|hotfix|chore|test)[/](?<ticket>[A-Za-z]+-\\d+)(?<subject>(-[A-Za-z0-9]+)*)?$",

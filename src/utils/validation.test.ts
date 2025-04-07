@@ -1,8 +1,8 @@
-import { toPaginatedSchema, validation } from './validation.ts'
+import { paginate, validation } from './validation.ts'
 
 describe('validation', () => {
-  describe('boolean', () => {
-    const schema = validation.boolean
+  describe('bool', () => {
+    const schema = validation.bool
 
     it('should return true for valid boolean values', () => {
       expect(schema.parse('1')).toBe(true)
@@ -163,14 +163,10 @@ describe('validation', () => {
     })
   })
 
-  describe('toPaginatedSchema', () => {
-    it('should return a paginated schema for a given schema', () => {
-      const schema = validation.string
-      const paginatedSchema = toPaginatedSchema(schema)
-
+  describe('paginate', () => {
+    it('should parse a valid object', () => {
       expect(
-        paginatedSchema.parse({
-          items: ['hello', 'world'],
+        paginate.parse({
           hasMore: false,
           itemsTotal: 2,
           page: 0,
@@ -179,12 +175,15 @@ describe('validation', () => {
         }),
       ).toEqual({
         hasMore: false,
-        items: ['hello', 'world'],
         itemsTotal: 2,
         page: 0,
         pageSize: 10,
         pagesTotal: 1,
       })
+    })
+
+    it('should not have an items property', () => {
+      expect(paginate.shape).not.toHaveProperty('items')
     })
   })
 })

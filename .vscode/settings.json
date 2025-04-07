@@ -1,21 +1,32 @@
 {
-  "editor.defaultFormatter": "biomejs.biome",
-  "editor.formatOnSave": true,
-  "explorer.fileNesting.patterns": {
-    // cspell:disable-next-line
-    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock, knip.json*, .nvmrc, .lefthook.yml, biome.json*, .npmrc, tsconfig.json, .gitignore, .validate-commit-message.mjs, project-words.txt, .cspell.json",
-    "Dockerfile": "docker-compose.yml,.dockerignore",
-    ".env": ".env.*",
-    "*.ts": "$(capture).*.ts",
-    "*.tsx": "$(capture).*.tsx"
-  },
-  "editor.codeActionsOnSave": {
-    "source.organizeImports.biome": "explicit"
-  },
   "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
-  }
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  // cspell:disable-next-line
+  "explorer.fileNesting.patterns": {
+    ".env": ".env.*",
+    "*.ts": "$(capture).*.ts",
+    "*.tsx": "$(capture).*.tsx",
+    "Dockerfile": "docker-compose.yml,.dockerignore",
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock, knip.json*, .nvmrc, .lefthook.yml, biome.json*, .npmrc, tsconfig.json, .gitignore, .validate-commit-message.mjs, project-words.txt, .cspell.json"
+  },
+  "notebook.defaultFormatter": "biomejs.biome"
 }
