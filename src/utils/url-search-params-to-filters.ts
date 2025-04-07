@@ -40,7 +40,7 @@ class UnsupportedFieldOperatorError extends CustomError {
     super(
       'UnsupportedFieldOperatorError',
       `Operation "${operator}" is not valid for field "${field}"`,
-      'UNSUPPORTED_FIELD_OPERATOR',
+      'UNSUPPORTED_FIELD_OPERATOR_ERROR',
     )
   }
 }
@@ -52,6 +52,12 @@ class UnsupportedMultipleValueOperatorError extends CustomError {
       `The "${operator}" does not support multiple values`,
       'UNSUPPORTED_MULTIPLE_VALUE_OPERATOR_ERROR',
     )
+  }
+}
+
+class UnsupportedFieldError extends CustomError {
+  constructor(field: string) {
+    super('UnsupportedFieldError', `The field "${field}" is not supported`, 'UNSUPPORTED_FIELD_ERROR')
   }
 }
 
@@ -99,6 +105,8 @@ const isNullable = (schema: ZodSchema): boolean => {
 
   return false
 }
+
+const isDefined = (value: unknown): boolean => value !== undefined
 
 // biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
 const buildFilterSchema = <T extends ZodObject<any>>(baseSchema: T) => {
@@ -148,29 +156,29 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
   }
 
   for (const [rawKey, rawValues] of Object.entries(rawParamGroups)) {
-    const [keyRaw, opRaw = 'eq'] = rawKey.split(':')
-    const op = opRaw as Operator
-    const key = (keyRaw as string).trim()
+    const [fieldRaw, operatorRaw = 'eq'] = rawKey.split(':')
+    const operator = operatorRaw as Operator
+    const field = (fieldRaw as string).trim()
 
-    if (!Operator[op]) {
-      throw new UnsupportedOperatorError(op)
+    if (!Operator[operator]) {
+      throw new UnsupportedOperatorError(operator)
     }
 
-    if (!(key in baseSchema.shape)) {
-      continue
+    if (!(field in baseSchema.shape)) {
+      throw new UnsupportedFieldError(field)
     }
 
-    const schemaOps = new Set(getOperatorsForSchema(baseSchema.shape[key]))
+    const schemaOps = new Set(getOperatorsForSchema(baseSchema.shape[field]))
 
-    if (schemaOps.has(op) === false) {
-      throw new UnsupportedFieldOperatorError(key, op)
+    if (schemaOps.has(operator) === false) {
+      throw new UnsupportedFieldOperatorError(field, operator)
     }
 
-    const schema = baseSchema.shape[key]
+    const schema = baseSchema.shape[field]
     const type = getBaseType(schema)
 
     const values = rawValues
-      .flatMap((v) => (op === 'search' ? v : v.split(',')))
+      .flatMap((v) => (operator === 'search' ? v : v.split(',')))
       .map((v) => (v === 'null' ? null : v.trim()))
       .filter((v) => v !== '')
 
@@ -179,13 +187,15 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
       if (value === null) return null
 
       if (type === 'ZodDate') {
-        const d = new Date(value)
-        return Number.isNaN(d.getTime()) ? value : d
+        const date = new Date(value)
+
+        return Number.isNaN(date.getTime()) ? value : date
       }
 
       if (type === 'ZodNumber') {
-        const n = Number(value)
-        return Number.isNaN(n) ? value : n
+        const number = Number(value)
+
+        return Number.isNaN(number) ? value : number
       }
 
       if (type === 'ZodBoolean') {
@@ -201,53 +211,42 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
 
     const parsedValues = values.map(coerceValue)
 
-    if (!filters[key]) {
-      filters[key] = {}
+    if (!filters[field]) {
+      filters[field] = {}
     }
 
-    const previousEq = structuredClone(filters[key].eq)
-    const previousNeq = structuredClone(filters[key].neq)
-    const previousIn = structuredClone(filters[key].in)
-    const previousNin = structuredClone(filters[key].nin)
     const deduped = [...new Set(parsedValues)]
 
-    const nextIn = [
-      ...new Set([...(previousIn ?? []), previousEq, ...deduped].filter((v) => typeof v !== 'undefined')),
-    ].sort()
+    if (['eq', 'in'].includes(operator)) {
+      const previousEq = structuredClone(filters[field].eq)
+      const previousIn = structuredClone(filters[field].in) ?? []
+      const nextIn = [...new Set([...previousIn, previousEq, ...deduped].filter(isDefined))].sort()
 
-    const nextNin = [
-      ...new Set([...(previousNin ?? []), previousNeq, ...deduped].filter((v) => typeof v !== 'undefined')),
-    ].sort()
+      filters[field].eq = undefined
 
-    // Handle eq
-    if (['eq', 'in'].includes(op)) {
-      filters[key].eq = undefined
-
-      if (nextIn && nextIn.length > 1) {
-        filters[key].in = nextIn
+      if (nextIn.length > 1) {
+        filters[field].in = nextIn
       } else {
-        filters[key].eq = nextIn[0]
+        filters[field].eq = nextIn[0]
       }
-    }
+    } else if (['neq', 'nin'].includes(operator)) {
+      const previousNeq = structuredClone(filters[field].neq)
+      const previousNin = structuredClone(filters[field].nin) ?? []
+      const nextNin = [...new Set([...previousNin, previousNeq, ...deduped].filter(isDefined))].sort()
 
-    // Handle neq
-    else if (['neq', 'nin'].includes(op)) {
-      filters[key].neq = undefined
+      filters[field].neq = undefined
 
-      if (nextNin && nextNin.length > 1) {
-        filters[key].nin = nextNin
+      if (nextNin.length > 1) {
+        filters[field].nin = nextNin
       } else {
-        filters[key].neq = nextNin[0]
+        filters[field].neq = nextNin[0]
       }
-    }
-
-    // Everything else (gt, lt, etc.)
-    else {
+    } else {
       if (deduped.length > 1) {
-        throw new UnsupportedMultipleValueOperatorError(op)
+        throw new UnsupportedMultipleValueOperatorError(operator)
       }
 
-      filters[key][op] = deduped[0]
+      filters[field][operator] = deduped[0]
     }
   }
 

@@ -129,7 +129,7 @@ describe('urlSearchParamsToFilters', () => {
     expect(filters).toEqual({})
   })
 
-  it('should not throw when given an invalid filter field', () => {
+  it('should throw when given an invalid filter field', () => {
     const baseSchema = z.object({
       name: z.string(),
     })
@@ -138,20 +138,19 @@ describe('urlSearchParamsToFilters', () => {
 
     params.append('invalidField', 'John')
 
-    expect(() => urlSearchParamsToFilters(params, { baseSchema })).not.toThrowError()
+    expect(() => urlSearchParamsToFilters(params, { baseSchema })).toThrowError()
   })
 
-  it('should not throw when given an invalid filter operation', () => {
+  it('should throw when given an invalid operator', () => {
     const baseSchema = z.object({
       name: z.string(),
     })
 
     const params = new URLSearchParams()
 
-    params.append('name', 'John')
-    params.append('operation', 'invalidOperation')
+    params.append('name:invalid', 'John')
 
-    expect(() => urlSearchParamsToFilters(params, { baseSchema })).not.toThrowError()
+    expect(() => urlSearchParamsToFilters(params, { baseSchema })).toThrowError('Unsupported operator: invalid')
   })
 
   it('should throw an error when passing null to search operation', () => {
@@ -180,7 +179,7 @@ describe('urlSearchParamsToFilters', () => {
     )
   })
 
-  it('should throw an error if the operator is not supported', () => {
+  it('should throw an error if the field operator is not supported', () => {
     const baseSchema = z.object({
       name: z.string(),
     })
