@@ -166,6 +166,39 @@ const buildFilterSchema = <T extends ZodObject<any>>(baseSchema: T) => {
   return z.object(shape)
 }
 
+// biome-ignore lint/suspicious/noExplicitAny: coercion needs dynamic input
+const makeCoerceValue = (zodType: string) => (value: any) => {
+  if (value === null) return null
+
+  if (zodType === 'ZodDate') {
+    const date = new Date(value)
+
+    return Number.isNaN(date.getTime()) ? value : date
+  }
+
+  if (zodType === 'ZodNumber') {
+    const number = Number(value)
+
+    return Number.isNaN(number) ? value : number
+  }
+
+  if (zodType === 'ZodBoolean') {
+    return value === 'true'
+  }
+
+  if (zodType === 'ZodString' || zodType === 'ZodEnum') {
+    return value.toString().trim()
+  }
+
+  return value
+}
+
+const makeNormalizeValues = (operator: Operator) => (rawValues: string[]) =>
+  rawValues
+    .flatMap((v) => (operator === 'search' ? v : v.split(',')))
+    .map((v) => (v === 'null' ? null : v.trim()))
+    .filter((v) => v !== '')
+
 const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Options) => {
   // biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
   const filters: Record<string, any> = {}
@@ -183,57 +216,33 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
   for (const [rawKey, rawValues] of Object.entries(rawParamGroups)) {
     const [fieldRaw, operatorRaw = 'eq'] = rawKey.split(':')
     const operator = operatorRaw as Operator
-    const field = (fieldRaw as string).trim()
+    const isSupportedOperator = Boolean(Operator[operator])
 
-    if (!Operator[operator]) {
+    if (!isSupportedOperator) {
       throw new UnsupportedOperatorError(operator)
     }
 
-    if (!(field in baseSchema.shape)) {
+    const field = (fieldRaw as string).trim()
+    const isSupportedField = field in baseSchema.shape
+
+    if (!isSupportedField) {
       throw new UnsupportedFieldError(field)
     }
 
     const schemaOps = new Set(getOperatorsForSchema(baseSchema.shape[field]))
+    const isSupportedFieldOperator = schemaOps.has(operator)
 
-    if (schemaOps.has(operator) === false) {
+    if (!isSupportedFieldOperator) {
       throw new UnsupportedFieldOperatorError(field, operator)
     }
 
-    const schema = baseSchema.shape[field]
+    // biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
+    const schema: ZodObject<any> = baseSchema.shape[field]
+
     const type = getBaseType(schema)
-
-    const values = rawValues
-      .flatMap((v) => (operator === 'search' ? v : v.split(',')))
-      .map((v) => (v === 'null' ? null : v.trim()))
-      .filter((v) => v !== '')
-
-    // biome-ignore lint/suspicious/noExplicitAny: coercion needs dynamic input
-    const coerceValue = (value: any) => {
-      if (value === null) return null
-
-      if (type === 'ZodDate') {
-        const date = new Date(value)
-
-        return Number.isNaN(date.getTime()) ? value : date
-      }
-
-      if (type === 'ZodNumber') {
-        const number = Number(value)
-
-        return Number.isNaN(number) ? value : number
-      }
-
-      if (type === 'ZodBoolean') {
-        return value === 'true'
-      }
-
-      if (type === 'ZodString' || type === 'ZodEnum') {
-        return value.toString().trim()
-      }
-
-      return value
-    }
-
+    const normalizeValues = makeNormalizeValues(operator)
+    const coerceValue = makeCoerceValue(type)
+    const values = normalizeValues(rawValues)
     const parsedValues = values.map(coerceValue)
 
     if (!filters[field]) {
@@ -242,42 +251,57 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
 
     const deduped = [...new Set(parsedValues)]
 
-    if (['eq', 'in'].includes(operator)) {
-      const previousEq = structuredClone(filters[field].eq)
-      const previousIn = structuredClone(filters[field].in) ?? []
+    const applyEquivalenceOperation = ({ isNegated = false }: { isNegated?: boolean }) => {
+      const eqOp = isNegated ? 'neq' : 'eq'
+      const inOp = isNegated ? 'nin' : 'in'
+      const previousEq = structuredClone(filters[field][eqOp])
+      const previousIn = structuredClone(filters[field][inOp]) ?? []
       const nextIn = safeSort([...new Set([...previousIn, previousEq, ...deduped].filter(isDefined))], type)
 
-      filters[field].eq = undefined
+      filters[field][eqOp] = undefined
 
       if (nextIn.length > 1) {
-        filters[field].in = nextIn
+        filters[field][inOp] = nextIn
       } else {
-        filters[field].eq = nextIn[0]
+        filters[field][eqOp] = nextIn[0]
       }
-    } else if (['neq', 'nin'].includes(operator)) {
-      const previousNeq = structuredClone(filters[field].neq)
-      const previousNin = structuredClone(filters[field].nin) ?? []
-      const nextNin = safeSort([...new Set([...previousNin, previousNeq, ...deduped].filter(isDefined))], type)
+    }
 
-      filters[field].neq = undefined
+    switch (operator) {
+      case 'eq':
+      case 'in': {
+        applyEquivalenceOperation({ isNegated: false })
 
-      if (nextNin.length > 1) {
-        filters[field].nin = nextNin
-      } else {
-        filters[field].neq = nextNin[0]
+        break
       }
-    } else {
-      if (deduped.length > 1) {
-        throw new UnsupportedMultipleValueOperatorError(operator)
-      }
+      case 'neq':
+      case 'nin': {
+        applyEquivalenceOperation({ isNegated: true })
 
-      filters[field][operator] = deduped[0]
+        break
+      }
+      case 'gt':
+      case 'gte':
+      case 'lt':
+      case 'lte':
+      case 'search': {
+        if (deduped.length > 1) {
+          throw new UnsupportedMultipleValueOperatorError(operator)
+        }
+
+        filters[field][operator] = deduped[0]
+
+        break
+      }
+      default: {
+        const _exhaustiveCheck: never = operator
+
+        throw new UnsupportedOperatorError(operator)
+      }
     }
   }
 
-  const filterSchema = buildFilterSchema(baseSchema)
-
-  return filterSchema.parse(filters)
+  return buildFilterSchema(baseSchema).parse(filters)
 }
 
 export { urlSearchParamsToFilters }

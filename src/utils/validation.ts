@@ -73,12 +73,14 @@ const validation = {
   uuid,
 } as const
 
-const paginate = z.object({
-  hasMore: validation.bool,
-  itemsTotal: validation.number,
-  page: validation.number,
-  pageSize: validation.number,
-  pagesTotal: validation.number,
-})
+const paginate = z
+  .object({
+    hasMore: validation.bool,
+    itemsTotal: validation.number.int().min(0),
+    page: validation.number.int().min(0),
+    pageSize: validation.number.int().min(0),
+    pagesTotal: validation.number.int().min(0),
+  })
+  .strict()
 
 export { paginate, validation }
