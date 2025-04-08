@@ -4,9 +4,10 @@ import { makeV1 } from './v1/index.ts'
 import type { Env } from './v1/models.ts'
 
 const makeApp = (domain: Domain) => {
-  const app = new Hono<Env>().basePath('/api')
+  const app = new Hono<Env>()
 
-  app.route('/v1', makeV1(domain))
+  app.get('/health', (c) => c.json({ message: 'OK' }))
+  app.route('/api/v1', makeV1(domain))
 
   return app
 }
