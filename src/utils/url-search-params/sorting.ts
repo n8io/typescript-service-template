@@ -41,6 +41,10 @@ const urlSearchParamsToSort = (
     return undefined
   }
 
+  if (!sortableFieldsRaw?.length) {
+    return undefined
+  }
+
   const sortableFields = new Set(sortableFieldsRaw)
   const sortParams = params.getAll('sort')
   const sortFields = new Map<(typeof sortableFieldsRaw)[number], SortDirection>()
