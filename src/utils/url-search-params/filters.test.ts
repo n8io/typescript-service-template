@@ -175,7 +175,7 @@ describe('urlSearchParamsToFilters', () => {
     params.append('age:search', '123')
 
     expect(() => urlSearchParamsToFilters(params, { baseSchema })).toThrowError(
-      'Operation "search" is not valid for field "age"',
+      'Unsupported operator "search" for field "age"',
     )
   })
 

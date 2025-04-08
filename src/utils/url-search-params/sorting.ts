@@ -1,3 +1,5 @@
+import { ApiUnsupportedSortFieldError } from '../../models/custom-error.ts'
+
 type Options = {
   sortableFields: string[]
 }
@@ -7,30 +9,6 @@ type SortDirection = 'asc' | 'desc'
 type SortField<T> = {
   field: T
   direction: SortDirection
-}
-
-class CustomError extends Error {
-  code?: string
-
-  constructor(name: string, message: string, code?: string) {
-    super(message)
-    this.code = code
-    this.name = name
-  }
-
-  override toString() {
-    return `[${this.name}] ${this.message}`
-  }
-}
-
-class UnsupportedSortFieldError extends CustomError {
-  constructor(field: string) {
-    super(
-      'UnsupportedSortFieldError',
-      `The sorting by the field "${field}" is not supported`,
-      'UNSUPPORTED_SORT_FIELD_ERROR',
-    )
-  }
 }
 
 const urlSearchParamsToSort = (
@@ -65,7 +43,7 @@ const urlSearchParamsToSort = (
     }
 
     if (!sortableFields.has(field)) {
-      throw new UnsupportedSortFieldError(field)
+      throw new ApiUnsupportedSortFieldError(field)
     }
 
     if (sortFields.has(field)) {
