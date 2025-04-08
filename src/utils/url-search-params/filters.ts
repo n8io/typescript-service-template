@@ -1,4 +1,10 @@
 import { ZodObject, ZodSchema, type ZodTypeAny, z } from 'zod'
+import {
+  ApiUnsupportedFieldError,
+  ApiUnsupportedFieldOperatorError,
+  ApiUnsupportedMultipleValueOperatorError,
+  ApiUnsupportedOperatorError,
+} from '../../models/custom-error.ts'
 
 type Options = {
   // biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
@@ -18,52 +24,6 @@ const Operator = {
 } as const
 
 type Operator = (typeof Operator)[keyof typeof Operator]
-
-class CustomError extends Error {
-  code?: string
-
-  constructor(name: string, message: string, code?: string) {
-    super(message)
-    this.code = code
-    this.name = name
-  }
-
-  override toString() {
-    return `[${this.name}] ${this.message}`
-  }
-}
-
-class UnsupportedOperatorError extends CustomError {
-  constructor(operator: string) {
-    super('UnsupportedOperatorError', `Unsupported operator: ${operator}`, 'UNSUPPORTED_OPERATOR')
-  }
-}
-
-class UnsupportedFieldOperatorError extends CustomError {
-  constructor(field: string, operator: string) {
-    super(
-      'UnsupportedFieldOperatorError',
-      `Operation "${operator}" is not valid for field "${field}"`,
-      'UNSUPPORTED_FIELD_OPERATOR_ERROR',
-    )
-  }
-}
-
-class UnsupportedMultipleValueOperatorError extends CustomError {
-  constructor(operator: string) {
-    super(
-      'UnsupportedMultipleValueOperatorError',
-      `The "${operator}" does not support multiple values`,
-      'UNSUPPORTED_MULTIPLE_VALUE_OPERATOR_ERROR',
-    )
-  }
-}
-
-class UnsupportedFieldError extends CustomError {
-  constructor(field: string) {
-    super('UnsupportedFieldError', `The field "${field}" is not supported`, 'UNSUPPORTED_FIELD_ERROR')
-  }
-}
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const safeSort = (values: any[], zodType: string) => {
@@ -219,21 +179,21 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
     const isSupportedOperator = Boolean(Operator[operator])
 
     if (!isSupportedOperator) {
-      throw new UnsupportedOperatorError(operator)
+      throw new ApiUnsupportedOperatorError(operator)
     }
 
     const field = (fieldRaw as string).trim()
     const isSupportedField = field in baseSchema.shape
 
     if (!isSupportedField) {
-      throw new UnsupportedFieldError(field)
+      throw new ApiUnsupportedFieldError(field)
     }
 
     const schemaOps = new Set(getOperatorsForSchema(baseSchema.shape[field]))
     const isSupportedFieldOperator = schemaOps.has(operator)
 
     if (!isSupportedFieldOperator) {
-      throw new UnsupportedFieldOperatorError(field, operator)
+      throw new ApiUnsupportedFieldOperatorError(field, operator)
     }
 
     // biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
@@ -286,7 +246,7 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
       case 'lte':
       case 'search': {
         if (deduped.length > 1) {
-          throw new UnsupportedMultipleValueOperatorError(operator)
+          throw new ApiUnsupportedMultipleValueOperatorError(operator)
         }
 
         filters[field][operator] = deduped[0]
@@ -296,7 +256,7 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
       default: {
         const _exhaustiveCheck: never = operator
 
-        throw new UnsupportedOperatorError(operator)
+        throw new ApiUnsupportedOperatorError(operator)
       }
     }
   }

@@ -19,7 +19,7 @@ pre-commit:
       skip: 
         - rebase
     types:
-      run: npx tsc-files --noEmit {staged_files}
+      run: npx tsc-files --noEmit
       skip: 
         - rebase
 commit-msg:

@@ -47,6 +47,7 @@ npm run docker:up
       - [x] Lint changed spelling
       - [x] Lint commit message
       - [x] Identify dead code
+      - [x] Identify circular dependencies
     - [x] ...on push
       - [x] Lint branch name
   - [ ] 📛 Automatically update badges in README (test coverage)

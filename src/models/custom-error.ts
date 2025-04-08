@@ -1,0 +1,99 @@
+import type { ZodError } from 'zod'
+import { ErrorCode } from './error-code.ts'
+import { HttpStatus } from './http-status.ts'
+
+class CustomError extends Error {
+  code?: string
+  httpStatusCode?: HttpStatus
+
+  constructor(
+    name: string,
+    message: string,
+    code: ErrorCode = 'UNHANDLED_EXCEPTION',
+    httpStatusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+  ) {
+    super(message)
+    this.code = code
+    this.httpStatusCode = httpStatusCode
+    this.name = name
+  }
+
+  override toString() {
+    return `[${this.name}] ${this.message}`
+  }
+}
+
+class ApiUnsupportedOperatorError extends CustomError {
+  constructor(operator: string) {
+    super(
+      'UnsupportedOperatorError',
+      `Unsupported operator: ${operator}`,
+      'API_UNSUPPORTED_FILTER_OPERATOR',
+      HttpStatus.BAD_REQUEST,
+    )
+  }
+}
+
+class ApiUnsupportedFieldError extends CustomError {
+  constructor(field: string) {
+    super(
+      'UnsupportedFieldError',
+      `Unsupported field: ${field}`,
+      'API_UNSUPPORTED_FILTER_FIELD',
+      HttpStatus.BAD_REQUEST,
+    )
+  }
+}
+
+class ApiUnsupportedFieldOperatorError extends CustomError {
+  constructor(field: string, operator: string) {
+    super(
+      'UnsupportedFieldOperatorError',
+      `Unsupported operator "${operator}" for field "${field}"`,
+      'API_UNSUPPORTED_FILTER_FIELD_OPERATOR',
+      HttpStatus.BAD_REQUEST,
+    )
+  }
+}
+
+class ApiUnsupportedMultipleValueOperatorError extends CustomError {
+  constructor(operator: string) {
+    super(
+      'UnsupportedMultipleValueOperatorError',
+      `The "${operator}" does not support multiple values`,
+      'API_UNSUPPORTED_FILTER_MULTIPLE_VALUE_OPERATOR',
+      HttpStatus.BAD_REQUEST,
+    )
+  }
+}
+
+class ApiUnsupportedSortFieldError extends CustomError {
+  constructor(field: string) {
+    super(
+      'UnsupportedSortFieldError',
+      `The sorting by the field "${field}" is not supported`,
+      'API_UNSUPPORTED_SORT_FIELD',
+      HttpStatus.BAD_REQUEST,
+    )
+  }
+}
+
+class AppConfigIncompleteError extends CustomError {
+  constructor(error: ZodError) {
+    super(
+      'AppConfigIncompleteError',
+      `The application configuration is incomplete: ${error.issues.map(({ message, path }) => `${path.join('.')} ${message.toLowerCase()}`).join(' / ')}`,
+      'APP_CONFIG_INCOMPLETE',
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    )
+  }
+}
+
+export {
+  ApiUnsupportedFieldError,
+  ApiUnsupportedFieldOperatorError,
+  ApiUnsupportedMultipleValueOperatorError,
+  ApiUnsupportedOperatorError,
+  ApiUnsupportedSortFieldError,
+  AppConfigIncompleteError,
+}
