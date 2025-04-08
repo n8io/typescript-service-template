@@ -27,6 +27,10 @@ class CustomError extends Error {
     this.code = code
     this.name = name
   }
+
+  override toString() {
+    return `[${this.name}] ${this.message}`
+  }
 }
 
 class UnsupportedOperatorError extends CustomError {
@@ -59,6 +63,27 @@ class UnsupportedFieldError extends CustomError {
   constructor(field: string) {
     super('UnsupportedFieldError', `The field "${field}" is not supported`, 'UNSUPPORTED_FIELD_ERROR')
   }
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+const safeSort = (values: any[], zodType: string) => {
+  if (zodType === 'ZodNumber') {
+    return values.sort((a, b) => a - b)
+  }
+
+  if (zodType === 'ZodDate') {
+    return values.sort((a, b) => a.getTime() - b.getTime())
+  }
+
+  if (zodType === 'ZodBoolean') {
+    return values.sort((a, b) => Number(a) - Number(b))
+  }
+
+  if (zodType === 'ZodString' || zodType === 'ZodEnum') {
+    return values.sort((a, b) => a?.localeCompare(b))
+  }
+
+  return values.sort()
 }
 
 const getOperatorsForSchema = (schema: ZodSchema): Operator[] => {
@@ -220,7 +245,7 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
     if (['eq', 'in'].includes(operator)) {
       const previousEq = structuredClone(filters[field].eq)
       const previousIn = structuredClone(filters[field].in) ?? []
-      const nextIn = [...new Set([...previousIn, previousEq, ...deduped].filter(isDefined))].sort()
+      const nextIn = safeSort([...new Set([...previousIn, previousEq, ...deduped].filter(isDefined))], type)
 
       filters[field].eq = undefined
 
@@ -232,7 +257,7 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
     } else if (['neq', 'nin'].includes(operator)) {
       const previousNeq = structuredClone(filters[field].neq)
       const previousNin = structuredClone(filters[field].nin) ?? []
-      const nextNin = [...new Set([...previousNin, previousNeq, ...deduped].filter(isDefined))].sort()
+      const nextNin = safeSort([...new Set([...previousNin, previousNeq, ...deduped].filter(isDefined))], type)
 
       filters[field].neq = undefined
 

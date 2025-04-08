@@ -8,9 +8,9 @@ export default defineConfig({
       reportOnFailure: true,
       thresholds: {
         branches: 90,
-        functions: 70,
-        lines: 70,
-        statements: 70,
+        functions: 80,
+        lines: 75,
+        statements: 75,
       },
     },
     environment: 'node',
