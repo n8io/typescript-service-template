@@ -1,6 +1,10 @@
 pre-commit:
   parallel: true
   commands:
+    circular-dependencies:
+      run: npx madge --circular ./src/index.ts
+      skip: 
+        - rebase
     dead-code:
       run: npx knip
       skip: 
