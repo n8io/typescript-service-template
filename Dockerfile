@@ -20,6 +20,7 @@ COPY . .
 EXPOSE 3000
 
 ENV NODE_ENV=production
+ENV NODE_OPTIONS="--disable-warning=ExperimentalWarning --experimental-strip-types"
 
 # Set the command to start the application
 CMD ["node", "--env-file-if-exists", ".env", "--require", "./src/utils/instrumentation.ts", "src/index.ts"]
