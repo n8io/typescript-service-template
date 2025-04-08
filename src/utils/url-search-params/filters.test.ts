@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { urlSearchParamsToFilters } from './url-search-params-to-filters.ts'
-import { validation } from './validation.ts'
+import { validation } from '../validation.ts'
+import { urlSearchParamsToFilters } from './filters.ts'
 
 describe('urlSearchParamsToFilters', () => {
   it('should parse the kitchen sink of url search params', () => {
