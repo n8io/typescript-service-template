@@ -27,10 +27,11 @@ npm run docker:up
 - [x] 📈 Enforce high unit test coverage
 - [x] ⏰ Enforce a sane http request timeout
 - [x] 🔇 No unnecessary exposure of an entity's db `id`, only use `gid`
-- [x] 🆔 Automatically append requestId to api requests
+- [x] 🆔 Automatically append `requestId` to api requests
 - [x] 🧑‍🏭 CI/CD
   - [x] 👨‍⚕️ Use GitHub actions to automate as much as possible
   - [x] 📔 Every PR must have code a coverage report
+  - [x] 🔍 Audit dependencies
 - [x] 🧑‍⚖️ Only use `type` instead of `interface` keyword
 - [x] 📊 Bake in OpenTelemetry metrics
 - [ ] 👷 Adapt api requests to domain request shape (filters, sorting, pagination) via common util(s)
@@ -38,9 +39,21 @@ npm run docker:up
 - [ ] 🗄️ Use Drizzle for db layer
 - [ ] 🤓 DX improvements
   - [x] ⌚ Leverage native `node --watch` to restart server on code changes
+  - [x] 🪝 Git hooks
+    - [x] ...on commit
+      - [x] Format changed code
+      - [x] Lint changed code
+      - [x] Lint changed types
+      - [x] Lint changed spelling
+      - [x] Lint commit message
+      - [x] Identify dead code
+    - [x] ...on push
+      - [x] Lint branch name
   - [ ] 📛 Automatically update badges in README (test coverage)
   - [ ] ♻️ Autogenerate openapi spec
   - [ ] 📘 Autogenerate api documentation
   - [ ] 📗 Expose swagger documentation
+
+## Contributing
 
 😃 PRs welcome!

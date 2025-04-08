@@ -10,14 +10,12 @@ pre-commit:
       skip: 
         - rebase
     style:
-      glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,yml,yaml}"
       run: npx @biomejs/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
       stage_fixed: true
       skip: 
         - rebase
     types:
-      glob: "*.{ts,tsx}"
-      run: npx tsc-files --noEmit
+      run: npx tsc-files --noEmit {staged_files}
       skip: 
         - rebase
 commit-msg:
