@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "A typescript service",
   "scripts": {
-    "docker:up": "docker compose up --build service",
+    "docker:up": "docker compose up --build --no-log-prefix service",
     "docker:build": "docker build --no-cache -t typescript-service-template .",
     "lint": "npm run lint:style && npm run lint:types && npm run lint:dead-code && npm run lint:spelling",
     "lint:dead-code": "npx knip",
@@ -14,8 +14,8 @@
     "format": "biome check --write",
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",
     "init": "lefthook install",
-    "test": "vitest --coverage.enabled true",
-    "start": "node --env-file-if-exists==.env src/index.ts"
+    "test": "vitest --coverage",
+    "start": "node --env-file-if-exists=.env src/index.ts"
   },
   "engines": {
     "node": ">=22",
@@ -26,7 +26,7 @@
   "license": "UNLICENSED",
   "type": "module",
   "cspell": {
-    "words": ["biomejs", "knip", "EDITMSG", "lefthook", "Monitorable"],
+    "words": ["biomejs", "knip", "EDITMSG", "lefthook", "Monitorable", "transpiling"],
     "ignorePaths": [".github", ".vscode", "node_modules", "dist", "coverage", "docker-compose.yml", "package*.json"]
   },
   "validate-branch-name": {
