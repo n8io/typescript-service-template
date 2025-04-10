@@ -29,7 +29,7 @@
   "license": "UNLICENSED",
   "type": "module",
   "cspell": {
-    "words": ["biomejs", "EDITMSG", "ilike", "knip", "lefthook", "Monitorable", "transpiling", "gids"],
+    "words": ["biomejs", "EDITMSG", "gids", "ilike", "isactive", "knip", "lefthook", "Monitorable", "transpiling"],
     "ignorePaths": [
       ".github",
       ".vscode",
