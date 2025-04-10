@@ -1,15 +1,14 @@
 import type { Config } from '../../utils/config.ts'
-import { ResourceRepository } from './resource/index.ts'
+import { makeDatabase, runMigrations } from './database/index.ts'
+import { ResourceRepository } from './resource.ts'
 
 const initRepositories = async (config: Config) => {
+  const db = makeDatabase(config)
+
+  await runMigrations(db)
+
   return {
-    resource: new ResourceRepository({
-      db: {
-        connection: {
-          url: config.DATABASE_URL,
-        },
-      },
-    }),
+    resource: new ResourceRepository({ db }),
   }
 }
 

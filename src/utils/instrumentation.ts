@@ -1,3 +1,4 @@
+/* v8 ignore start */
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node'
 import { ConsoleMetricExporter, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics'
 import { NodeSDK } from '@opentelemetry/sdk-node'

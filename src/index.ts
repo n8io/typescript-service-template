@@ -11,6 +11,10 @@ const start = async () => {
   const api = await initApi(domain)
 
   appState.registerClosableDependency(api.server)
+
+  return appState
 }
 
 start()
+
+export { start }

@@ -34,9 +34,10 @@ npm run docker:up
   - [x] 🔍 Audit dependencies
 - [x] 🧑‍⚖️ Only use `type` instead of `interface` keyword
 - [x] 📊 Bake in OpenTelemetry metrics
-- [ ] 👷 Adapt api requests to domain request shape (filters, sorting, pagination) via common util(s)
-- [ ] 🏪 Adapt domain requests to spi request format via common util(s)
-- [ ] 🗄️ Use Drizzle for db layer
+- [ ] ✍️ Utilize structured logging (pino??)
+- [x] 👷 Adapt api requests to domain request shape (filters, sorting, pagination) via common util(s)
+- [x] 🏪 Adapt domain requests to spi request format via common util(s)
+- [x] 🗄️ Use Drizzle for db layer
 - [ ] 🤓 DX improvements
   - [x] ⌚ Leverage native `node --watch` to restart server on code changes
   - [x] 🪝 Git hooks
@@ -50,10 +51,10 @@ npm run docker:up
       - [x] Identify circular dependencies
     - [x] ...on push
       - [x] Lint branch name
-  - [ ] 📛 Automatically update badges in README (test coverage)
-  - [ ] ♻️ Autogenerate openapi spec
-  - [ ] 📘 Autogenerate api documentation
-  - [ ] 📗 Expose swagger documentation
+  - [ ] ♻️ Autogenerate openapi spec (hono-openapi)
+  - [ ] 📘 Autogenerate api documentation (hono-openapi)
+  - [ ] 📗 Expose Swagger-like documentation (Scalar)
+  - [ ] 😇 Automatically update badges in README (test coverage)
 
 ## Contributing
 

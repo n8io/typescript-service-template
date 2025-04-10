@@ -19,14 +19,13 @@
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "file",
   "editor.formatOnPaste": true,
-  "editor.formatOnType": true,
   // cspell:disable-next-line
   "explorer.fileNesting.patterns": {
     ".env": ".env.*",
     "*.ts": "$(capture).*.ts",
     "*.tsx": "$(capture).*.tsx",
     "Dockerfile": "docker-compose.yml,.dockerignore",
-    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock, knip.json*, .nvmrc, .lefthook.yml, biome.json*, .npmrc, tsconfig.json, .gitignore, .validate-commit-message.mjs, project-words.txt, .cspell.json"
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, bun.lockb, bun.lock, drizzle.config.ts, knip.json*, .nvmrc, .lefthook.yml, biome.json*, .npmrc, tsconfig.json, .gitignore, .validate-commit-message.mjs, project-words.txt, .cspell.json"
   },
   "notebook.defaultFormatter": "biomejs.biome"
 }

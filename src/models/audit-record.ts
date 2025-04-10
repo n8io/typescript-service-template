@@ -37,12 +37,12 @@ const schemaAuditRecord = z.discriminatedUnion('type', [schemaAuditRecordSystem,
 
 type AuditRecord = Prettify<z.infer<typeof schemaAuditRecord>>
 
-const _exampleAuditRecord = (overrides: Partial<AuditRecord> = {}): AuditRecord => {
-  if (overrides.type === AuditRecordType.SYSTEM) {
+const exampleAuditRecord = (overrides: Partial<AuditRecord> = {}): AuditRecord => {
+  if (overrides.type === AuditRecordType.USER) {
     return exampleAuditRecordUser(overrides as Partial<AuditRecordUser>)
   }
 
   return exampleAuditRecordSystem(overrides as Partial<AuditRecordSystem>)
 }
 
-export { schemaAuditRecord }
+export { exampleAuditRecord, schemaAuditRecord }

@@ -89,6 +89,12 @@ class AppConfigIncompleteError extends CustomError {
   }
 }
 
+class DomainNotFoundError extends CustomError {
+  constructor(message: string) {
+    super('DomainNotFoundError', message, 'DOMAIN_NOT_FOUND', HttpStatus.NOT_FOUND)
+  }
+}
+
 export {
   ApiUnsupportedFieldError,
   ApiUnsupportedFieldOperatorError,
@@ -96,4 +102,6 @@ export {
   ApiUnsupportedOperatorError,
   ApiUnsupportedSortFieldError,
   AppConfigIncompleteError,
+  CustomError,
+  DomainNotFoundError,
 }

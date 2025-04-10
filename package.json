@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "description": "A typescript service",
   "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "docker:up": "docker compose up --build --no-log-prefix service",
     "docker:build": "docker build --no-cache -t typescript-service-template .",
     "lint": "npm run lint:style && npm run lint:types && npm run lint:dead-code && npm run lint:spelling && npm run lint:circular-dependencies",
@@ -27,8 +29,17 @@
   "license": "UNLICENSED",
   "type": "module",
   "cspell": {
-    "words": ["biomejs", "knip", "EDITMSG", "lefthook", "Monitorable", "transpiling"],
-    "ignorePaths": [".github", ".vscode", "node_modules", "dist", "coverage", "docker-compose.yml", "package*.json"]
+    "words": ["biomejs", "EDITMSG", "ilike", "knip", "lefthook", "Monitorable", "transpiling", "gids"],
+    "ignorePaths": [
+      ".github",
+      ".vscode",
+      "node_modules",
+      "dist",
+      "coverage",
+      "docker-compose.yml",
+      "package*.json",
+      "**/database/migrations/**"
+    ]
   },
   "madge": {
     "layout": "twopi"
@@ -43,15 +54,19 @@
     "@opentelemetry/sdk-metrics": "^2",
     "@opentelemetry/sdk-node": "^0",
     "@opentelemetry/sdk-trace-node": "^2",
+    "drizzle-orm": "^0.41.0",
     "hono": "^4",
+    "pg": "^8.14.1",
     "zod": "^3"
   },
   "devDependencies": {
     "@biomejs/biome": "^1",
     "@total-typescript/tsconfig": "^1",
     "@types/node": "^22",
+    "@types/pg": "^8",
     "@vitest/coverage-v8": "^3",
     "cspell": "^8",
+    "drizzle-kit": "^0",
     "knip": "^5",
     "lefthook": "^1",
     "madge": "^8",
