@@ -107,6 +107,15 @@ type IndexConfig<T> = {
   compositeUniqueIndexes?: (keyof T)[][]
 }
 
+const toPostgresObjectName = (input: string) =>
+  input
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '_') // Replace non-alphanumeric and non-underscore characters
+    .replace(/^([^a-z_])/, '_$1') // Prefix if it doesn't start with letter or underscore
+    .replace(/_+/g, '_') // Collapse multiple underscores
+    .replace(/^_+|_+$/g, '') // Trim leading/trailing underscores
+    .slice(0, 63) // Enforce max 63 characters
+
 const schemaToDrizzleTable = <T extends ZodRawShape>(
   tableName: string,
   schema: ZodObject<T>,
@@ -147,24 +156,28 @@ const schemaToDrizzleTable = <T extends ZodRawShape>(
     }
 
     for (const field of config.indexes ?? []) {
+      const name = toPostgresObjectName(`idx_${tableName}_${String(field)}`)
+
       // @ts-expect-error ???
-      constraints[`idx_${String(field)}`] = index(`idx_${String(field)}`).on(t[field as string])
+      constraints[name] = index(name).on(t[field as string])
     }
 
     for (const field of config.uniqueIndexes ?? []) {
+      const name = toPostgresObjectName(`udx_${tableName}_${String(field)}`)
+
       // @ts-expect-error ???
-      constraints[`uniq_${String(field)}`] = uniqueIndex(`uniq_${String(field)}`).on(t[field as string])
+      constraints[name] = uniqueIndex(name).on(t[field as string])
     }
 
     for (const fields of config.compositeIndexes ?? []) {
-      const name = `idx_${fields.join('_')}`
+      const name = toPostgresObjectName(`idx_${tableName}_${fields.join('_')}`)
 
       // @ts-expect-error ???
       constraints[name] = index(name).on(...fields.map((f) => t[f as string]))
     }
 
     for (const fields of config.compositeUniqueIndexes ?? []) {
-      const name = `uniq_${fields.join('_')}`
+      const name = toPostgresObjectName(`udx_${tableName}_${fields.join('_')}`)
 
       // @ts-expect-error ???
       constraints[name] = uniqueIndex(name).on(...fields.map((f) => t[f as string]))

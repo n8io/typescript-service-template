@@ -48,10 +48,10 @@ describe('schemaToDrizzleTable', () => {
       	CONSTRAINT "test_table_id_pk" PRIMARY KEY("id")
       );
       ",
-        "CREATE INDEX "idx_name" ON "test_table" USING btree ("name");",
-        "CREATE UNIQUE INDEX "uniq_name" ON "test_table" USING btree ("name");",
-        "CREATE INDEX "idx_name_status" ON "test_table" USING btree ("name","status");",
-        "CREATE UNIQUE INDEX "uniq_name_isActive" ON "test_table" USING btree ("name","isActive");",
+        "CREATE INDEX "idx_test_table_name" ON "test_table" USING btree ("name");",
+        "CREATE UNIQUE INDEX "udx_test_table_name" ON "test_table" USING btree ("name");",
+        "CREATE INDEX "idx_test_table_name_status" ON "test_table" USING btree ("name","status");",
+        "CREATE UNIQUE INDEX "udx_test_table_name_isactive" ON "test_table" USING btree ("name","isActive");",
       ]
     `)
   })
