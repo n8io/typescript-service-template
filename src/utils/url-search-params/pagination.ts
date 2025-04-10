@@ -1,10 +1,9 @@
 import { z } from 'zod'
-import { paginate as pagination } from '../validation.ts'
 
-const paginate = pagination
-  .pick({
-    page: true,
-    pageSize: true,
+const paginate = z
+  .object({
+    page: z.coerce.number().int().optional(),
+    pageSize: z.coerce.number().int().optional(),
   })
   .optional()
 
@@ -26,8 +25,8 @@ const urlSearchParamsToPagination = (params: URLSearchParams): Paginate | undefi
     return undefined
   }
 
-  const page = params.get(PageParams.PAGE)
-  const pageSize = params.get(PageParams.PAGE_SIZE)
+  const page = params.get(PageParams.PAGE) ?? undefined
+  const pageSize = params.get(PageParams.PAGE_SIZE) ?? undefined
 
   return paginate.parse({ page, pageSize })
 }

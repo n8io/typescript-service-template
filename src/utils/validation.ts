@@ -76,10 +76,10 @@ const validation = {
 const paginate = z
   .object({
     hasMore: validation.bool,
-    itemsTotal: validation.number.int().min(0),
-    page: validation.number.int().min(0),
-    pageSize: validation.number.int().min(0),
-    pagesTotal: validation.number.int().min(0),
+    itemsTotal: validation.number.int().nonnegative(),
+    page: validation.number.int().nonnegative(),
+    pageSize: validation.number.int().nonnegative(),
+    pagesTotal: validation.number.int().nonnegative(),
   })
   .strict()
 
