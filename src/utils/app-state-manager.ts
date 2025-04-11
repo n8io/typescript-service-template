@@ -55,7 +55,7 @@ class AppStateManager {
       return
     }
 
-    console.info('🏁 Gracefully closed connections.')
+    console.info('🏁 Gracefully closed all connections.')
     process.exitCode = ExitCode.OK
   }
 

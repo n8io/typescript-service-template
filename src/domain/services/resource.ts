@@ -1,6 +1,5 @@
 import type { z } from 'zod'
 import { DomainNotFoundError } from '../../models/custom-error.ts'
-import { gid } from '../../utils/generators/gid.ts'
 import { domainGetOneRequestToGetManyRequest } from '../../utils/transforms/domain-get-one-request-to-get-many-request.ts'
 import { spiRepositoryGetManyResponseToDomainPaginatedResponse } from '../../utils/transforms/spi-get-many-response-to-domain-paginated-response.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
@@ -42,7 +41,6 @@ class ResourceService {
     const spiRequest = schemaResource.parse({
       ...resource,
       createdAt: new Date(),
-      gid: gid(),
       updatedAt: new Date(),
       updatedBy: resource.createdBy,
     })

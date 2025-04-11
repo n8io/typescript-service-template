@@ -1,11 +1,11 @@
 import { createMiddleware } from 'hono/factory'
 import * as HonoLogger from 'hono/logger'
 import { ZodError } from 'zod'
-import type { Domain } from '../../../domain/index.ts'
+import type { Domain } from '../../../domain/init.ts'
 import { DomainNotFoundError } from '../../../models/custom-error.ts'
 import { ErrorCode } from '../../../models/error-code.ts'
 import * as DomainMiddleware from './domain.ts'
-import { initMiddleware } from './index.ts'
+import { initMiddleware } from './init.ts'
 
 vi.mock('hono/logger')
 vi.mock('./domain.ts')

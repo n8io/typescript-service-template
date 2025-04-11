@@ -34,10 +34,11 @@ npm run docker:up
   - [x] 🔍 Audit dependencies
 - [x] 🧑‍⚖️ Only use `type` instead of `interface` keyword
 - [x] 📊 Bake in OpenTelemetry metrics
-- [ ] ✍️ Utilize structured logging (pino??)
 - [x] 👷 Adapt api requests to domain request shape (filters, sorting, pagination) via common util(s)
 - [x] 🏪 Adapt domain requests to spi request format via common util(s)
 - [x] 🗄️ Use Drizzle for db layer
+  - [x] 🏊‍♂️ Implement db connection pooling
+- [ ] ✍️ Utilize structured logging (pino??)
 - [ ] 🤓 DX improvements
   - [x] ⌚ Leverage native `node --watch` to restart server on code changes
   - [x] 🪝 Git hooks

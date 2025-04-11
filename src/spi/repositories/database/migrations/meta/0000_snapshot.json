@@ -1,5 +1,5 @@
 {
-  "id": "e93ce99c-a50a-4c1a-a8a8-38796fb8efd3",
+  "id": "50faa633-ac7a-4e12-bd5d-4f6756600cc5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -52,14 +52,14 @@
         },
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {
-        "uniq_gid": {
-          "name": "uniq_gid",
+        "udx_resources_gid": {
+          "name": "udx_resources_gid",
           "columns": [
             {
               "expression": "gid",
@@ -73,8 +73,8 @@
           "method": "btree",
           "with": {}
         },
-        "uniq_name": {
-          "name": "uniq_name",
+        "udx_resources_name": {
+          "name": "udx_resources_name",
           "columns": [
             {
               "expression": "name",

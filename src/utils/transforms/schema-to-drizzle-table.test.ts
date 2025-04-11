@@ -44,7 +44,7 @@ describe('schemaToDrizzleTable', () => {
       	"name" varchar(255) NOT NULL,
       	"isActive" boolean NOT NULL,
       	"status" varchar(255),
-      	"id" uuid NOT NULL,
+      	"id" varchar(255) NOT NULL,
       	CONSTRAINT "test_table_id_pk" PRIMARY KEY("id")
       );
       ",

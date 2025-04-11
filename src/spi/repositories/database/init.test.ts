@@ -1,21 +1,36 @@
 import * as Db from 'drizzle-orm/node-postgres'
 import * as DbMigrator from 'drizzle-orm/node-postgres/migrator'
-import { makeDatabase, runMigrations } from './index.ts'
+import pg from 'pg'
+import type { AppStateManager } from '../../../utils/app-state-manager.ts'
+import { makeDatabase, runMigrations } from './init.ts'
+import * as schema from './schema.ts'
 
 vi.mock('drizzle-orm/node-postgres')
 vi.mock('drizzle-orm/node-postgres/migrator')
+vi.mock('pg')
 
 describe('makeDatabase', () => {
+  const pool = {} as pg.Pool
+
+  beforeEach(() => {
+    vi.spyOn(pg, 'Pool').mockReturnValue(pool)
+  })
+
   it('should create a database connection', () => {
     const drizzleSpy = vi.spyOn(Db, 'drizzle')
+    const appStateManager: AppStateManager = { registerClosableDependency: vi.fn() } as unknown as AppStateManager
 
     const config = {
       DATABASE_URL: 'postgres://user:password@localhost:5432/db',
     }
 
-    makeDatabase(config)
+    makeDatabase({ appStateManager, config })
 
-    expect(drizzleSpy).toHaveBeenCalledWith(config.DATABASE_URL)
+    expect(pg.Pool).toHaveBeenCalledWith({
+      connectionString: config.DATABASE_URL,
+    })
+
+    expect(drizzleSpy).toHaveBeenCalledWith({ client: pool, schema })
   })
 })
 

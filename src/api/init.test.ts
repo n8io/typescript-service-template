@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
-import type { Domain } from '../domain/index.ts'
-import { initApi } from './index.ts'
+import type { Domain } from '../domain/init.ts'
+import { initApi } from './init.ts'
 
 vi.mock('./http/app.ts', () => ({
   makeApp: vi.fn().mockReturnValue(new Hono()),

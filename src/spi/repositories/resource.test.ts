@@ -1,6 +1,6 @@
 import { exampleResource } from '../../domain/models/resource.ts'
 import * as Utils from '../../utils/transforms/domain-get-many-request-to-drizzle-query.ts'
-import type { makeDatabase } from './database/index.ts'
+import type { makeDatabase } from './database/init.ts'
 import { resourcesTable } from './database/schema.ts'
 import { ResourceRepository } from './resource.ts'
 

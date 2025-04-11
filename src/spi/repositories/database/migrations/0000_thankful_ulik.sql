@@ -6,9 +6,9 @@ CREATE TABLE "resources" (
 	"updatedBy" jsonb NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"timeZone" varchar(255),
-	"id" uuid NOT NULL,
+	"id" varchar(255) NOT NULL,
 	CONSTRAINT "resources_id_pk" PRIMARY KEY("id")
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX "uniq_gid" ON "resources" USING btree ("gid");--> statement-breakpoint
-CREATE UNIQUE INDEX "uniq_name" ON "resources" USING btree ("name");
+CREATE UNIQUE INDEX "udx_resources_gid" ON "resources" USING btree ("gid");--> statement-breakpoint
+CREATE UNIQUE INDEX "udx_resources_name" ON "resources" USING btree ("name");

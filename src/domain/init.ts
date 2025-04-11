@@ -1,5 +1,5 @@
-import type { Spi } from '../spi/index.ts'
-import { initServices } from './services/index.ts'
+import type { Spi } from '../spi/init.ts'
+import { initServices } from './services/init.ts'
 
 type Domain = {
   services: Awaited<ReturnType<typeof initServices>>

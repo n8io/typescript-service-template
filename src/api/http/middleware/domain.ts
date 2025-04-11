@@ -1,5 +1,5 @@
 import { createMiddleware } from 'hono/factory'
-import type { Domain } from '../../../domain/index.ts'
+import type { Domain } from '../../../domain/init.ts'
 import type { Env } from '../v1/models.ts'
 
 const makeDomainMiddleware = (domain: Domain) => {

@@ -1,44 +1,53 @@
-import { start } from './index.ts'
-import { config } from './utils/config.ts'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('./utils/app-state-manager.ts', () => {
+  const registerClosableDependency = vi.fn()
+  const AppStateManager = vi.fn().mockImplementation(() => ({
+    registerClosableDependency,
+  }))
+
+  return {
+    AppStateManager,
+    registerClosableDependency,
+  }
+})
 
 vi.mock('./utils/config.ts', () => ({
-  config: {},
+  config: { mock: 'config' },
 }))
 
-vi.mock('./spi/index.ts', () => ({
-  initSpi: vi.fn(async () => 'mockedSpi'),
+vi.mock('./spi/init.ts', () => ({
+  initSpi: vi.fn().mockResolvedValue('mockedSpi'),
 }))
 
-vi.mock('./domain/index.ts', () => ({
-  initDomain: vi.fn(async () => 'mockedDomain'),
+vi.mock('./domain/init.ts', () => ({
+  initDomain: vi.fn().mockResolvedValue('mockedDomain'),
 }))
 
-vi.mock('./api/index.ts', () => ({
-  initApi: vi.fn(async () => ({
-    server: { id: 'mock-server' },
-  })),
-}))
-
-vi.mock('./utils/app-state-manager.ts', () => ({
-  // biome-ignore lint/style/useNamingConvention: <explanation>
-  AppStateManager: vi.fn().mockImplementation(() => ({
-    registerClosableDependency: vi.fn(),
-  })),
+vi.mock('./api/init.ts', () => ({
+  initApi: vi.fn().mockResolvedValue({ server: { id: 'mock-server' } }),
 }))
 
 describe('start', () => {
-  it('wires up and registers the server dependency', async () => {
-    const { AppStateManager } = await import('./utils/app-state-manager.ts')
-    const { initSpi } = await import('./spi/index.ts')
-    const { initDomain } = await import('./domain/index.ts')
-    const { initApi } = await import('./api/index.ts')
-    const appState = await start()
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-    expect(initSpi).toHaveBeenCalledWith(config)
-    expect(initDomain).toHaveBeenCalledWith('mockedSpi')
-    expect(initApi).toHaveBeenCalledWith('mockedDomain')
+  it('wires up and registers the server dependency', async () => {
+    const { start } = await import('./index.ts') // <-- IMPORTANT: must come AFTER mocks
+
+    const { AppStateManager } = await import('./utils/app-state-manager.ts')
+    const { config } = await import('./utils/config.ts')
+    const { initSpi } = await import('./spi/init.ts')
+    const { initDomain } = await import('./domain/init.ts')
+    const { initApi } = await import('./api/init.ts')
+
+    const appStateManager = await start()
 
     expect(AppStateManager).toHaveBeenCalled()
-    expect(appState.registerClosableDependency).toHaveBeenCalledWith({ id: 'mock-server' })
+    expect(initSpi).toHaveBeenCalledWith({ appStateManager, config })
+    expect(initDomain).toHaveBeenCalledWith('mockedSpi')
+    expect(initApi).toHaveBeenCalledWith('mockedDomain')
+    expect(appStateManager.registerClosableDependency).toHaveBeenCalledWith({ id: 'mock-server' })
   })
 })

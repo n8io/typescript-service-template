@@ -5,7 +5,7 @@ import type { SpiPaginatedResponse } from '../../domain/spi-ports/paginated.ts'
 import type { SpiGetManyRequest, SpiResourceRepository } from '../../domain/spi-ports/resource-repository.ts'
 import { domainGetManyRequestToDrizzleQuery } from '../../utils/transforms/domain-get-many-request-to-drizzle-query.ts'
 import { validation } from '../../utils/validation.ts'
-import type { makeDatabase } from './database/index.ts'
+import type { makeDatabase } from './database/init.ts'
 import { resourcesTable as resourceTable } from './database/schema.ts'
 import { schemaDbRecord } from './models.ts'
 
