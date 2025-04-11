@@ -7,10 +7,6 @@ vi.mock('./http/init.ts', () => ({
 }))
 
 describe('initApi', () => {
-  beforeEach(() => {
-    vi.spyOn(console, 'log').mockImplementation(() => {})
-  })
-
   it('should initialize the API and return a server instance', async () => {
     const mockDomain = {} as Domain
     const { server } = await initApi(mockDomain)

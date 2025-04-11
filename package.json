@@ -38,7 +38,8 @@
       "knip",
       "lefthook",
       "Monitorable",
-      "transpiling"
+      "transpiling",
+      "unstub"
     ],
     "ignorePaths": [
       ".github",

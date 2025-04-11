@@ -7,12 +7,11 @@ import { ErrorCode } from '../../../models/error-code.ts'
 import { HttpStatus } from '../../../models/http-status.ts'
 import { databaseErrorMessages, isSpiDatabaseError } from '../../../spi/repositories/database/error.ts'
 import { isCustomError, isValidationError } from '../../../utils/errors.ts'
+import { logger } from '../../../utils/logger.ts'
 
 const errorHandler = (): ErrorHandler => (error, ctx) => {
   if (isValidationError(error)) {
     const validationError = error as ZodError
-
-    console.error('Validation error:', validationError.message)
 
     return ctx.json(
       {
@@ -27,8 +26,7 @@ const errorHandler = (): ErrorHandler => (error, ctx) => {
   if (isSpiDatabaseError(error)) {
     const spiDatabaseError = error as DatabaseError
 
-    // TODO: Use logger
-    console.error('Database error:', spiDatabaseError.message)
+    logger.error('Database error:', spiDatabaseError.message)
 
     let details = databaseErrorMessages.get(spiDatabaseError.code as string)
 
@@ -49,8 +47,7 @@ const errorHandler = (): ErrorHandler => (error, ctx) => {
   if (isCustomError(error)) {
     const customError = error as CustomError
 
-    // TODO: Use logger
-    console.error(customError)
+    logger.error(customError)
 
     return ctx.json(
       {
@@ -61,8 +58,7 @@ const errorHandler = (): ErrorHandler => (error, ctx) => {
     )
   }
 
-  // TODO: Use logger
-  console.error('Unhandled exception:', error)
+  logger.error('Unhandled exception:', error)
 
   return ctx.json(
     {

@@ -1,6 +1,7 @@
 import { serve } from '@hono/node-server'
 import type { Domain } from '../domain/init.ts'
 import type { Closable } from '../utils/app-state-manager.ts'
+import { logger } from '../utils/logger.ts'
 import { initHttp } from './http/init.ts'
 
 const initApi = async (domain: Domain) => {
@@ -11,14 +12,14 @@ const initApi = async (domain: Domain) => {
     port: 3000,
   }
 
-  const server = serve(options, (info) => console.log(`🚀 Server is running on http://localhost:${info.port}`))
+  const server = serve(options, (info) => logger.info(`🚀 Server is running on http://localhost:${info.port}`))
 
   const closeableServer: Closable = {
     close: () =>
       new Promise((resolve) => {
-        console.log('📕 Closing server connections...')
+        logger.info('📕 Closing server connections...')
         server.close(() => {
-          console.log('✔️ Server closed.')
+          logger.info('✔️ Server closed.')
 
           resolve(undefined)
         })
