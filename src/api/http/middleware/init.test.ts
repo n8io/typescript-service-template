@@ -1,129 +1,79 @@
-import { createMiddleware } from 'hono/factory'
-import * as HonoLogger from 'hono/logger'
-import { ZodError } from 'zod'
+import * as Pino from 'hono-pino'
+import * as Compress from 'hono/compress'
+import * as Cors from 'hono/cors'
+import * as RequestId from 'hono/request-id'
+import * as SecureHeaders from 'hono/secure-headers'
+import * as Timeout from 'hono/timeout'
+import * as Timing from 'hono/timing'
 import type { Domain } from '../../../domain/init.ts'
 import { exampleConfig } from '../../../models/config.ts'
-import { DomainNotFoundError } from '../../../models/custom-error.ts'
-import { ErrorCode } from '../../../models/error-code.ts'
-import * as DomainMiddleware from './domain/init.ts'
+import * as InitDomain from './domain/init.ts'
+import * as ErrorHandler from './error-handler.ts'
 import { initMiddleware } from './init.ts'
-
-vi.mock('hono/logger')
-vi.mock('./domain/init.ts')
 
 vi.mock('../../../utils/config.ts', async () => ({
   config: exampleConfig(),
 }))
 
+vi.mock('hono-pino')
+vi.mock('hono/compress')
+vi.mock('hono/cors')
+vi.mock('hono/request-id')
+vi.mock('hono/secure-headers')
+vi.mock('hono/timeout')
+vi.mock('hono/timing')
+vi.mock('./domain/init.ts')
+vi.mock('./error-handler.ts')
+
 describe('initMiddleware', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.stubEnv('IS_TEST_CONTEXT', 'true')
+
+    // @ts-expect-error ???
+    vi.spyOn(Pino, 'pinoLogger').mockReturnValue(() => {})
+    // @ts-expect-error ???
+    vi.spyOn(Compress, 'compress').mockReturnValue(() => {})
+    // @ts-expect-error ???
+    vi.spyOn(Cors, 'cors').mockReturnValue(() => {})
+    // @ts-expect-error ???
+    vi.spyOn(RequestId, 'requestId').mockReturnValue(() => {})
+    // @ts-expect-error ???
+    vi.spyOn(SecureHeaders, 'secureHeaders').mockReturnValue(() => {})
+    // @ts-expect-error ???
+    vi.spyOn(Timeout, 'timeout').mockReturnValue(() => {})
+    // @ts-expect-error ???
+    vi.spyOn(Timing, 'timing').mockReturnValue(() => {})
+    // @ts-expect-error ???
+    vi.spyOn(InitDomain, 'initDomain').mockReturnValue(() => {})
+    // @ts-expect-error ???
+    vi.spyOn(ErrorHandler, 'errorHandler').mockReturnValue(() => {})
   })
 
-  describe('should handle custom errors correctly', async () => {
-    const error = new DomainNotFoundError('💥')
+  it('should initialize middleware with default settings', () => {
+    const domain = {} as Domain
+    const app = initMiddleware(domain)
 
-    beforeEach(() => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
+    expect(app).toBeDefined()
 
-      vi.spyOn(HonoLogger, 'logger').mockImplementation(() => {
-        return createMiddleware(async (_, next) => {
-          next()
-        })
-      })
-
-      vi.spyOn(DomainMiddleware, 'initDomain').mockImplementation(() => {
-        return createMiddleware(async () => {
-          throw error
-        })
-      })
-    })
-
-    it('should handle customer errors', async () => {
-      const mockDomain = {} as Domain
-      const app = initMiddleware(mockDomain)
-      const res = await app.request('/test')
-
-      expect(res.status).toEqual(error.httpStatusCode)
-
-      await expect(res.json()).resolves.toEqual({
-        code: error.code,
-        message: error.message,
-      })
-    })
-  })
-
-  describe('should handle validation errors correctly', async () => {
-    const error = new ZodError([
-      {
-        code: 'invalid_type',
-        expected: 'string',
-        path: ['test'],
-        message: 'Expected string, received number',
-        received: 'number',
+    expect(Pino.pinoLogger).toHaveBeenCalledWith({
+      pino: {
+        enabled: true,
+        level: 'info',
+        transport: {
+          options: {
+            colorize: true,
+          },
+          target: 'pino-pretty',
+        },
       },
-    ])
-
-    beforeEach(() => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
-
-      vi.spyOn(HonoLogger, 'logger').mockImplementation(() => {
-        return createMiddleware(async (_, next) => {
-          next()
-        })
-      })
-
-      vi.spyOn(DomainMiddleware, 'initDomain').mockImplementation(() => {
-        return createMiddleware(async () => {
-          throw error
-        })
-      })
     })
 
-    it('should handle customer errors', async () => {
-      const mockDomain = {} as Domain
-      const app = initMiddleware(mockDomain)
-      const res = await app.request('/test')
-
-      expect(res.status).toEqual(400)
-
-      await expect(res.json()).resolves.toEqual({
-        code: ErrorCode.VALIDATION_ERROR,
-        message: 'Validation error',
-        details: error.errors,
-      })
-    })
-  })
-
-  describe('should handle unhandled errors correctly', async () => {
-    beforeEach(() => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
-
-      vi.spyOn(HonoLogger, 'logger').mockImplementation(() => {
-        return createMiddleware(async (_, next) => {
-          next()
-        })
-      })
-
-      vi.spyOn(DomainMiddleware, 'initDomain').mockImplementation(() => {
-        return createMiddleware(async () => {
-          throw new Error('💥')
-        })
-      })
-    })
-
-    it('should handle customer errors', async () => {
-      const mockDomain = {} as Domain
-      const app = initMiddleware(mockDomain)
-      const res = await app.request('/test')
-
-      expect(res.status).toEqual(500)
-
-      await expect(res.json()).resolves.toEqual({
-        code: ErrorCode.UNHANDLED_EXCEPTION,
-        message: 'An unhandled exception occurred',
-      })
-    })
+    expect(Compress.compress).toHaveBeenCalled()
+    expect(Cors.cors).toHaveBeenCalled()
+    expect(RequestId.requestId).toHaveBeenCalled()
+    expect(SecureHeaders.secureHeaders).toHaveBeenCalled()
+    expect(Timeout.timeout).toHaveBeenCalledWith(10_000)
+    expect(Timing.timing).toHaveBeenCalled()
   })
 })
