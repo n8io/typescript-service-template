@@ -56,7 +56,10 @@
     "@opentelemetry/sdk-trace-node": "^2",
     "drizzle-orm": "^0",
     "hono": "^4",
+    "hono-pino": "^0",
     "pg": "^8",
+    "pino": "^9",
+    "pino-pretty": "^13",
     "ulid": "^3",
     "zod": "^3"
   },

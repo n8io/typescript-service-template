@@ -1,7 +1,7 @@
 import type { Domain } from '../../domain/init.ts'
-import { makeApp } from './app.ts'
+import { initHttp } from './init.ts'
 
-describe('makeApp', () => {
+describe('initHttp', () => {
   const mockDomain = {
     services: {
       resource: {},
@@ -9,13 +9,13 @@ describe('makeApp', () => {
   } as Domain
 
   it('should create an instance of Hono', () => {
-    const app = makeApp(mockDomain)
+    const app = initHttp(mockDomain)
 
     expect(app).toBeDefined()
   })
 
   it("should have a health endpoint that returns 'OK'", async () => {
-    const app = makeApp(mockDomain)
+    const app = initHttp(mockDomain)
     const response = await app.request('/health')
 
     expect(response.status).toBe(200)
@@ -26,7 +26,7 @@ describe('makeApp', () => {
   })
 
   it('should have registered all the expected routes', async () => {
-    const app = makeApp(mockDomain)
+    const app = initHttp(mockDomain)
 
     expect(app.routes).toMatchInlineSnapshot(`
       [

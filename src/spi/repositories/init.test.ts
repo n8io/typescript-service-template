@@ -3,7 +3,7 @@ import type { Config } from '../../utils/config.ts'
 import * as Db from './database/init.ts'
 import { initRepositories } from './init.ts'
 
-vi.mock('./database/index.ts')
+vi.mock('./database/init.ts')
 
 describe('initRepositories', () => {
   it('should initialize the resource repository with the database connection', async () => {

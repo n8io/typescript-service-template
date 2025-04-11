@@ -1,10 +1,10 @@
 import { serve } from '@hono/node-server'
 import type { Domain } from '../domain/init.ts'
 import type { Closable } from '../utils/app-state-manager.ts'
-import { makeApp } from './http/app.ts'
+import { initHttp } from './http/init.ts'
 
 const initApi = async (domain: Domain) => {
-  const app = makeApp(domain)
+  const app = initHttp(domain)
 
   const options: Parameters<typeof serve>[0] = {
     fetch: app.fetch,

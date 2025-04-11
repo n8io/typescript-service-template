@@ -3,7 +3,7 @@ import type { Domain } from '../../domain/init.ts'
 import { initV1 } from './v1/init.ts'
 import type { Env } from './v1/models.ts'
 
-const makeApp = (domain: Domain) => {
+const initHttp = (domain: Domain) => {
   const app = new Hono<Env>({ strict: false })
 
   app.get('/health', (c) => c.json({ message: 'OK' }))
@@ -12,4 +12,4 @@ const makeApp = (domain: Domain) => {
   return app
 }
 
-export { makeApp }
+export { initHttp }
