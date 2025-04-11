@@ -23,6 +23,17 @@ class CustomError extends Error {
   }
 }
 
+class ApiRequestMissingRequiredHeader extends CustomError {
+  constructor(header: string) {
+    super(
+      'ApiMissingClientId',
+      `Request is missing the required "${header}" header`,
+      'API_REQUEST_HEADER_MISSING',
+      HttpStatus.BAD_REQUEST,
+    )
+  }
+}
+
 class ApiUnsupportedOperatorError extends CustomError {
   constructor(operator: string) {
     super(
@@ -96,6 +107,7 @@ class DomainNotFoundError extends CustomError {
 }
 
 export {
+  ApiRequestMissingRequiredHeader,
   ApiUnsupportedFieldError,
   ApiUnsupportedFieldOperatorError,
   ApiUnsupportedMultipleValueOperatorError,

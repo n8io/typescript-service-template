@@ -36,9 +36,13 @@ npm run docker:up
 - [x] 📊 Bake in OpenTelemetry metrics
 - [x] 👷 Adapt api requests to domain request shape (filters, sorting, pagination) via common util(s)
 - [x] 🏪 Adapt domain requests to spi request format via common util(s)
+- [x] 🚔 Enforce a request header client id
 - [x] 🗄️ Use Drizzle for db layer
   - [x] 🏊‍♂️ Implement db connection pooling
-- [ ] ✍️ Utilize structured logging (pino??)
+  - [ ] 🛑 Properly handle db level errors (index violations etc)
+- [ ] ✍️ Utilize structured logging (pino)
+  - [ ] 🪵 No console logs
+- [x] 🛢️ No barrel or index files
 - [ ] 🤓 DX improvements
   - [x] ⌚ Leverage native `node --watch` to restart server on code changes
   - [x] 🪝 Git hooks

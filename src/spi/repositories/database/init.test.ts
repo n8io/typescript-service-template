@@ -1,6 +1,7 @@
 import * as Db from 'drizzle-orm/node-postgres'
 import * as DbMigrator from 'drizzle-orm/node-postgres/migrator'
 import pg from 'pg'
+import { exampleConfig } from '../../../models/config.ts'
 import type { AppStateManager } from '../../../utils/app-state-manager.ts'
 import { makeDatabase, runMigrations } from './init.ts'
 import * as schema from './schema.ts'
@@ -19,10 +20,7 @@ describe('makeDatabase', () => {
   it('should create a database connection', () => {
     const drizzleSpy = vi.spyOn(Db, 'drizzle')
     const appStateManager: AppStateManager = { registerClosableDependency: vi.fn() } as unknown as AppStateManager
-
-    const config = {
-      DATABASE_URL: 'postgres://user:password@localhost:5432/db',
-    }
+    const config = exampleConfig()
 
     makeDatabase({ appStateManager, config })
 

@@ -1,5 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-
 vi.mock('./utils/app-state-manager.ts', () => {
   const registerClosableDependency = vi.fn()
   const AppStateManager = vi.fn().mockImplementation(() => ({

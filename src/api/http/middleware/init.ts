@@ -11,8 +11,9 @@ import { ZodError } from 'zod'
 import type { Domain } from '../../../domain/init.ts'
 import { CustomError } from '../../../models/custom-error.ts'
 import { ErrorCode } from '../../../models/error-code.ts'
+import { config } from '../../../utils/config.ts'
 import type { Env } from '../v1/models.ts'
-import { makeDomainMiddleware } from './domain.ts'
+import { initDomain } from './domain/init.ts'
 
 const tenSecondsInMs = 10 * 1_000
 
@@ -20,33 +21,27 @@ const initMiddleware = (domain: Domain): Hono<Env> => {
   const app = new Hono<Env>()
   const areLogsPretty = process.env.NODE_ENV !== 'production'
 
-  const transport = areLogsPretty
-    ? {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-        },
-      }
-    : undefined
+  const pino = {
+    enabled: !config.IS_TEST_CONTEXT,
+    level: 'info',
+    transport: areLogsPretty
+      ? {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+          },
+        }
+      : undefined,
+  }
 
   app.use(requestId())
-
-  app.use(
-    logger({
-      pino: {
-        enabled: !process.env.IS_TEST_CONTEXT,
-        level: 'info',
-        transport,
-      },
-    }),
-  )
-
+  app.use(logger({ pino }))
   app.use(cors())
   app.use(secureHeaders())
   app.use(timeout(tenSecondsInMs))
   app.use(compress())
   app.use(timing())
-  app.use(makeDomainMiddleware(domain))
+  app.use(initDomain(domain))
 
   app.onError((err, c) => {
     if (err instanceof CustomError) {

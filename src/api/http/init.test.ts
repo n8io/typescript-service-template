@@ -1,5 +1,10 @@
 import type { Domain } from '../../domain/init.ts'
+import { exampleConfig } from '../../models/config.ts'
 import { initHttp } from './init.ts'
+
+vi.mock('../../utils/config.ts', () => ({
+  config: exampleConfig(),
+}))
 
 describe('initHttp', () => {
   const mockDomain = {

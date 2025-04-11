@@ -3,6 +3,7 @@ import type { Domain } from '../../../domain/init.ts'
 type Env = {
   // biome-ignore lint/style/useNamingConvention: Hono uses PascalCase
   Variables: {
+    clientId: string
     services: Domain['services']
   }
 }
