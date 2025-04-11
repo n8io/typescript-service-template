@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
+import { pinoLogger as logger } from 'hono-pino'
 import { compress } from 'hono/compress'
 import { cors } from 'hono/cors'
-import { logger } from 'hono/logger'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
 import { timeout } from 'hono/timeout'
@@ -18,9 +18,29 @@ const tenSecondsInMs = 10 * 1_000
 
 const initMiddleware = (domain: Domain): Hono<Env> => {
   const app = new Hono<Env>()
+  const areLogsPretty = process.env.NODE_ENV !== 'production'
+
+  const transport = areLogsPretty
+    ? {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+        },
+      }
+    : undefined
 
   app.use(requestId())
-  app.use(logger())
+
+  app.use(
+    logger({
+      pino: {
+        enabled: !process.env.IS_TEST_CONTEXT,
+        level: 'info',
+        transport,
+      },
+    }),
+  )
+
   app.use(cors())
   app.use(secureHeaders())
   app.use(timeout(tenSecondsInMs))
@@ -54,7 +74,7 @@ const initMiddleware = (domain: Domain): Hono<Env> => {
       )
     }
 
-    console.error('Unhandled exception:', err)
+    // console.error('Unhandled exception:', err)
 
     return c.json(
       {

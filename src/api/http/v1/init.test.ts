@@ -2,7 +2,7 @@ import type { Domain } from '../../../domain/init.ts'
 import * as Middleware from '../middleware/init.ts'
 import { initV1 } from './init.ts'
 
-vi.mock('../middleware/index.ts')
+vi.mock('../middleware/init.ts')
 
 describe('makeV1', () => {
   it('should initialize the middleware with the params', () => {

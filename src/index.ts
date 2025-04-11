@@ -15,4 +15,11 @@ const start = async () => {
   return appStateManager
 }
 
+/* v8 ignore start */
+if (process.env.IS_TEST_CONTEXT === undefined) {
+  // We disable this code when running it's unit tests
+  start()
+}
+/* v8 ignore end */
+
 export { start }

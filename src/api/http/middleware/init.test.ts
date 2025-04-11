@@ -11,6 +11,11 @@ vi.mock('hono/logger')
 vi.mock('./domain.ts')
 
 describe('initMiddleware', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.stubEnv('IS_TEST_CONTEXT', 'true')
+  })
+
   describe('should handle custom errors correctly', async () => {
     const error = new DomainNotFoundError('💥')
 

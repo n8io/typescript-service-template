@@ -2,7 +2,7 @@ import type { Spi } from '../spi/init.ts'
 import { initDomain } from './init.ts'
 import * as Services from './services/init.ts'
 
-vi.mock('./services/index.ts')
+vi.mock('./services/init.ts')
 
 describe('initDomain', () => {
   it('should initialize the services', async () => {

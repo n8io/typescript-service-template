@@ -3,7 +3,7 @@ import type { Config } from '../utils/config.ts'
 import { initSpi } from './init.ts'
 import * as Repositories from './repositories/init.ts'
 
-vi.mock('./repositories/index.ts')
+vi.mock('./repositories/init.ts')
 
 describe('initSpi', () => {
   it('should initialize the repositories', async () => {
