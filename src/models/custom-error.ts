@@ -6,20 +6,24 @@ class CustomError extends Error {
   code?: string
   httpStatusCode?: HttpStatus
 
+  override cause?: unknown
+
   constructor(
     name: string,
     message: string,
     code: ErrorCode = 'UNHANDLED_EXCEPTION',
     httpStatusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+    cause?: Error,
   ) {
     super(message)
     this.code = code
     this.httpStatusCode = httpStatusCode
     this.name = name
+    this.cause = cause
   }
 
   override toString() {
-    return `[${this.name}] ${this.message}`
+    return `[${this.name}] ${this.message}${this.cause ? ` / cause: ${this.cause}` : ''}`
   }
 }
 

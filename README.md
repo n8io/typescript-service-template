@@ -39,11 +39,14 @@ npm run docker:up
 - [x] 🚔 Enforce a request header client id
 - [x] 🗄️ Use Drizzle for db layer
   - [x] 🏊‍♂️ Implement db connection pooling
-  - [ ] 🛑 Properly handle db level errors (index violations etc)
+  - [x] 🛑 Properly handle db level errors (index violations etc)
 - [ ] ✍️ Utilize structured logging (pino)
   - [ ] 🪵 No console logs
 - [x] 🛢️ No barrel or index files
-- [ ] 🤓 DX improvements
+- [ ] ♻️ Autogenerate openapi spec (hono-openapi)
+- [ ] 📘 Autogenerate api documentation (hono-openapi)
+- [ ] 📗 Expose Swagger-like documentation (Scalar)
+- [x] 🤓 DX improvements
   - [x] ⌚ Leverage native `node --watch` to restart server on code changes
   - [x] 🪝 Git hooks
     - [x] ...on commit
@@ -56,10 +59,7 @@ npm run docker:up
       - [x] Identify circular dependencies
     - [x] ...on push
       - [x] Lint branch name
-  - [ ] ♻️ Autogenerate openapi spec (hono-openapi)
-  - [ ] 📘 Autogenerate api documentation (hono-openapi)
-  - [ ] 📗 Expose Swagger-like documentation (Scalar)
-  - [ ] 😇 Automatically update badges in README (test coverage)
+- [ ] 😇 Automatically update badges in README (test coverage)
 
 ## Contributing
 
