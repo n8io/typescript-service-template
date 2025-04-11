@@ -1,4 +1,4 @@
-import type { Domain } from '../../domain/index.ts'
+import type { Domain } from '../../domain/init.ts'
 import { makeApp } from './app.ts'
 
 describe('makeApp', () => {

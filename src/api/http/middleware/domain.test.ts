@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import type { Domain } from '../../../domain/index.ts'
+import type { Domain } from '../../../domain/init.ts'
 import type { Env } from '../v1/models.ts'
 import { makeDomainMiddleware } from './domain.ts'
 

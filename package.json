@@ -54,9 +54,10 @@
     "@opentelemetry/sdk-metrics": "^2",
     "@opentelemetry/sdk-node": "^0",
     "@opentelemetry/sdk-trace-node": "^2",
-    "drizzle-orm": "^0.41.0",
+    "drizzle-orm": "^0",
     "hono": "^4",
-    "pg": "^8.14.1",
+    "pg": "^8",
+    "ulid": "^3",
     "zod": "^3"
   },
   "devDependencies": {

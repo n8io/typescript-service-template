@@ -1,5 +1,5 @@
-import { randomUUID } from 'node:crypto'
+import { ulid } from 'ulid'
 
-const id = () => randomUUID()
+const id = ulid
 
 export { id }

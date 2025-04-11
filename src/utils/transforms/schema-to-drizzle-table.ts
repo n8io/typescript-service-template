@@ -126,7 +126,7 @@ const schemaToDrizzleTable = <T extends ZodRawShape>(
   if (!('id' in shape)) {
     // @ts-expect-error ???
     // biome-ignore lint/complexity/useLiteralKeys: ???
-    shape['id'] = z.string().uuid()
+    shape['id'] = z.string()
   }
 
   const columns: Record<string, DrizzleColumn> = {}

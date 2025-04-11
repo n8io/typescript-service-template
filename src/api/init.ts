@@ -1,5 +1,5 @@
 import { serve } from '@hono/node-server'
-import type { Domain } from '../domain/index.ts'
+import type { Domain } from '../domain/init.ts'
 import type { Closable } from '../utils/app-state-manager.ts'
 import { makeApp } from './http/app.ts'
 
@@ -16,8 +16,9 @@ const initApi = async (domain: Domain) => {
   const closeableServer: Closable = {
     close: () =>
       new Promise((resolve) => {
+        console.log('📕 Closing server connections...')
         server.close(() => {
-          console.log('📕 Server closed.')
+          console.log('✔️ Server closed.')
 
           resolve(undefined)
         })

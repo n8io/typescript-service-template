@@ -1,6 +1,6 @@
-import type { Spi } from '../spi/index.ts'
-import { initDomain } from './index.ts'
-import * as Services from './services/index.ts'
+import type { Spi } from '../spi/init.ts'
+import { initDomain } from './init.ts'
+import * as Services from './services/init.ts'
 
 vi.mock('./services/index.ts')
 

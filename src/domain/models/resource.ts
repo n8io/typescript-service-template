@@ -1,10 +1,11 @@
 import { z } from 'zod'
 import { exampleAuditRecord } from '../../models/audit-record.ts'
 import { schemaEntity } from '../../models/entity.ts'
+import { gid } from '../../utils/generators/gid.ts'
 import { validation } from '../../utils/validation.ts'
 
 const schemaResource = schemaEntity.extend({
-  gid: validation.string,
+  gid: validation.string.default(gid),
   name: validation.string,
   timeZone: validation.timeZone.nullable(),
 })

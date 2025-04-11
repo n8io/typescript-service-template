@@ -1,20 +1,18 @@
-import { initApi } from './api/index.ts'
-import { initDomain } from './domain/index.ts'
-import { initSpi } from './spi/index.ts'
+import { initApi } from './api/init.ts'
+import { initDomain } from './domain/init.ts'
+import { initSpi } from './spi/init.ts'
 import { AppStateManager } from './utils/app-state-manager.ts'
 import { config } from './utils/config.ts'
 
 const start = async () => {
-  const appState = new AppStateManager()
-  const spi = await initSpi(config)
+  const appStateManager = new AppStateManager()
+  const spi = await initSpi({ appStateManager, config })
   const domain = await initDomain(spi)
   const api = await initApi(domain)
 
-  appState.registerClosableDependency(api.server)
+  appStateManager.registerClosableDependency(api.server)
 
-  return appState
+  return appStateManager
 }
-
-start()
 
 export { start }

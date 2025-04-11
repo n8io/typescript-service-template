@@ -1,5 +1,5 @@
-import type { Spi } from '../../spi/index.ts'
-import { initServices } from './index.ts'
+import type { Spi } from '../../spi/init.ts'
+import { initServices } from './init.ts'
 import { ResourceService } from './resource.ts'
 
 describe('initServices', () => {
