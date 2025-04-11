@@ -2,13 +2,18 @@ import { createMiddleware } from 'hono/factory'
 import * as HonoLogger from 'hono/logger'
 import { ZodError } from 'zod'
 import type { Domain } from '../../../domain/init.ts'
+import { exampleConfig } from '../../../models/config.ts'
 import { DomainNotFoundError } from '../../../models/custom-error.ts'
 import { ErrorCode } from '../../../models/error-code.ts'
-import * as DomainMiddleware from './domain.ts'
+import * as DomainMiddleware from './domain/init.ts'
 import { initMiddleware } from './init.ts'
 
 vi.mock('hono/logger')
-vi.mock('./domain.ts')
+vi.mock('./domain/init.ts')
+
+vi.mock('../../../utils/config.ts', async () => ({
+  config: exampleConfig(),
+}))
 
 describe('initMiddleware', () => {
   beforeEach(() => {
@@ -28,7 +33,7 @@ describe('initMiddleware', () => {
         })
       })
 
-      vi.spyOn(DomainMiddleware, 'makeDomainMiddleware').mockImplementation(() => {
+      vi.spyOn(DomainMiddleware, 'initDomain').mockImplementation(() => {
         return createMiddleware(async () => {
           throw error
         })
@@ -69,7 +74,7 @@ describe('initMiddleware', () => {
         })
       })
 
-      vi.spyOn(DomainMiddleware, 'makeDomainMiddleware').mockImplementation(() => {
+      vi.spyOn(DomainMiddleware, 'initDomain').mockImplementation(() => {
         return createMiddleware(async () => {
           throw error
         })
@@ -101,7 +106,7 @@ describe('initMiddleware', () => {
         })
       })
 
-      vi.spyOn(DomainMiddleware, 'makeDomainMiddleware').mockImplementation(() => {
+      vi.spyOn(DomainMiddleware, 'initDomain').mockImplementation(() => {
         return createMiddleware(async () => {
           throw new Error('💥')
         })

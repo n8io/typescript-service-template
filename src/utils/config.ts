@@ -1,9 +1,6 @@
 import { z } from 'zod'
+import { schemaConfig } from '../models/config.ts'
 import { AppConfigIncompleteError } from '../models/custom-error.ts'
-
-const schemaConfig = z.object({
-  DATABASE_URL: z.string().url(),
-})
 
 type Config = z.infer<typeof schemaConfig>
 

@@ -16,8 +16,8 @@ const start = async () => {
 }
 
 /* v8 ignore start */
-if (process.env.IS_TEST_CONTEXT === undefined) {
-  // We disable this code when running it's unit tests
+if (!config.IS_TEST_CONTEXT) {
+  // We disable this code when running tests
   start()
 }
 /* v8 ignore end */

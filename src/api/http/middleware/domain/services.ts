@@ -1,8 +1,8 @@
 import { createMiddleware } from 'hono/factory'
-import type { Domain } from '../../../domain/init.ts'
-import type { Env } from '../v1/models.ts'
+import type { Domain } from '../../../../domain/init.ts'
+import type { Env } from '../../v1/models.ts'
 
-const makeDomainMiddleware = (domain: Domain) => {
+const services = (domain: Domain) => {
   const services: Env['Variables']['services'] = {
     resource: domain.services.resource,
   }
@@ -14,4 +14,4 @@ const makeDomainMiddleware = (domain: Domain) => {
   })
 }
 
-export { makeDomainMiddleware }
+export { services }
