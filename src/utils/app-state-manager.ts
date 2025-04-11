@@ -4,7 +4,7 @@ const ExitCode = {
 } as const
 
 type Closable = {
-  close(): void
+  close(): Promise<void> | void
 }
 
 type MonitorableStatus = {

@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import pg from 'pg'
 import type { AppStateManager, Closable } from '../../../utils/app-state-manager.ts'
 import type { Config } from '../../../utils/config.ts'
+import { logger } from '../../../utils/logger.ts'
 import * as schema from './schema.ts'
 
 type Dependencies = {
@@ -16,9 +17,9 @@ const initDatabase = ({ appStateManager, config }: Dependencies) => {
 
   const closeable: Closable = {
     close: async () => {
-      console.log('📕 Closing database connection...')
+      logger.info('📕 Closing database connection...')
       await pool.end()
-      console.log('✔️ Database connection closed')
+      logger.info('✔️ Database connection closed')
     },
   }
 

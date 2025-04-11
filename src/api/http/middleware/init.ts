@@ -39,6 +39,8 @@ const initMiddleware = (domain: Domain): Hono<Env> => {
   app.use(timeout(tenSecondsInMs))
   app.use(compress())
   app.use(timing())
+
+  // Initialize the domain with the app context
   app.use(initDomain(domain))
 
   // Handle thrown errors
