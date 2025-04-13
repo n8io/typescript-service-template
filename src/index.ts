@@ -16,7 +16,7 @@ const start = async () => {
 }
 
 /* v8 ignore start */
-if (!config.IS_TEST_CONTEXT) {
+if (config.NODE_ENV !== 'test') {
   // We disable this code when running tests
   start()
 }

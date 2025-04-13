@@ -1,4 +1,3 @@
-import * as Pino from 'hono-pino'
 import * as Compress from 'hono/compress'
 import * as Cors from 'hono/cors'
 import * as RequestId from 'hono/request-id'
@@ -10,12 +9,12 @@ import { exampleConfig } from '../../../models/config.ts'
 import * as InitDomain from './domain/init.ts'
 import * as ErrorHandler from './error-handler.ts'
 import { initMiddleware } from './init.ts'
+import * as Logger from './logger.ts'
 
 vi.mock('../../../utils/config.ts', async () => ({
   config: exampleConfig(),
 }))
 
-vi.mock('hono-pino')
 vi.mock('hono/compress')
 vi.mock('hono/cors')
 vi.mock('hono/request-id')
@@ -28,10 +27,9 @@ vi.mock('./error-handler.ts')
 describe('initMiddleware', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubEnv('IS_TEST_CONTEXT', 'true')
 
     // @ts-expect-error ???
-    vi.spyOn(Pino, 'pinoLogger').mockReturnValue(() => {})
+    vi.spyOn(Logger, 'logger').mockReturnValue(() => {})
     // @ts-expect-error ???
     vi.spyOn(Compress, 'compress').mockReturnValue(() => {})
     // @ts-expect-error ???
@@ -56,19 +54,7 @@ describe('initMiddleware', () => {
 
     expect(app).toBeDefined()
 
-    expect(Pino.pinoLogger).toHaveBeenCalledWith({
-      pino: {
-        enabled: true,
-        level: 'info',
-        transport: {
-          options: {
-            colorize: true,
-          },
-          target: 'pino-pretty',
-        },
-      },
-    })
-
+    expect(Logger.logger).toHaveBeenCalled()
     expect(Compress.compress).toHaveBeenCalled()
     expect(Cors.cors).toHaveBeenCalled()
     expect(RequestId.requestId).toHaveBeenCalled()

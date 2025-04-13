@@ -19,6 +19,7 @@ describe('createLogger', () => {
     createLogger()
 
     expect(mockedPino).toHaveBeenCalledWith({
+      enabled: expect.any(Boolean),
       level: 'info',
       transport: {
         target: 'pino-pretty',
@@ -45,6 +46,7 @@ describe('createLogger', () => {
     createLogger()
 
     expect(mockedPino).toHaveBeenCalledWith({
+      enabled: true,
       level: 'info',
       transport: undefined,
     })

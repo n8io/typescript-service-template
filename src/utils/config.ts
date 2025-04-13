@@ -4,6 +4,7 @@ import { AppConfigIncompleteError } from '../models/custom-error.ts'
 
 type Config = z.infer<typeof schemaConfig>
 
+// biome-ignore lint/nursery/noProcessEnv: <explanation>
 const results = schemaConfig.safeParse(process.env)
 
 if (!results.success) {

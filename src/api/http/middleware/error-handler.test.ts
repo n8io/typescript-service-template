@@ -4,11 +4,11 @@ import { PostgresError } from 'pg-error-enum'
 import { ZodError } from 'zod'
 import { DomainNotFoundError } from '../../../models/custom-error.ts'
 import { ErrorCode } from '../../../models/error-code.ts'
-import { databaseErrorMessages } from '../../../spi/repositories/database/error.ts'
-import { errorHandler } from './error-handler.ts'
-
 import * as SpiErrorUtils from '../../../spi/repositories/database/error.ts'
 import * as GeneralErrorUtils from '../../../utils/errors.ts'
+import { errorHandler } from './error-handler.ts'
+
+vi.mock('../../../utils/logger.ts')
 
 describe('errorHandler', () => {
   beforeEach(() => {
@@ -88,6 +88,7 @@ describe('errorHandler', () => {
         const error = new pg.DatabaseError('🔥', 0, 'error')
 
         error.code = handledCode
+        error.detail = 'DATABASE_ERROR_DETAIL'
 
         throw error
       })
@@ -100,8 +101,7 @@ describe('errorHandler', () => {
 
       await expect(res.json()).resolves.toEqual({
         code: ErrorCode.SPI_DATABASE_ERROR,
-        details: databaseErrorMessages.get(handledCode),
-        message: 'Database error',
+        message: 'DATABASE_ERROR_DETAIL',
       })
     })
 
@@ -124,8 +124,7 @@ describe('errorHandler', () => {
 
       await expect(res.json()).resolves.toEqual({
         code: ErrorCode.SPI_DATABASE_ERROR,
-        details: 'See logs for more details',
-        message: 'Database error',
+        message: 'Unhandled database error, see logs for details.',
       })
     })
   })
@@ -150,7 +149,7 @@ describe('errorHandler', () => {
 
       await expect(res.json()).resolves.toEqual({
         code: ErrorCode.UNHANDLED_EXCEPTION,
-        message: 'An unhandled exception occurred',
+        message: 'An unhandled exception occurred, see logs for more details.',
       })
     })
   })

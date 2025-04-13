@@ -1,21 +1,23 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AppStateManager, type Closable, type Monitorable } from './app-state-manager.ts'
+import * as Logger from './logger.ts'
+
+vi.mock('./logger.ts')
 
 describe('AppState', () => {
-  let asm: AppStateManager
+  let appStateManager: AppStateManager
 
   beforeEach(() => {
     vi.clearAllMocks()
 
-    asm = new AppStateManager()
-    vi.spyOn(console, 'error').mockReturnValue()
-    vi.spyOn(console, 'info').mockReturnValue()
-    vi.spyOn(console, 'log').mockReturnValue()
-    vi.spyOn(console, 'warn').mockReturnValue()
+    appStateManager = new AppStateManager()
+
+    vi.spyOn(Logger.logger, 'error').mockReturnValue()
+    vi.spyOn(Logger.logger, 'info').mockReturnValue()
+    vi.spyOn(Logger.logger, 'warn').mockReturnValue()
   })
 
   it('should initialize with default state', async () => {
-    const actual = await asm.getMonitorableDependencyStatuses()
+    const actual = await appStateManager.getMonitorableDependencyStatuses()
 
     expect(actual).toEqual([])
   })
@@ -28,9 +30,9 @@ describe('AppState', () => {
 
     const mockMonitorable = new MockMonitorable()
 
-    asm.registerMonitorableDependency(mockMonitorable)
+    appStateManager.registerMonitorableDependency(mockMonitorable)
 
-    const actual = await asm.getMonitorableDependencyStatuses()
+    const actual = await appStateManager.getMonitorableDependencyStatuses()
 
     expect(actual).toEqual([
       {
@@ -50,7 +52,7 @@ describe('AppState', () => {
       }
       const mockCloseable = new MockCloseable()
 
-      asm.registerClosableDependency(mockCloseable)
+      appStateManager.registerClosableDependency(mockCloseable)
       process.emit('SIGTERM')
 
       expect(mockClose).toHaveBeenCalledWith()
@@ -67,7 +69,7 @@ describe('AppState', () => {
       }
       const mockCloseable = new MockCloseable()
 
-      asm.registerClosableDependency(mockCloseable)
+      appStateManager.registerClosableDependency(mockCloseable)
       process.emit('SIGINT')
 
       expect(mockClose).toHaveBeenCalledWith()
@@ -82,9 +84,10 @@ describe('AppState', () => {
         name = 'MockCloseable'
         close = mockClose
       }
+
       const mockCloseable = new MockCloseable()
 
-      asm.registerClosableDependency(mockCloseable)
+      appStateManager.registerClosableDependency(mockCloseable)
 
       // @ts-expect-error - We are testing the behavior of the exit handler
       process.emit('exit')
@@ -111,8 +114,8 @@ describe('AppState', () => {
       const mockCloseableOne = new MockCloseableOne()
       const mockCloseableTwo = new MockCloseableTwo()
 
-      asm.registerClosableDependency(mockCloseableOne)
-      asm.registerClosableDependency(mockCloseableTwo)
+      appStateManager.registerClosableDependency(mockCloseableOne)
+      appStateManager.registerClosableDependency(mockCloseableTwo)
       process.emit('SIGTERM')
       expect(mockCloseOne).toHaveBeenCalledWith()
       expect(mockCloseTwo).toHaveBeenCalledWith()
@@ -122,22 +125,22 @@ describe('AppState', () => {
   describe('when error unhandled rejection is thrown', () => {
     it('should log a message and the error', async () => {
       const mockError = new Error('MOCK_ERROR')
-      const consoleSpyError = vi.spyOn(console, 'error')
+      const loggerErrorSpy = vi.spyOn(Logger.logger, 'error')
       // @ts-expect-error This will trigger the unhandled rejection handler
       process.emit('unhandledRejection', mockError)
 
-      expect(consoleSpyError).toHaveBeenCalledWith('😱 Oh no, there was an unhandled rejection', mockError)
+      expect(loggerErrorSpy).toHaveBeenCalledWith('😱 Oh no, there was an unhandled rejection', mockError)
     })
   })
 
   describe('when non-error unhandled rejection is thrown', () => {
     it('should log a message and reason as an object', async () => {
       const reason = 'REASON'
-      const consoleSpyError = vi.spyOn(console, 'error')
+      const loggerErrorSpy = vi.spyOn(Logger.logger, 'error')
       // @ts-expect-error This will trigger the unhandled rejection handler
       process.emit('unhandledRejection', reason)
 
-      expect(consoleSpyError).toHaveBeenCalledWith('😱 Oh no, there was an unhandled rejection', { reason })
+      expect(loggerErrorSpy).toHaveBeenCalledWith('😱 Oh no, there was an unhandled rejection', { reason })
     })
   })
 })

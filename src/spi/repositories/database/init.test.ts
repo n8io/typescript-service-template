@@ -2,12 +2,14 @@ import * as Db from 'drizzle-orm/node-postgres'
 import pg from 'pg'
 import { exampleConfig } from '../../../models/config.ts'
 import type { AppStateManager, Closable } from '../../../utils/app-state-manager.ts'
-import { initDatabase } from './init.ts'
 import * as schema from './schema.ts'
 
 vi.mock('drizzle-orm/node-postgres')
 vi.mock('drizzle-orm/node-postgres/migrator')
+vi.mock('./logger.ts')
 vi.mock('pg')
+
+import { initDatabase } from './init.ts'
 
 describe('initDatabase', () => {
   const pool = {

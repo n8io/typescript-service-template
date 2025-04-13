@@ -15,5 +15,7 @@ export default defineConfig({
     },
     environment: 'node',
     globals: true,
+    mockReset: true,
+    unstubEnvs: true,
   },
 })
