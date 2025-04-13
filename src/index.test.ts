@@ -29,7 +29,6 @@ vi.mock('./api/init.ts', () => ({
 describe('start', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.stubEnv('IS_TEST_CONTEXT', 'true')
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 

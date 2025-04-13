@@ -40,8 +40,8 @@ npm run docker:up
 - [x] 🗄️ Use Drizzle for db layer
   - [x] 🏊‍♂️ Implement db connection pooling
   - [x] 🛑 Properly handle db level errors (index violations etc)
-- [ ] ✍️ Utilize structured logging (pino)
-  - [ ] 🪵 No console logs
+- [x] ✍️ Utilize structured logging (pino)
+  - [x] 🪵 No console logs
 - [x] 🛢️ No barrel or index files
 - [ ] ♻️ Autogenerate openapi spec (hono-openapi)
 - [ ] 📘 Autogenerate api documentation (hono-openapi)

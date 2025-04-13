@@ -26,6 +26,7 @@
         "noUnusedImports": "error"
       },
       "nursery": {
+        "noProcessEnv": "error",
         "noTemplateCurlyInString": "error",
         "useAtIndex": "error"
       },

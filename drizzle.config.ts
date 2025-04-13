@@ -7,6 +7,7 @@ export default defineConfig({
   schema: './src/spi/repositories/database/schema.ts',
   dialect: 'postgresql',
   dbCredentials: {
+    // biome-ignore lint/nursery/noProcessEnv: <explanation>
     url: process.env.DATABASE_URL as string,
   },
 })

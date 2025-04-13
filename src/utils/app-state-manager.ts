@@ -1,3 +1,5 @@
+import { logger } from './logger.ts'
+
 const ExitCode = {
   ERROR: 1,
   OK: 0,
@@ -37,13 +39,13 @@ class AppStateManager {
 
     this.isShuttingDown = true
 
-    console.info(`\n❌ Received ${signal}, starting graceful shutdown...`)
+    logger.info(`❌ Received ${signal}, starting graceful shutdown...`)
 
     const results = await Promise.allSettled(this.closableDependencies.map((dependency) => dependency.close()))
     const rejected = results.filter((result) => result.status === 'rejected')
 
     for (const rejection of rejected) {
-      console.warn(
+      logger.warn(
         '💥 Something went wrong. We failed to shutdown something gracefully. See the error for details.',
         rejection,
       )
@@ -55,7 +57,7 @@ class AppStateManager {
       return
     }
 
-    console.info('🏁 Gracefully closed all connections.')
+    logger.info('🏁 Gracefully closed all connections.')
     process.exitCode = ExitCode.OK
   }
 
@@ -68,9 +70,9 @@ class AppStateManager {
       const message = '😱 Oh no, there was an unhandled rejection'
 
       if (reason instanceof Error) {
-        console.error(message, reason)
+        logger.error(message, reason)
       } else {
-        console.error(message, { reason })
+        logger.error(message, { reason })
       }
     })
 

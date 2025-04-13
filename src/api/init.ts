@@ -4,7 +4,7 @@ import type { Closable } from '../utils/app-state-manager.ts'
 import { logger } from '../utils/logger.ts'
 import { initHttp } from './http/init.ts'
 
-const initApi = async (domain: Domain) => {
+const initApi = (domain: Domain) => {
   const app = initHttp(domain)
 
   const options: Parameters<typeof serve>[0] = {
@@ -15,15 +15,17 @@ const initApi = async (domain: Domain) => {
   const server = serve(options, (info) => logger.info(`🚀 Server is running on http://localhost:${info.port}`))
 
   const closeableServer: Closable = {
-    close: () =>
-      new Promise((resolve) => {
-        logger.info('📕 Closing server connections...')
+    close: async () => {
+      logger.info('📕 Closing server connections...')
+
+      return new Promise((resolve) =>
         server.close(() => {
           logger.info('✔️ Server closed.')
 
           resolve(undefined)
-        })
-      }),
+        }),
+      )
+    },
   }
 
   return { server: closeableServer }
