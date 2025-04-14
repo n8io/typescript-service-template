@@ -6,7 +6,7 @@
   "scripts": {
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "docker:up": "docker compose up --build --no-log-prefix service",
+    "docker:up": "docker compose up --build --no-log-prefix --watch service",
     "docker:build": "docker build --no-cache -t typescript-service-template .",
     "lint": "npm run lint:style && npm run lint:types && npm run lint:dead-code && npm run lint:spelling && npm run lint:circular-dependencies",
     "lint:circular-dependencies": "madge --circular ./src/index.ts",

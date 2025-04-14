@@ -10,7 +10,7 @@ pre-commit:
       skip: 
         - rebase
     spelling:
-      run: npx cspell {staged_files} --quiet
+      run: npx cspell . --quiet
       skip: 
         - rebase
     style:
