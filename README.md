@@ -48,6 +48,7 @@ npm run docker:up
 - [ ] 📗 Expose Swagger-like documentation (Scalar)
 - [x] 🤓 DX improvements
   - [x] ⌚ Leverage native `node --watch` to restart server on code changes
+  - [x] 🥳 Add VSCode launch configuration for debugging
   - [x] 🪝 Git hooks
     - [x] ...on commit
       - [x] Format changed code

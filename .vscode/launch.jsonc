@@ -1,0 +1,14 @@
+{
+  "$schema": "vscode://schemas/launch",
+  "configurations": [
+    {
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}",
+      "name": "Attach to Docker",
+      "port": 9229,
+      "remoteRoot": "/app",
+      "request": "attach",
+      "type": "node"
+    }
+  ]
+}
