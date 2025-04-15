@@ -9,6 +9,7 @@ const initApi = (domain: Domain) => {
 
   const options: Parameters<typeof serve>[0] = {
     fetch: app.fetch,
+    hostname: '0.0.0.0',
     port: 3000,
   }
 

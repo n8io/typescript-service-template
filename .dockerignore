@@ -1,4 +1,5 @@
 *
 !.extras/docker-entrypoint.sh
-!.env
+!.extras/postinstall.mjs
 !package*.json
+!src

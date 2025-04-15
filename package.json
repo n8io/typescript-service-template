@@ -17,7 +17,7 @@
     "lint:types": "tsc --noEmit",
     "format": "biome check --write",
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",
-    "postinstall": "lefthook install",
+    "postinstall": "node ./.extras/postinstall.mjs",
     "test": "vitest --coverage",
     "start": "node --env-file-if-exists=.env src/index.ts"
   },
