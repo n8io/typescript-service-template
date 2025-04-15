@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "A typescript service",
   "scripts": {
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
+    "db:generate": "drizzle-kit generate --config ./drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config ./drizzle.config.ts",
     "docker:up": "docker compose up --build --no-log-prefix --watch service",
     "docker:build": "docker build --no-cache -t typescript-service-template .",
     "lint": "npm run lint:style && npm run lint:types && npm run lint:dead-code && npm run lint:spelling && npm run lint:circular-dependencies",

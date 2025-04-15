@@ -132,7 +132,8 @@ const schemaToDrizzleTable = <T extends ZodRawShape>(
   const columns: Record<string, DrizzleColumn> = {}
 
   for (const [key, zodTypeOriginal] of Object.entries(shape)) {
-    const { baseType, isNullable } = unwrapZodType(zodTypeOriginal)
+    const { baseType, isNullable, isOptional } = unwrapZodType(zodTypeOriginal)
+    const isNullish = isNullable || isOptional
     const baseTypeName = baseType._def.typeName
     const mapFn = mapZodToDrizzle[baseTypeName]
 
@@ -142,7 +143,7 @@ const schemaToDrizzleTable = <T extends ZodRawShape>(
 
     let column = mapFn(key, zodTypeOriginal)
 
-    if (!isNullable && 'notNull' in column) {
+    if (!isNullish && 'notNull' in column) {
       column = column.notNull()
     }
 
