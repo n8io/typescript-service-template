@@ -58,7 +58,7 @@ jobs:
         run: npm run lint:types
 
   build:
-    name: 🧱 Run tests
+    name: 🧪 Run tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -117,7 +117,7 @@ jobs:
           path: coverage
 
   report-coverage:
-    name: 📈 Compare coverage diff
+    name: 📈 Analyze code coverage trends
     needs: build
     runs-on: ubuntu-latest
     permissions:
