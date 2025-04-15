@@ -39,8 +39,6 @@ services:
     command:
       - node
       - --inspect=0.0.0.0:9229
-      - --env-file-if-exists
-      - .env
       - --watch
       - src/index.ts
 

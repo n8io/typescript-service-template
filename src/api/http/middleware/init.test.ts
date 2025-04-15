@@ -1,7 +1,6 @@
 import * as Compress from 'hono/compress'
 import * as Cors from 'hono/cors'
 import * as RequestId from 'hono/request-id'
-import * as SecureHeaders from 'hono/secure-headers'
 import * as Timeout from 'hono/timeout'
 import * as Timing from 'hono/timing'
 import type { Domain } from '../../../domain/init.ts'
@@ -18,7 +17,6 @@ vi.mock('../../../utils/config.ts', async () => ({
 vi.mock('hono/compress')
 vi.mock('hono/cors')
 vi.mock('hono/request-id')
-vi.mock('hono/secure-headers')
 vi.mock('hono/timeout')
 vi.mock('hono/timing')
 vi.mock('./domain/init.ts')
@@ -36,8 +34,6 @@ describe('initMiddleware', () => {
     vi.spyOn(Cors, 'cors').mockReturnValue(() => {})
     // @ts-expect-error ???
     vi.spyOn(RequestId, 'requestId').mockReturnValue(() => {})
-    // @ts-expect-error ???
-    vi.spyOn(SecureHeaders, 'secureHeaders').mockReturnValue(() => {})
     // @ts-expect-error ???
     vi.spyOn(Timeout, 'timeout').mockReturnValue(() => {})
     // @ts-expect-error ???
@@ -58,7 +54,6 @@ describe('initMiddleware', () => {
     expect(Compress.compress).toHaveBeenCalled()
     expect(Cors.cors).toHaveBeenCalled()
     expect(RequestId.requestId).toHaveBeenCalled()
-    expect(SecureHeaders.secureHeaders).toHaveBeenCalled()
     expect(Timeout.timeout).toHaveBeenCalledWith(10_000)
     expect(Timing.timing).toHaveBeenCalled()
   })

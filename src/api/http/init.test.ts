@@ -77,11 +77,6 @@ describe('initHttp', () => {
         },
         {
           "handler": [Function],
-          "method": "ALL",
-          "path": "/api/v1/*",
-        },
-        {
-          "handler": [Function],
           "method": "GET",
           "path": "/api/v1/resources",
         },

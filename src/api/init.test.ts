@@ -28,6 +28,7 @@ describe('initApi', () => {
     expect(serveSpy).toHaveBeenCalledWith(
       {
         fetch: expect.any(Function),
+        hostname: '0.0.0.0',
         port: 3000,
       },
       expect.any(Function),
