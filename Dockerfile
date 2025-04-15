@@ -10,6 +10,13 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Nerf our postinstall script
+RUN \
+  mv package.json package.json.bkp && \
+  cat package.json.bkp > package.json && \
+  rm package.json.bkp && \
+  npm pkg set scripts.postinstall="echo Skipping postinstall..."
+
 # Install dependencies with production flag to keep the image small
 RUN npm ci --omit=dev
 
