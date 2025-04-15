@@ -23,7 +23,7 @@ const exampleResource = (overrides: Partial<Resource> = {}): Resource => ({
   ...overrides,
 })
 
-const resourceSortableFields: (keyof Resource)[] = ['createdAt', 'name', 'gid', 'timeZone', 'updatedAt']
+const resourceSortableFields: (keyof Resource)[] = ['createdAt', 'gid', 'name', 'timeZone', 'updatedAt']
 
 export { exampleResource, resourceSortableFields, schemaResource }
 export type { Resource }
