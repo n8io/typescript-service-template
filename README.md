@@ -55,6 +55,7 @@ npm run docker:up
     - [x] ...on commit
       - [x] Format changed code
       - [x] Lint changed code
+      - [x] Lint changed db migrations
       - [x] Lint changed types
       - [x] Lint changed spelling
       - [x] Lint commit message

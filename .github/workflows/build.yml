@@ -6,8 +6,59 @@ on:
       - "!main"
 
 jobs:
+  validate:
+    name: 📋 Validation check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        task:
+          - audit
+          - circular-dependencies
+          - db-migrations
+          - dead-code
+          - spelling
+          - style
+          - types
+    outputs:
+      branchName: ${{ steps.env.outputs.SAFE_MATRIX_NAME }}
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: 🛒 Checkout code
+        uses: actions/checkout@v4
+      - name: 📗 Setup NodeJs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: "npm"
+      - name: 🔽 Install dependencies
+        run: npm install --frozen-lockfile
+      - name: 🕵️‍♂️ Audit dependencies
+        if: matrix.task == 'audit'
+        run: npm audit --omit=dev
+      - name: 🔄 Check for circular dependencies
+        if: matrix.task == 'circular-dependencies'
+        run: npm run lint:circular-dependencies
+      - name: 🗃️ Check for db migration
+        if: matrix.task == 'db-migrations'
+        run: npm run lint:db-migrations
+      - name: ☠️ Check for dead code
+        if: matrix.task == 'dead-code'
+        run: npm run lint:dead-code
+      - name: 🗣️ Check for spelling errors
+        if: matrix.task == 'spelling'
+        run: npm run lint:spelling
+      - name: 🔄 Check for style issues
+        if: matrix.task == 'style'
+        run: npm run lint:style
+      - name: 🏷️ Check for types issues
+        if: matrix.task == 'types'
+        run: npm run lint:types
+
   build:
-    name: 🧱 Build & Test
+    name: 🧱 Run tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -52,10 +103,6 @@ jobs:
           cache: "npm"
       - name: 🔽 Install dependencies
         run: npm install --frozen-lockfile
-      - name: 🔍 Audit dependencies
-        run: npm audit --omit=dev
-      - name: 🚨 Lint code
-        run: npm run lint
       - name: 🧪 Run tests
         run: npm run test
       - name: 📔 Report coverage
@@ -99,7 +146,7 @@ jobs:
 
   build-status:
     name: ✅ Successful build
-    needs: [build, report-coverage]
+    needs: [validate, build, report-coverage]
     runs-on: ubuntu-latest
     if: always()
     steps:
