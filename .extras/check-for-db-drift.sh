@@ -27,15 +27,15 @@ if ! git diff --quiet -- "$OUT_DIR_ABS"; then
 fi
 
 # Run drizzle-kit generate
-echo "🔍 Running drizzle-kit generate..."
+echo "🔍 Looking for database schema drift..."
 OUTPUT=$(npx drizzle-kit generate --config "$CONFIG_PATH")
 LAST_LINE=$(echo "$OUTPUT" | tail -n 1)
 
 if [[ "$LAST_LINE" == *"$EXPECTED_MESSAGE"* ]]; then
-  echo "✅ Drizzle schema is up-to-date"
+  echo "👍 Database schema is up-to-date"
   exit 0
 else
-  echo "🚨 Schema drift or migration detected. Have you ran 'npm run db:generate'?"
+  echo "🚨 Database schema drift detected. Have you ran \"npm run db:generate\"?"
   
   if [[ $WAS_CLEAN_BEFORE -eq 0 ]]; then
     git clean -fd "$OUT_DIR_ABS" &> /dev/null
