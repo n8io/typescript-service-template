@@ -5,6 +5,10 @@ pre-commit:
       run: npx madge --circular ./src/index.ts
       skip: 
         - rebase
+    db-migrations:
+      run: ./.extras/check-for-db-drift.sh
+      skip: 
+        - rebase
     dead-code:
       run: npx knip
       skip: 
