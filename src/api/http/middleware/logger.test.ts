@@ -1,19 +1,28 @@
 import type { Context } from 'hono'
 import * as Pino from 'hono-pino'
 import { exampleConfig } from '../../../models/config.ts'
+import * as GetPinoConfig from '../../../utils/logger.ts'
 import * as Utils from '../../../utils/url-search-params/to-object.ts'
 import { logger, onReqBindings } from './logger.ts'
 
 vi.mock('hono-pino', () => ({ pinoLogger: vi.fn() }))
 vi.mock('../../../utils/url-search-params/to-object.ts')
+vi.mock('../../../utils/logger.ts')
 
 vi.mock('../../../utils/config.ts', async () => ({
   config: exampleConfig(),
 }))
 
 describe('logger', () => {
-  it('should create a logger with production settings', () => {
+  const mockPinoConfig = {
+    enabled: true,
+    level: 'info',
+    transport: undefined,
+  }
+
+  it('should create a logger with the expected params', () => {
     const pinoLogger = vi.spyOn(Pino, 'pinoLogger').mockReturnValue(() => Promise.resolve(undefined))
+    const getPinoConfigSpy = vi.spyOn(GetPinoConfig, 'getPinoConfig').mockReturnValue(mockPinoConfig)
 
     vi.stubEnv('NODE_ENV', 'production')
 
@@ -23,37 +32,10 @@ describe('logger', () => {
       http: {
         onReqBindings: expect.any(Function),
       },
-      pino: {
-        enabled: expect.any(Boolean),
-        level: 'info',
-        transport: undefined,
-      },
+      pino: mockPinoConfig,
     })
-  })
 
-  it('should create a logger with test settings', () => {
-    const pinoLogger = vi.spyOn(Pino, 'pinoLogger').mockReturnValue(() => Promise.resolve(undefined))
-
-    vi.stubEnv('NODE_ENV', 'test')
-
-    logger()
-
-    expect(pinoLogger).toHaveBeenCalledWith({
-      http: {
-        onReqBindings: expect.any(Function),
-      },
-      pino: {
-        enabled: false,
-        level: 'info',
-        transport: {
-          options: {
-            colorize: true,
-            ignore: 'pid,hostname',
-          },
-          target: 'pino-pretty',
-        },
-      },
-    })
+    expect(getPinoConfigSpy).toHaveBeenCalledTimes(1)
   })
 })
 
