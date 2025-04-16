@@ -1,5 +1,8 @@
+import { context, trace } from '@opentelemetry/api'
+import { AsyncHooksContextManager } from '@opentelemetry/context-async-hooks'
+import { BasicTracerProvider } from '@opentelemetry/sdk-trace-node'
 import { pino } from 'pino'
-import { createLogger } from './logger.ts'
+import { createLogger, getBindings } from './logger.ts'
 
 vi.mock('pino', () => ({
   pino: vi.fn(),
@@ -20,6 +23,9 @@ describe('createLogger', () => {
 
     expect(mockedPino).toHaveBeenCalledWith({
       enabled: expect.any(Boolean),
+      formatters: expect.objectContaining({
+        bindings: expect.any(Function),
+      }),
       level: 'info',
       transport: {
         target: 'pino-pretty',
@@ -47,8 +53,49 @@ describe('createLogger', () => {
 
     expect(mockedPino).toHaveBeenCalledWith({
       enabled: true,
+      formatters: expect.objectContaining({
+        bindings: expect.any(Function),
+      }),
       level: 'info',
       transport: undefined,
     })
+  })
+})
+
+describe('getBindings', () => {
+  beforeEach(() => {
+    // Enable context propagation for context.with to work
+    const contextManager = new AsyncHooksContextManager()
+    context.setGlobalContextManager(contextManager.enable())
+
+    const provider = new BasicTracerProvider()
+    trace.setGlobalTracerProvider(provider)
+  })
+
+  it('should return empty object when no span is active', () => {
+    expect(getBindings()).toEqual({})
+  })
+
+  it('should return trace_id and span_id when span is active', () => {
+    const tracer = trace.getTracer('test')
+    const span = tracer.startSpan('test-span')
+
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    let result: any
+
+    context.with(trace.setSpan(context.active(), span), () => {
+      result = getBindings()
+    })
+
+    const { traceId, spanId } = span.spanContext()
+
+    expect(result).toEqual({
+      // biome-ignore lint/style/useNamingConvention: <explanation>
+      span_id: spanId,
+      // biome-ignore lint/style/useNamingConvention: <explanation>
+      trace_id: traceId,
+    })
+
+    span.end()
   })
 })
