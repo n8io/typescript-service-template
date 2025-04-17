@@ -1,5 +1,6 @@
 import * as HonoServer from '@hono/node-server'
 import type { Domain } from '../domain/init.ts'
+import type { AppStateManager } from '../utils/app-state-manager.ts'
 import { initApi } from './init.ts'
 
 vi.mock('@hono/node-server', () => ({
@@ -22,8 +23,15 @@ describe('initApi', () => {
       close: vi.fn().mockResolvedValue(undefined),
     } as unknown as HonoServer.ServerType)
 
+    const mockAppStateManager = {} as AppStateManager
     const mockDomain = {} as Domain
-    const { server } = await initApi(mockDomain)
+
+    const dependencies = {
+      appStateManager: mockAppStateManager,
+      domain: mockDomain,
+    }
+
+    const { server } = await initApi(dependencies)
 
     expect(serveSpy).toHaveBeenCalledWith(
       {

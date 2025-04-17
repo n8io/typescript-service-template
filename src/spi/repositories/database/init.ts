@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
 import pg from 'pg'
-import type { AppStateManager, Closable } from '../../../utils/app-state-manager.ts'
+import type { AppStateManager, Closable, Monitorable } from '../../../utils/app-state-manager.ts'
 import type { Config } from '../../../utils/config.ts'
 import { logger } from '../../../utils/logger.ts'
 import * as schema from './schema.ts'
@@ -23,7 +23,23 @@ const initDatabase = ({ appStateManager, config }: Dependencies) => {
     },
   }
 
+  const isConnected = async () => {
+    try {
+      await pool.query('SELECT 1')
+
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  const monitorable: Monitorable = {
+    isConnected,
+    name: 'database',
+  }
+
   appStateManager.registerClosableDependency(closeable)
+  appStateManager.registerMonitorableDependency(monitorable)
 
   return drizzle({ client: pool, schema })
 }
