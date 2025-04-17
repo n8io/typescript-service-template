@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { exampleGid } from '../utils/generators/gid.ts'
 
 const AuditRecordType = {
   SYSTEM: 'SYSTEM',
@@ -28,7 +29,7 @@ type AuditRecordUser = Prettify<z.infer<typeof schemaAuditRecordUser>>
 
 const exampleAuditRecordUser = (overrides: Partial<AuditRecordUser> = {}): AuditRecordUser => ({
   email: 'em@il.com', // Optional
-  gid: 'AUDIT_RECORD_USER_GID',
+  gid: exampleGid(),
   type: AuditRecordType.USER,
   ...overrides,
 })
