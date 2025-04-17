@@ -1,11 +1,16 @@
 import { serve } from '@hono/node-server'
 import type { Domain } from '../domain/init.ts'
-import type { Closable } from '../utils/app-state-manager.ts'
+import type { AppStateManager, Closable } from '../utils/app-state-manager.ts'
 import { logger } from '../utils/logger.ts'
 import { initHttp } from './http/init.ts'
 
-const initApi = (domain: Domain) => {
-  const app = initHttp(domain)
+type Dependencies = {
+  appStateManager: AppStateManager
+  domain: Domain
+}
+
+const initApi = (dependencies: Dependencies) => {
+  const app = initHttp(dependencies)
 
   const options: Parameters<typeof serve>[0] = {
     fetch: app.fetch,

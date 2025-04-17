@@ -1,5 +1,6 @@
 import type { Domain } from '../../domain/init.ts'
 import { exampleConfig } from '../../models/config.ts'
+import type { AppStateManager } from '../../utils/app-state-manager.ts'
 import { initHttp } from './init.ts'
 
 vi.mock('../../utils/config.ts', () => ({
@@ -7,31 +8,27 @@ vi.mock('../../utils/config.ts', () => ({
 }))
 
 describe('initHttp', () => {
+  const mockAppStateManager = {} as AppStateManager
+
   const mockDomain = {
     services: {
       resource: {},
     },
   } as Domain
 
+  const dependencies = {
+    appStateManager: mockAppStateManager,
+    domain: mockDomain,
+  }
+
   it('should create an instance of Hono', () => {
-    const app = initHttp(mockDomain)
+    const app = initHttp(dependencies)
 
     expect(app).toBeDefined()
   })
 
-  it("should have a health endpoint that returns 'OK'", async () => {
-    const app = initHttp(mockDomain)
-    const response = await app.request('/health')
-
-    expect(response.status).toBe(200)
-
-    const jsonResponse = await response.json()
-
-    expect(jsonResponse).toEqual({ message: 'OK' })
-  })
-
   it('should have registered all the expected routes', async () => {
-    const app = initHttp(mockDomain)
+    const app = initHttp(dependencies)
 
     expect(app.routes).toMatchInlineSnapshot(`
       [

@@ -46,7 +46,7 @@ describe('start', () => {
     expect(AppStateManager).toHaveBeenCalled()
     expect(initSpi).toHaveBeenCalledWith({ appStateManager, config })
     expect(initDomain).toHaveBeenCalledWith('mockedSpi')
-    expect(initApi).toHaveBeenCalledWith('mockedDomain')
+    expect(initApi).toHaveBeenCalledWith({ appStateManager, domain: 'mockedDomain' })
     expect(appStateManager.registerClosableDependency).toHaveBeenCalledWith({ id: 'mock-server' })
   })
 })

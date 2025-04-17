@@ -8,7 +8,7 @@ const start = async () => {
   const appStateManager = new AppStateManager()
   const spi = await initSpi({ appStateManager, config })
   const domain = await initDomain(spi)
-  const api = await initApi(domain)
+  const api = await initApi({ appStateManager, domain })
 
   appStateManager.registerClosableDependency(api.server)
 
