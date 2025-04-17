@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import type { AppStateManager } from '../../../utils/app-state-manager.ts'
+import type { AppStateManager } from '../../utils/app-state-manager.ts'
 import { health } from './health.ts'
 
 describe('health', () => {
