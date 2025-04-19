@@ -31,6 +31,10 @@ const health =
   ({ appStateManager }: Dependencies): Handler =>
   async (c) => {
     const dependencies = await getDependencyStatuses(appStateManager)
+    const areDependenciesConnected = dependencies.every(({ isConnected }) => isConnected)
+    const isAppHealthy = !appStateManager.isShuttingDown && areDependenciesConnected
+
+    c.status(isAppHealthy ? 200 : 503)
 
     return c.json({
       timestamp: new Date(),
@@ -39,4 +43,4 @@ const health =
     })
   }
 
-export { health }
+export { cache, health }
