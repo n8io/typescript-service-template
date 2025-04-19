@@ -1,6 +1,6 @@
 import type { Handler } from 'hono'
 import { LRUCache } from 'lru-cache'
-import type { AppStateManager } from '../../utils/app-state-manager.ts'
+import type { AppStateManager } from '../../../utils/app-state-manager.ts'
 
 type Dependencies = {
   appStateManager: AppStateManager

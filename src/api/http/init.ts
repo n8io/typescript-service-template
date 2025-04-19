@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import type { Domain } from '../../domain/init.ts'
 import type { AppStateManager } from '../../utils/app-state-manager.ts'
-import { health } from './health.ts'
+import { initCommon } from './common/init.ts'
 import { initV1 } from './v1/init.ts'
 import type { Env } from './v1/models.ts'
 
@@ -13,7 +13,7 @@ type Dependencies = {
 const initHttp = ({ appStateManager, domain }: Dependencies) => {
   const app = new Hono<Env>({ strict: false })
 
-  app.get('/health', health({ appStateManager }))
+  app.route('/', initCommon({ appStateManager }))
   app.route('/api/v1', initV1(domain))
 
   return app
