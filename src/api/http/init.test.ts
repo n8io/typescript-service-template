@@ -35,6 +35,16 @@ describe('initHttp', () => {
         {
           "handler": [Function],
           "method": "GET",
+          "path": "/",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/favicon.ico",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
           "path": "/health",
         },
         {
