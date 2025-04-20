@@ -15,6 +15,12 @@ vi.mock('./http/init.ts', () => ({
   }),
 }))
 
+vi.mock('../utils/config.ts', () => ({
+  config: {
+    PORT: 3000,
+  },
+}))
+
 vi.mock('../utils/logger.ts')
 
 describe('initApi', () => {
@@ -23,7 +29,10 @@ describe('initApi', () => {
       close: vi.fn().mockResolvedValue(undefined),
     } as unknown as HonoServer.ServerType)
 
-    const mockAppStateManager = {} as AppStateManager
+    const mockAppStateManager: AppStateManager = {
+      registerClosableDependency: vi.fn().mockResolvedValue(undefined),
+    } as unknown as AppStateManager
+
     const mockDomain = {} as Domain
 
     const dependencies = {
@@ -32,6 +41,8 @@ describe('initApi', () => {
     }
 
     const { server } = await initApi(dependencies)
+
+    expect(server).toBeDefined()
 
     expect(serveSpy).toHaveBeenCalledWith(
       {
@@ -42,8 +53,8 @@ describe('initApi', () => {
       expect.any(Function),
     )
 
-    expect(server.close).toBeDefined()
-
-    server.close()
+    expect(mockAppStateManager.registerClosableDependency).toHaveBeenCalledWith({
+      close: expect.any(Function),
+    })
   })
 })

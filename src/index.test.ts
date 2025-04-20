@@ -40,13 +40,11 @@ describe('start', () => {
     const { initSpi } = await import('./spi/init.ts')
     const { initDomain } = await import('./domain/init.ts')
     const { initApi } = await import('./api/init.ts')
-
     const appStateManager = await start()
 
     expect(AppStateManager).toHaveBeenCalled()
     expect(initSpi).toHaveBeenCalledWith({ appStateManager, config })
     expect(initDomain).toHaveBeenCalledWith('mockedSpi')
     expect(initApi).toHaveBeenCalledWith({ appStateManager, domain: 'mockedDomain' })
-    expect(appStateManager.registerClosableDependency).toHaveBeenCalledWith({ id: 'mock-server' })
   })
 })
