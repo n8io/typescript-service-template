@@ -115,4 +115,39 @@ describe('resources', () => {
       expect(mockServices.resource.getOne).toHaveBeenCalledWith(gid)
     })
   })
+
+  describe('PATCH /:gid', () => {
+    it('should update a resource by id and return the updated resource', async () => {
+      const gid = 'GID'
+
+      const mockServices = {
+        resource: {
+          updateOne: vi.fn().mockResolvedValue(mockResource),
+        },
+      }
+
+      const app = new Hono<Env>()
+
+      // Attach mock services middleware
+      app.use('*', async (ctx, next) => {
+        // @ts-expect-error ???
+        ctx.set('services', mockServices)
+        await next()
+      })
+
+      // Mount the resources route
+      app.route('/', resources)
+
+      const res = await app.request(`/${gid}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ name: 'UPDATED_NAME' }),
+      })
+
+      const data = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(data).toEqual(JSON.parse(JSON.stringify(mockResource)))
+      expect(mockServices.resource.updateOne).toHaveBeenCalledWith(gid, { name: 'UPDATED_NAME' })
+    })
+  })
 })
