@@ -1,3 +1,4 @@
+import { exampleAuditRecord } from '../../models/audit-record.ts'
 import { DomainNotFoundError } from '../../models/custom-error.ts'
 import { exampleResource } from '../models/resource.ts'
 import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
@@ -5,10 +6,11 @@ import { ResourceService } from './resource.ts'
 
 describe('ResourceService', () => {
   const mockResource = exampleResource()
+
   describe('createOne', () => {
     it('should create a resource and return it', async () => {
       const mockRepository = {
-        createOne: vi.fn(),
+        createOne: vi.fn().mockResolvedValue(mockResource),
         getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
       } as unknown as SpiResourceRepository
 
@@ -157,6 +159,30 @@ describe('ResourceService', () => {
       })
 
       await expect(() => resourceService.getOne('GID')).rejects.toThrowError(DomainNotFoundError)
+    })
+  })
+
+  describe('updateOne', () => {
+    it('should update the resource and return the updated resource', async () => {
+      const mockResource = exampleResource()
+
+      const mockRepository = {
+        getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
+        updateOne: vi.fn().mockResolvedValue(mockResource),
+      } as unknown as SpiResourceRepository
+
+      const resourceService = new ResourceService({
+        repository: mockRepository,
+      })
+
+      const update = { name: 'UPDATED_NAME', updatedBy: exampleAuditRecord() }
+
+      await resourceService.updateOne(mockResource.gid, update)
+
+      expect(mockRepository.updateOne).toHaveBeenCalledWith(mockResource.gid, {
+        ...update,
+        updatedAt: expect.any(Date),
+      })
     })
   })
 })

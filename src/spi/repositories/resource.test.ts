@@ -1,25 +1,32 @@
 import { exampleResource } from '../../domain/models/resource.ts'
+import { exampleAuditRecord } from '../../models/audit-record.ts'
 import * as Utils from '../../utils/transforms/domain-get-many-request-to-drizzle-query.ts'
 import type { initDatabase } from './database/init.ts'
 import { resourcesTable } from './database/schema.ts'
 import { ResourceRepository } from './resource.ts'
 
-describe('ResourceRepository', () => {
-  describe('createOne', () => {
-    const mockDb = (overrides = {}) =>
-      ({
-        from: vi.fn().mockName('db.from').mockReturnThis(),
-        insert: vi.fn().mockName('db.insert').mockReturnThis(),
-        limit: vi.fn().mockName('db.limit').mockReturnThis(),
-        offset: vi.fn().mockName('db.offset').mockResolvedValue([exampleResource()]),
-        orderBy: vi.fn().mockName('db.orderBy').mockReturnThis(),
-        returning: vi.fn().mockName('db.returning').mockResolvedValue([exampleResource()]),
-        select: vi.fn().mockName('db.select').mockReturnThis(),
-        values: vi.fn().mockName('db.values').mockReturnThis(),
-        where: vi.fn().mockName('db.where').mockReturnThis(),
-        ...overrides,
-      }) as unknown as ReturnType<typeof initDatabase>
+vi.mock('drizzle-orm')
 
+import * as Operations from 'drizzle-orm'
+
+describe('ResourceRepository', () => {
+  const mockDb = (overrides = {}) =>
+    ({
+      from: vi.fn().mockName('db.from').mockReturnThis(),
+      insert: vi.fn().mockName('db.insert').mockReturnThis(),
+      limit: vi.fn().mockName('db.limit').mockReturnThis(),
+      offset: vi.fn().mockName('db.offset').mockResolvedValue([exampleResource()]),
+      orderBy: vi.fn().mockName('db.orderBy').mockReturnThis(),
+      returning: vi.fn().mockName('db.returning').mockResolvedValue([exampleResource()]),
+      select: vi.fn().mockName('db.select').mockReturnThis(),
+      set: vi.fn().mockName('db.set').mockReturnThis(),
+      update: vi.fn().mockName('db.update').mockReturnThis(),
+      values: vi.fn().mockName('db.values').mockReturnThis(),
+      where: vi.fn().mockName('db.where').mockReturnThis(),
+      ...overrides,
+    }) as unknown as ReturnType<typeof initDatabase>
+
+  describe('createOne', () => {
     const spiRequest = exampleResource()
 
     it('should have a method called createOne', () => {
@@ -54,20 +61,6 @@ describe('ResourceRepository', () => {
   })
 
   describe('getMany', () => {
-    const mockDb = (overrides = {}) =>
-      ({
-        from: vi.fn().mockName('db.from').mockReturnThis(),
-        insert: vi.fn().mockName('db.insert').mockReturnThis(),
-        limit: vi.fn().mockName('db.limit').mockReturnThis(),
-        offset: vi.fn().mockName('db.offset').mockResolvedValue([exampleResource()]),
-        orderBy: vi.fn().mockName('db.orderBy').mockReturnThis(),
-        returning: vi.fn().mockName('db.returning').mockReturnThis(),
-        select: vi.fn().mockName('db.select').mockReturnThis(),
-        values: vi.fn().mockName('db.values').mockReturnThis(),
-        where: vi.fn().mockName('db.where').mockReturnThis(),
-        ...overrides,
-      }) as unknown as ReturnType<typeof initDatabase>
-
     const spiRequest = {
       pagination: {
         page: 1,
@@ -128,6 +121,31 @@ describe('ResourceRepository', () => {
       await repository.getMany(spiRequest)
 
       expect(domainGetManyRequestToDrizzleQuerySpy).toHaveBeenCalledWith(spiRequest, resourcesTable)
+    })
+  })
+
+  describe('updateOne', () => {
+    it('should call update with the expected parameters', async () => {
+      const db = mockDb()
+      const repository = new ResourceRepository({ db })
+      const { gid } = exampleResource()
+      const updateRequest = { name: 'UPDATED_NAME', updatedAt: new Date(), updatedBy: exampleAuditRecord() }
+
+      // @ts-expect-error We don't need to mock the whole module
+      const eqSpy = vi.spyOn(Operations, 'eq').mockReturnValue(undefined)
+
+      await repository.updateOne(gid, updateRequest)
+
+      expect(db.update).toHaveBeenCalledWith(resourcesTable)
+
+      // @ts-expect-error Fix this type error
+      expect(db.set).toHaveBeenCalledWith(updateRequest)
+
+      // @ts-expect-error Fix this type error
+      expect(db.where).toHaveBeenCalledWith(eqSpy(resourcesTable.gid, gid))
+
+      // @ts-expect-error Fix this type error
+      expect(db.returning).toHaveBeenCalled()
     })
   })
 })

@@ -39,4 +39,13 @@ resources.get('/:gid', async (ctx) => {
   return ctx.json(resource)
 })
 
+resources.patch('/:gid', async (ctx) => {
+  const gid = ctx.req.param('gid')
+  const services = ctx.get('services')
+  const request = await ctx.req.json()
+  const resource = await services.resource.updateOne(gid, request)
+
+  return ctx.json(resource)
+})
+
 export { resources }

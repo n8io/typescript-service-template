@@ -1,5 +1,6 @@
 import type { z } from 'zod'
 import { DomainNotFoundError } from '../../models/custom-error.ts'
+import { gid } from '../../utils/generators/gid.ts'
 import { domainGetOneRequestToGetManyRequest } from '../../utils/transforms/domain-get-one-request-to-get-many-request.ts'
 import { spiRepositoryGetManyResponseToDomainPaginatedResponse } from '../../utils/transforms/spi-get-many-response-to-domain-paginated-response.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
@@ -15,13 +16,22 @@ class ResourceService {
   private schema = schemaResource
 
   private requestSchemas = {
-    createOne: this.schema.omit({
-      gid: true,
-      createdAt: true,
-      updatedAt: true,
-      updatedBy: true,
+    createOne: this.schema.pick({
+      createdBy: true,
+      name: true,
+      timeZone: true,
     }),
     getMany: schemaDomainGetManyRequest,
+    updateOne: this.schema
+      .pick({
+        name: true,
+        timeZone: true,
+        updatedBy: true,
+      })
+      .extend({
+        name: this.schema.shape.name.optional(),
+        timeZone: this.schema.shape.timeZone.optional(),
+      }),
   }
 
   private responseSchemas = {
@@ -36,18 +46,19 @@ class ResourceService {
   }
 
   async createOne(
-    resource: z.infer<typeof this.requestSchemas.createOne>,
+    request: z.infer<typeof this.requestSchemas.createOne>,
   ): Promise<Prettify<z.infer<typeof this.responseSchemas.getOne>>> {
-    const spiRequest = schemaResource.parse({
-      ...resource,
+    const spiRequest = this.requestSchemas.createOne.parse(request)
+
+    const created = await this.dependencies.repository.createOne({
+      ...spiRequest,
       createdAt: new Date(),
+      gid: gid(),
       updatedAt: new Date(),
-      updatedBy: resource.createdBy,
+      updatedBy: request.createdBy,
     })
 
-    await this.dependencies.repository.createOne(spiRequest)
-
-    return this.getOne(spiRequest.gid)
+    return this.getOne(created.gid)
   }
 
   async getMany(
@@ -74,6 +85,17 @@ class ResourceService {
     }
 
     return found
+  }
+
+  async updateOne(gid: string, updates: z.infer<typeof this.requestSchemas.updateOne>) {
+    const spiRequest = this.requestSchemas.updateOne.parse(updates)
+
+    const updated = await this.dependencies.repository.updateOne(gid, {
+      ...spiRequest,
+      updatedAt: new Date(),
+    })
+
+    return this.getOne(updated.gid)
   }
 }
 

@@ -97,6 +97,11 @@ describe('initHttp', () => {
           "method": "GET",
           "path": "/api/v1/resources/:gid",
         },
+        {
+          "handler": [Function],
+          "method": "PATCH",
+          "path": "/api/v1/resources/:gid",
+        },
       ]
     `)
   })
