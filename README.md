@@ -43,9 +43,9 @@ npm run docker:up
 - [x] ✍️ Utilize structured logging (pino)
   - [x] 🪵 No console logs
 - [x] 🛢️ No barrel or index files
-- [ ] ♻️ Autogenerate openapi spec (hono-openapi)
-- [ ] 📘 Autogenerate api documentation (hono-openapi)
-- [ ] 📗 Expose Swagger-like documentation (Scalar)
+- [x] ♻️ [Autogenerate openapi spec](http://localhost:3000/api/v1/openapi) (hono-openapi)
+- [x] 📘 Autogenerate api documentation (hono-openapi)
+- [x] 📗 [Expose Swagger-like documentation](http://localhost:3000/api/v1/docs) (Scalar)
 - [x] 🤓 DX improvements
   - [x] ⌚ Leverage native `node --watch` to restart server on code changes
   - [x] 🕵️‍♀️ Leverage native `docker compose --watch` to restart the container on code changes
@@ -59,11 +59,10 @@ npm run docker:up
       - [x] Lint changed types
       - [x] Lint changed spelling
       - [x] Lint commit message
-      - [x] Identify dead code
-      - [x] Identify circular dependencies
+      - [x] Lint dead code
+      - [x] Lint circular dependencies
     - [x] ...on push
       - [x] Lint branch name
-- [ ] 😇 Automatically update badges in README (test coverage)
 
 ## Contributing
 
