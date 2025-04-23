@@ -5,7 +5,7 @@ import { domainGetOneRequestToGetManyRequest } from '../../utils/transforms/doma
 import { spiRepositoryGetManyResponseToDomainPaginatedResponse } from '../../utils/transforms/spi-get-many-response-to-domain-paginated-response.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
 import { schemaDomainGetManyRequest } from '../models/request.ts'
-import { schemaResource } from '../models/resource.ts'
+import { type Resource, exampleResource, schemaResource } from '../models/resource.ts'
 import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
 
 type Dependencies = {
@@ -13,31 +13,34 @@ type Dependencies = {
 }
 
 class ResourceService {
-  private schema = schemaResource
+  static schema = schemaResource
 
-  private requestSchemas = {
-    createOne: this.schema.pick({
+  static requestSchemas = {
+    createOne: schemaResource.pick({
       createdBy: true,
       name: true,
       timeZone: true,
     }),
-    getMany: schemaDomainGetManyRequest,
-    updateOne: this.schema
+    getMany: schemaResource,
+    updateOne: schemaResource
       .pick({
         name: true,
         timeZone: true,
         updatedBy: true,
       })
       .extend({
-        name: this.schema.shape.name.optional(),
-        timeZone: this.schema.shape.timeZone.optional(),
+        name: schemaResource.shape.name.optional(),
+        timeZone: schemaResource.shape.timeZone.optional(),
       }),
+  } as const
+
+  static responseSchemas = {
+    getMany: toPaginatedResponseSchema(schemaResource, exampleResource()),
+    getOne: schemaResource,
   }
 
-  private responseSchemas = {
-    getMany: toPaginatedResponseSchema(this.schema),
-    getOne: this.schema,
-  }
+  static sortableFields: (keyof Resource)[] = ['createdAt', 'gid', 'name', 'timeZone', 'updatedAt']
+  static filterableFields: (keyof Resource)[] = structuredClone(this.sortableFields)
 
   private dependencies: Dependencies
 
@@ -46,9 +49,9 @@ class ResourceService {
   }
 
   async createOne(
-    request: z.infer<typeof this.requestSchemas.createOne>,
-  ): Promise<Prettify<z.infer<typeof this.responseSchemas.getOne>>> {
-    const spiRequest = this.requestSchemas.createOne.parse(request)
+    request: z.infer<typeof ResourceService.requestSchemas.createOne>,
+  ): Promise<Prettify<z.infer<typeof ResourceService.responseSchemas.getOne>>> {
+    const spiRequest = ResourceService.requestSchemas.createOne.parse(request)
 
     const created = await this.dependencies.repository.createOne({
       ...spiRequest,
@@ -62,8 +65,8 @@ class ResourceService {
   }
 
   async getMany(
-    query: Prettify<z.infer<typeof this.requestSchemas.getMany>>,
-  ): Promise<Prettify<z.infer<typeof this.responseSchemas.getMany>>> {
+    query: Prettify<z.infer<typeof schemaDomainGetManyRequest>>,
+  ): Promise<Prettify<z.infer<typeof ResourceService.responseSchemas.getMany>>> {
     const spiRequest = schemaDomainGetManyRequest.parse(query)
     const { items, itemsTotal } = await this.dependencies.repository.getMany(spiRequest)
 
@@ -71,11 +74,11 @@ class ResourceService {
       ...spiRequest.pagination,
       items,
       itemsTotal,
-      schema: this.schema,
+      schema: ResourceService.schema,
     })
   }
 
-  async getOne(gid: string): Promise<Prettify<z.infer<typeof this.responseSchemas.getOne>>> {
+  async getOne(gid: string): Promise<Prettify<z.infer<typeof ResourceService.responseSchemas.getOne>>> {
     const {
       items: [found],
     } = await this.getMany(domainGetOneRequestToGetManyRequest('gid', gid))
@@ -87,8 +90,8 @@ class ResourceService {
     return found
   }
 
-  async updateOne(gid: string, updates: z.infer<typeof this.requestSchemas.updateOne>) {
-    const spiRequest = this.requestSchemas.updateOne.parse(updates)
+  async updateOne(gid: string, updates: z.infer<typeof ResourceService.requestSchemas.updateOne>) {
+    const spiRequest = ResourceService.requestSchemas.updateOne.parse(updates)
 
     const updated = await this.dependencies.repository.updateOne(gid, {
       ...spiRequest,

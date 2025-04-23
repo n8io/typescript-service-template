@@ -2,7 +2,7 @@
   "name": "typescript-service-template",
   "author": "Nate Clark <n8@n8io.com>",
   "version": "1.0.0",
-  "description": "A typescript service",
+  "description": "A typescript service template",
   "scripts": {
     "db:generate": "drizzle-kit generate --config ./drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config ./drizzle.config.ts",
@@ -32,6 +32,7 @@
   "cspell": {
     "words": [
       "biomejs",
+      "commonmark",
       "EDITMSG",
       "gids",
       "ilike",
@@ -62,6 +63,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1",
+    "@hono/zod-validator": "^0",
     "@opentelemetry/api": "^1",
     "@opentelemetry/auto-instrumentations-node": "^0",
     "@opentelemetry/context-async-hooks": "^2",
@@ -69,8 +71,10 @@
     "@opentelemetry/sdk-metrics": "^2",
     "@opentelemetry/sdk-node": "^0",
     "@opentelemetry/sdk-trace-node": "^2",
+    "@scalar/hono-api-reference": "^0",
     "drizzle-orm": "^0",
     "hono": "^4",
+    "hono-openapi": "^0",
     "hono-pino": "^0",
     "lru-cache": "^11",
     "pg": "^8",
@@ -78,7 +82,8 @@
     "pino": "^9",
     "pino-pretty": "^13",
     "ulid": "^3",
-    "zod": "^3"
+    "zod": "^3",
+    "zod-openapi": "^4"
   },
   "devDependencies": {
     "@biomejs/biome": "^1",

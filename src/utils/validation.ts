@@ -1,16 +1,47 @@
 import { z } from 'zod'
 
-const string = z.string().trim().min(1)
-const date = z.coerce.date()
-const email = string.email().toLowerCase()
-const number = z.coerce.number()
-const url = string.url().toLowerCase()
-const uuid = z.string().uuid().toLowerCase()
+import 'zod-openapi/extend'
+import { OpenApiFormat } from '../api/http/models/openapi.ts'
+import { exampleGid } from './generators/gid.ts'
 
-const bool = z.preprocess(
-  (value) => ['1', 't', 'true', 'yes', 'y'].includes(value?.toString().toLowerCase().trim() ?? 'false'),
-  z.boolean(),
-)
+import 'zod-openapi/extend'
+
+const string = z.string().trim().min(1)
+
+const date = z.coerce.date().openapi({
+  example: new Date('1900-01-01T00:00:00Z'),
+  format: OpenApiFormat.DATE_TIME,
+})
+
+const email = string.email().toLowerCase().openapi({
+  example: 'em@il.com',
+  format: OpenApiFormat.EMAIL,
+})
+
+const number = z.coerce.number().openapi({
+  example: 1,
+  format: OpenApiFormat.INT32,
+})
+
+const url = string.url().toLowerCase().openapi({
+  example: 'https://example.com',
+  format: OpenApiFormat.URI,
+})
+
+const uuid = z.string().uuid().toLowerCase().openapi({
+  example: '00000000-0000-0000-0000-000000000000',
+  format: OpenApiFormat.UUID,
+})
+
+const bool = z
+  .preprocess(
+    (value) => ['1', 't', 'true', 'yes', 'y'].includes(value?.toString().toLowerCase().trim() ?? 'false'),
+    z.boolean(),
+  )
+  .openapi({
+    example: true,
+    format: OpenApiFormat.BINARY,
+  })
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
 
@@ -29,6 +60,7 @@ const country = string
     }),
   )
   .transform((value) => value.toUpperCase())
+  .openapi({ example: 'US' })
 
 const locale = string
   .refine(
@@ -42,6 +74,7 @@ const locale = string
     }),
   )
   .transform((locale) => new Intl.Segmenter(locale).resolvedOptions().locale)
+  .openapi({ example: 'en-US' })
 
 const timeZone = string
   .refine(
@@ -59,12 +92,18 @@ const timeZone = string
     }),
   )
   .transform((timeZone) => Intl.DateTimeFormat(undefined, { timeZone }).resolvedOptions().timeZone)
+  .openapi({ example: 'America/New_York' })
+
+const gid = string.openapi({
+  example: exampleGid(false),
+})
 
 const validation = {
   bool,
   country,
   date,
   email,
+  gid,
   locale,
   number,
   string,

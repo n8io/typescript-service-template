@@ -5,6 +5,7 @@ import * as Timeout from 'hono/timeout'
 import * as Timing from 'hono/timing'
 import type { Domain } from '../../../domain/init.ts'
 import { exampleConfig } from '../../../models/config.ts'
+import { makeApp } from '../v1/app.ts'
 import * as InitDomain from './domain/init.ts'
 import * as ErrorHandler from './error-handler.ts'
 import { initMiddleware } from './init.ts'
@@ -46,7 +47,7 @@ describe('initMiddleware', () => {
 
   it('should initialize middleware with default settings', () => {
     const domain = {} as Domain
-    const app = initMiddleware(domain)
+    const app = initMiddleware({ app: makeApp(), domain })
 
     expect(app).toBeDefined()
 

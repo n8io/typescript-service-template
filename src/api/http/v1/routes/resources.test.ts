@@ -1,6 +1,5 @@
-import { Hono } from 'hono'
 import { exampleResource } from '../../../../domain/models/resource.ts'
-import type { Env } from '../models.ts'
+import { makeApp } from '../app.ts'
 import { resources } from './resources.ts'
 
 describe('resources', () => {
@@ -23,7 +22,7 @@ describe('resources', () => {
         },
       }
 
-      const app = new Hono<Env>()
+      const app = makeApp()
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -57,7 +56,7 @@ describe('resources', () => {
         },
       }
 
-      const app = new Hono<Env>()
+      const app = makeApp()
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -95,7 +94,7 @@ describe('resources', () => {
         },
       }
 
-      const app = new Hono<Env>()
+      const app = makeApp()
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -126,7 +125,7 @@ describe('resources', () => {
         },
       }
 
-      const app = new Hono<Env>()
+      const app = makeApp()
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {

@@ -1,6 +1,5 @@
-import { Hono } from 'hono'
 import type { Domain } from '../../../../domain/init.ts'
-import type { Env } from '../../v1/models.ts'
+import { makeApp } from '../../v1/app.ts'
 import { services } from './services.ts'
 
 describe('services', () => {
@@ -11,7 +10,7 @@ describe('services', () => {
       },
     } as Domain
 
-    const app = new Hono<Env>()
+    const app = makeApp()
 
     app.use('*', services(mockDomain))
     app.get('/', (c) => c.json(c.get('services')))

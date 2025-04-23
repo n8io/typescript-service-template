@@ -50,41 +50,41 @@ describe('initHttp', () => {
         {
           "handler": [Function],
           "method": "ALL",
-          "path": "/api/v1/*",
+          "path": "/*",
         },
         {
           "handler": [Function],
           "method": "ALL",
-          "path": "/api/v1/*",
+          "path": "/*",
         },
         {
           "handler": [Function],
           "method": "ALL",
-          "path": "/api/v1/*",
+          "path": "/*",
         },
         {
           "handler": [Function],
           "method": "ALL",
-          "path": "/api/v1/*",
+          "path": "/*",
         },
         {
           "handler": [Function],
           "method": "ALL",
-          "path": "/api/v1/*",
+          "path": "/*",
         },
         {
           "handler": [Function],
           "method": "ALL",
-          "path": "/api/v1/*",
+          "path": "/*",
         },
         {
           "handler": [Function],
           "method": "ALL",
-          "path": "/api/v1/*",
+          "path": "/*",
         },
         {
           "handler": [Function],
-          "method": "GET",
+          "method": "POST",
           "path": "/api/v1/resources",
         },
         {
@@ -95,12 +95,142 @@ describe('initHttp', () => {
         {
           "handler": [Function],
           "method": "GET",
+          "path": "/api/v1/resources",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/resources",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
           "path": "/api/v1/resources/:gid",
         },
         {
           "handler": [Function],
           "method": "PATCH",
           "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "PATCH",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/docs",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/openapi",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/favicon.ico",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/health",
+        },
+        {
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "handler": [Function],
+          "method": "POST",
+          "path": "/api/v1/resources",
+        },
+        {
+          "handler": [Function],
+          "method": "POST",
+          "path": "/api/v1/resources",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/resources",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/resources",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "PATCH",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "PATCH",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/docs",
+        },
+        {
+          "handler": [Function],
+          "method": "GET",
+          "path": "/api/v1/openapi",
         },
       ]
     `)
