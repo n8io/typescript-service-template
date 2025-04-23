@@ -1,10 +1,10 @@
-import { Hono } from 'hono'
-import type { Env } from '../../v1/models.ts'
-import { REQUEST_HEADER_CLIENT_ID, clientId } from './client-id.ts'
+import { REQUEST_HEADER_CLIENT_ID } from '../../models/request.ts'
+import { makeApp } from '../../v1/app.ts'
+import { clientId } from './client-id.ts'
 
 describe('clientId', () => {
   it('should return successfully when providing the client id header', async () => {
-    const app = new Hono<Env>()
+    const app = makeApp()
 
     app.use('*', clientId())
     app.get('/', (c) => c.json(c.req.header(REQUEST_HEADER_CLIENT_ID)))
@@ -19,7 +19,7 @@ describe('clientId', () => {
   })
 
   it('should throw an error when not providing the client id header', async () => {
-    const app = new Hono<Env>()
+    const app = makeApp()
 
     app.use('*', clientId())
     app.get('/', (c) => c.json(c.req.header(REQUEST_HEADER_CLIENT_ID)))

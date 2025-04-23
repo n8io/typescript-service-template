@@ -14,6 +14,7 @@ const hostname = '0.0.0.0'
 
 const initApi = (dependencies: Dependencies) => {
   const app = initHttp(dependencies)
+  const { appStateManager } = dependencies
 
   const options: Parameters<typeof serve>[0] = {
     fetch: app.fetch,
@@ -21,7 +22,7 @@ const initApi = (dependencies: Dependencies) => {
     port: config.PORT,
   }
 
-  const server = serve(options, (info) => logger.info(`🚀 Server is running on http://localhost:${info.port}`))
+  const server = serve(options, ({ address, port }) => logger.info(`🚀 Server is running on http://${address}:${port}`))
 
   const closeableServer: Closable = {
     close: async () => {
@@ -37,7 +38,7 @@ const initApi = (dependencies: Dependencies) => {
     },
   }
 
-  dependencies.appStateManager.registerClosableDependency(closeableServer)
+  appStateManager.registerClosableDependency(closeableServer)
 
   return { server }
 }

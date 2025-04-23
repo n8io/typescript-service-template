@@ -12,7 +12,7 @@ log_info() {
 if [ ! -d "node_modules" ] || [ package-lock.json -nt node_modules ]; then
   log_info "🧐 Dependencies have changed, updating dependencies..."
   npm ci --omit=dev --silent
-  log_info "✅ Dependencies updated."
+  log_info "🚀 Dependencies updated"
 fi
 
 exec "$@"

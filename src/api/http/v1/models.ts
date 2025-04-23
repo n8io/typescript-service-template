@@ -8,4 +8,7 @@ type Env = {
   }
 }
 
+const version = 'v1'
+
 export type { Env }
+export { version }

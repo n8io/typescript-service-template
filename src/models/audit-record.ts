@@ -1,14 +1,16 @@
 import { z } from 'zod'
 import { exampleGid } from '../utils/generators/gid.ts'
 
+import 'zod-openapi/extend'
+
 const AuditRecordType = {
   SYSTEM: 'SYSTEM',
   USER: 'USER',
 } as const
 
 const schemaAuditRecordSystem = z.object({
-  system: z.string(),
-  type: z.literal(AuditRecordType.SYSTEM),
+  system: z.string().openapi({ description: 'The system that performed the action', example: 'SYSTEM' }),
+  type: z.literal(AuditRecordType.SYSTEM).openapi({ title: 'System', example: AuditRecordType.SYSTEM }),
 })
 
 type AuditRecordSystem = Prettify<z.infer<typeof schemaAuditRecordSystem>>
@@ -20,9 +22,13 @@ const exampleAuditRecordSystem = (overrides: Partial<AuditRecordSystem> = {}): A
 })
 
 const schemaAuditRecordUser = z.object({
-  email: z.string().email().optional(),
-  gid: z.string(),
-  type: z.literal(AuditRecordType.USER),
+  email: z
+    .string()
+    .email()
+    .optional()
+    .openapi({ description: 'The user who performed the action', title: 'Email', example: 'em@il.com' }),
+  gid: z.string().openapi({ example: exampleGid(false) }),
+  type: z.literal(AuditRecordType.USER).openapi({ title: 'User', example: AuditRecordType.USER }),
 })
 
 type AuditRecordUser = Prettify<z.infer<typeof schemaAuditRecordUser>>

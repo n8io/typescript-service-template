@@ -1,9 +1,9 @@
 import { createMiddleware } from 'hono/factory'
 import { ApiRequestMissingRequiredHeader } from '../../../../models/custom-error.ts'
 import { validation } from '../../../../utils/validation.ts'
+import { REQUEST_HEADER_CLIENT_ID } from '../../models/request.ts'
 import type { Env } from '../../v1/models.ts'
 
-const REQUEST_HEADER_CLIENT_ID = 'X-Request-Client-Id'
 const schemaRequestHeaderClientId = validation.string.min(1)
 
 const clientId = () =>
@@ -19,4 +19,4 @@ const clientId = () =>
     await next()
   })
 
-export { clientId, REQUEST_HEADER_CLIENT_ID }
+export { clientId }

@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import type { AppStateManager } from '../../../utils/app-state-manager.ts'
-import type { Env } from '../v1/models.ts'
 import { favicon } from './favicon.ts'
 import { health } from './health.ts'
 import { root } from './root.ts'
@@ -10,7 +9,7 @@ type Dependencies = {
 }
 
 const initCommon = ({ appStateManager }: Dependencies) => {
-  const app = new Hono<Env>({ strict: false })
+  const app = new Hono({ strict: false })
 
   app.get('/', root())
   app.get('/favicon.ico', favicon('💚'))
