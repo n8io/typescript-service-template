@@ -62,7 +62,7 @@ class AppStateManager {
   }
 
   private initializeSignalHandlers() {
-    process.on('uncaughtException', (error) => console.error('💀 Fatal unhandled exception occurred', error))
+    process.on('uncaughtException', (error) => logger.error('💀 Fatal unhandled exception occurred', error))
 
     process.on('unhandledRejection', (reason) => {
       this.isShuttingDown = true

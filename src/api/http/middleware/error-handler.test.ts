@@ -13,7 +13,6 @@ vi.mock('../../../utils/logger.ts')
 describe('errorHandler', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   it('should handle custom errors', async () => {

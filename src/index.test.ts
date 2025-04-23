@@ -29,7 +29,6 @@ vi.mock('./api/init.ts', () => ({
 describe('start', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
   it('wires up and registers the server dependency', async () => {
