@@ -20,7 +20,7 @@ npm run docker:up
 
 ## Goals
 
-- [x] 🐕‍🦺 Use Hono server framework
+- [x] 🔥 Use Hono server framework
 - [x] 💅 Use BiomeJs for style/linting/formatting
 - [x] 🧪 Use Vitest testing framework
 - [x] 📋 No transpiling steps, native TS code only
