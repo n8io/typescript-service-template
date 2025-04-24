@@ -8,6 +8,7 @@ docs.get(
   '/',
   Scalar({
     defaultOpenAllTags: true,
+    hideClientButton: true,
     url: `/api/${version}/openapi`,
   }),
 )
