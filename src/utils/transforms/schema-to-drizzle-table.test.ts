@@ -16,7 +16,16 @@ describe('schemaToDrizzleTable', () => {
         .toLowerCase()
         .trim()
         .transform((val) => val.toLowerCase()),
-      isActive: z.boolean(),
+      isActive: z.boolean().default(true),
+      nullableWithDefault: z.string().nullable().default('PRIMITIVE_DEFAULT'),
+      nullableWithDefaultFunction: z.coerce
+        .boolean()
+        .nullable()
+        .default(() => false),
+      nullableWithDefaultTransform: z
+        .string()
+        .nullable()
+        .transform((val) => val ?? 'default'),
       status: z.string().nullable().optional().default('active'),
     })
 
@@ -29,12 +38,7 @@ describe('schemaToDrizzleTable', () => {
       uniqueIndexes: ['name'],
     })
 
-    const sql = await generateMigration(
-      generateDrizzleJson({}),
-      generateDrizzleJson({
-        table,
-      }),
-    )
+    const sql = await generateMigration(generateDrizzleJson({}), generateDrizzleJson({ table }))
 
     expect(sql).toMatchInlineSnapshot(`
       [
@@ -42,7 +46,10 @@ describe('schemaToDrizzleTable', () => {
       	"age" integer NOT NULL,
       	"createdAt" timestamp (3) NOT NULL,
       	"name" varchar(255) NOT NULL,
-      	"isActive" boolean NOT NULL,
+      	"isActive" boolean DEFAULT true NOT NULL,
+      	"nullableWithDefault" varchar(255),
+      	"nullableWithDefaultFunction" boolean,
+      	"nullableWithDefaultTransform" varchar(255),
       	"status" varchar(255),
       	"id" varchar(255) NOT NULL,
       	CONSTRAINT "test_table_id_pk" PRIMARY KEY("id")

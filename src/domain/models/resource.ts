@@ -1,15 +1,14 @@
 import { z } from 'zod'
 import { exampleAuditRecord } from '../../models/audit-record.ts'
 import { schemaEntity } from '../../models/entity.ts'
-import { exampleGid, gid } from '../../utils/generators/gid.ts'
+import { exampleGid } from '../../utils/generators/gid.ts'
 import { validation } from '../../utils/validation.ts'
 
 import 'zod-openapi/extend'
 
 const schemaResource = schemaEntity
   .extend({
-    gid: validation.string.default(gid).openapi({
-      default: undefined,
+    gid: validation.string.openapi({
       example: exampleGid(false),
       description: 'The unique identifier for the resource',
     }),

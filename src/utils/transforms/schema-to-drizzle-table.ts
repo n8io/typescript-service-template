@@ -34,6 +34,7 @@ const unwrapZodType = (zodType: ZodTypeAny) => {
   let current = zodType
   let isNullable = false
   let isOptional = false
+  let defaultValue: unknown = undefined
 
   while (true) {
     const type = current._def.typeName
@@ -51,7 +52,12 @@ const unwrapZodType = (zodType: ZodTypeAny) => {
     }
 
     if (type === ZodFirstPartyTypeKind.ZodDefault) {
-      current = current._def.innerType || current._def.schema
+      // biome-ignore lint/suspicious/noExplicitAny: accessing internal Zod definition
+      const defaultVal = (current as any)._def.defaultValue
+
+      defaultValue = typeof defaultVal === 'function' ? defaultVal() : defaultVal
+      // biome-ignore lint/suspicious/noExplicitAny: accessing internal Zod definition
+      current = (current as any)._def.innerType || (current as any)._def.schema
       continue
     }
 
@@ -65,6 +71,7 @@ const unwrapZodType = (zodType: ZodTypeAny) => {
 
   return {
     baseType: current,
+    defaultValue,
     isNullable,
     isOptional,
   }
@@ -132,7 +139,7 @@ const schemaToDrizzleTable = <T extends ZodRawShape>(
   const columns: Record<string, DrizzleColumn> = {}
 
   for (const [key, zodTypeOriginal] of Object.entries(shape)) {
-    const { baseType, isNullable, isOptional } = unwrapZodType(zodTypeOriginal)
+    const { baseType, defaultValue, isNullable, isOptional } = unwrapZodType(zodTypeOriginal)
     const isNullish = isNullable || isOptional
     const baseTypeName = baseType._def.typeName
     const mapFn = mapZodToDrizzle[baseTypeName]
@@ -145,6 +152,12 @@ const schemaToDrizzleTable = <T extends ZodRawShape>(
 
     if (!isNullish && 'notNull' in column) {
       column = column.notNull()
+    }
+
+    // Apply default value only for non-nullish columns
+    if (defaultValue !== undefined && !isNullish && 'default' in column) {
+      // biome-ignore lint/suspicious/noExplicitAny: defaultValue comes from Zod default
+      column = (column as any).default(defaultValue)
     }
 
     columns[key] = column

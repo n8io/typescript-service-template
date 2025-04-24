@@ -21,6 +21,7 @@ class ResourceRepository implements SpiResourceRepository {
   private dependencies: Dependencies
   private schema = schemaResource
   private schemaDb = schemaDbRecord.merge(this.schema)
+  private table = resourcesTable
 
   constructor(dependencies: Dependencies) {
     this.dependencies = dependencies
@@ -28,21 +29,21 @@ class ResourceRepository implements SpiResourceRepository {
 
   async createOne(resource: z.infer<typeof this.schema>): Promise<Prettify<z.infer<typeof this.schema>>> {
     const dbRecord = this.schemaDb.parse(resource)
-    const [created] = await this.dependencies.db.insert(resourcesTable).values(dbRecord).returning()
+    const [created] = await this.dependencies.db.insert(this.table).values(dbRecord).returning()
 
     return this.schema.parse(created)
   }
 
   async getMany(query: SpiGetManyRequest): Promise<SpiPaginatedResponse<z.infer<typeof this.schema>>> {
-    const { limit, offset, orderBy, where } = domainGetManyRequestToDrizzleQuery(query, resourcesTable)
-    const countResults = await this.dependencies.db.select({ count: sql`COUNT(*)` }).from(resourcesTable).where(where)
+    const { limit, offset, orderBy, where } = domainGetManyRequestToDrizzleQuery(query, this.table)
+    const countResults = await this.dependencies.db.select({ count: sql`COUNT(*)` }).from(this.table).where(where)
 
     /* v8 ignore next 1 */
     const count = validation.number.parse(countResults[0]?.count ?? 0)
 
     const results = await this.dependencies.db
       .select()
-      .from(resourcesTable)
+      .from(this.table)
       .where(where)
       .orderBy(...orderBy)
       .limit(limit)
