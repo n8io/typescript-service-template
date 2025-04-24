@@ -30,7 +30,7 @@ npm run docker:up
 - [x] 🆔 Automatically append `requestId` to api requests
 - [x] 🧑‍🏭 CI/CD
   - [x] 👨‍⚕️ Use GitHub actions to automate as much as possible
-  - [x] 📔 Every PR must have code a coverage report
+  - [x] 📔 Every PR must have a code coverage report
   - [x] 🔍 Audit dependencies
 - [x] 🧑‍⚖️ Only use `type` instead of `interface` keyword
 - [x] 📊 Bake in OpenTelemetry metrics
