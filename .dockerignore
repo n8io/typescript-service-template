@@ -1,5 +1,8 @@
 *
 !.extras/docker-entrypoint.sh
 !.extras/postinstall.mjs
+!.extras/preinstall.mjs
+!.nvmrc
+!.npmrc
 !package*.json
 !src

@@ -1,4 +1,4 @@
-ARG NODE_VERSION=${NODE_VERSION:-22}-alpine
+ARG NODE_VERSION=${NODE_VERSION?:-The NODE_VERSION build arg is required}-alpine
 
 FROM node:${NODE_VERSION}
 
@@ -14,7 +14,7 @@ COPY .extras/ ./.extras
 COPY package*.json ./
 
 # Install dependencies with production flag to keep the image small
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
 
 # Copy the rest of the application code
 COPY . .

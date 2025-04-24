@@ -43,6 +43,7 @@ npm run docker:up
 - [x] ✍️ Utilize structured logging (pino)
   - [x] 🪵 No console logs
 - [x] 🛢️ No barrel or index files
+- [x] 🔢 Make the `.nvmrc` the single source of truth for the node version
 - [x] ♻️ [Autogenerate openapi spec](http://localhost:3000/api/v1/openapi) (hono-openapi)
 - [x] 📘 Autogenerate api documentation (hono-openapi)
 - [x] 📗 [Expose Swagger-like documentation](http://localhost:3000/api/v1/docs) (Scalar)
