@@ -1,12 +1,12 @@
 import type { z } from 'zod'
 import { DomainNotFoundError } from '../../models/custom-error.ts'
 import { gid } from '../../utils/generators/gid.ts'
-import { domainGetOneRequestToGetManyRequest } from '../../utils/transforms/domain-get-one-request-to-get-many-request.ts'
-import { spiRepositoryGetManyResponseToDomainPaginatedResponse } from '../../utils/transforms/spi-get-many-response-to-domain-paginated-response.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
 import { schemaDomainGetManyRequest } from '../models/request.ts'
 import { type Resource, exampleResource, schemaResource } from '../models/resource.ts'
 import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
+import { domainGetOneRequestToGetManyRequest } from './utils/domain-get-one-request-to-get-many-request.ts'
+import { spiRepositoryGetManyResponseToDomainPaginatedResponse } from './utils/spi-get-many-response-to-domain-paginated-response.ts'
 
 type Dependencies = {
   repository: SpiResourceRepository

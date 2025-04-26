@@ -3,11 +3,11 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "erasableSyntaxOnly": true,
-    "lib": ["ES2024"],
+    "lib": ["ESNext"],
     "module": "NodeNext",
     "noEmit": true,
     "rewriteRelativeImportExtensions": false,
-    "target": "ES2024",
+    "target": "ESNext",
     "types": ["vitest/globals"]
   }
 }

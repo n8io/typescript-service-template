@@ -15,9 +15,9 @@ import {
   ne,
   notInArray,
 } from 'drizzle-orm'
-import type { DomainGetManyRequest } from '../../domain/models/request.ts'
-import type { Operator } from '../../models/filter.ts'
-import type { resourcesTable } from '../../spi/repositories/database/schema.ts'
+import type { DomainGetManyRequest } from '../../../domain/models/request.ts'
+import type { Operator } from '../../../models/filter.ts'
+import type { resourcesTable } from '../../../spi/repositories/database/schema.ts'
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 type ColumnConditionFn = (column: any, value: unknown) => SQL<unknown>

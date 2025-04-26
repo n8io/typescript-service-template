@@ -1,17 +1,15 @@
-import { eq, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import type { z } from 'zod'
 import { schemaResource } from '../../domain/models/resource.ts'
-import type { SpiPaginatedResponse } from '../../domain/spi-ports/paginated.ts'
 import type {
   SpiGetManyRequest,
   SpiResourceRepository,
   SpiUpdateOneRequest,
 } from '../../domain/spi-ports/resource-repository.ts'
-import { domainGetManyRequestToDrizzleQuery } from '../../utils/transforms/domain-get-many-request-to-drizzle-query.ts'
-import { validation } from '../../utils/validation.ts'
 import type { initDatabase } from './database/init.ts'
 import { resourcesTable } from './database/schema.ts'
 import { schemaDbRecord } from './models.ts'
+import { spiGetManyRequestToPaginatedResult } from './utils/spi-get-many-request-to-paginated-result.ts'
 
 type Dependencies = {
   db: ReturnType<typeof initDatabase>
@@ -34,33 +32,21 @@ class ResourceRepository implements SpiResourceRepository {
     return this.schema.parse(created)
   }
 
-  async getMany(query: SpiGetManyRequest): Promise<SpiPaginatedResponse<z.infer<typeof this.schema>>> {
-    const { limit, offset, orderBy, where } = domainGetManyRequestToDrizzleQuery(query, this.table)
-    const countResults = await this.dependencies.db.select({ count: sql`COUNT(*)` }).from(this.table).where(where)
-
-    /* v8 ignore next 1 */
-    const count = validation.number.parse(countResults[0]?.count ?? 0)
-
-    const results = await this.dependencies.db
-      .select()
-      .from(this.table)
-      .where(where)
-      .orderBy(...orderBy)
-      .limit(limit)
-      .offset(offset)
-
-    return {
-      items: this.schema.array().parse(results),
-      itemsTotal: count,
-    }
+  async getMany(request: SpiGetManyRequest) {
+    return spiGetManyRequestToPaginatedResult({
+      db: this.dependencies.db,
+      request,
+      schema: this.schema,
+      table: this.table,
+    })
   }
 
   async updateOne(gid: string, request: SpiUpdateOneRequest): Promise<z.infer<typeof this.schema>> {
     const [updated] = await this.dependencies.db
-      .update(resourcesTable)
+      .update(this.table)
       .set(request)
       // @ts-expect-error Fix this type error
-      .where(eq(resourcesTable.gid, gid))
+      .where(eq(this.table.gid, gid))
       .returning()
 
     return this.schema.parse(updated)

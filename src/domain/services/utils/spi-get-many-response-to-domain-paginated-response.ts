@@ -1,5 +1,5 @@
 import type { ZodSchema } from 'zod'
-import { toPaginatedResponseSchema } from '../../domain/models/pagination.ts'
+import { toPaginatedResponseSchema } from '../../models/pagination.ts'
 
 const spiRepositoryGetManyResponseToDomainPaginatedResponse = ({
   items,
