@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
-import type { DomainGetManyRequest } from '../../domain/models/request.ts'
-import { resourcesTable } from '../../spi/repositories/database/schema.ts'
+import type { DomainGetManyRequest } from '../../../domain/models/request.ts'
+import { resourcesTable } from '../../../spi/repositories/database/schema.ts'
 import { domainGetManyRequestToDrizzleQuery } from './domain-get-many-request-to-drizzle-query.ts'
 
 describe('domainGetManyRequestToDrizzleQuery', () => {

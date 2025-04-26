@@ -1,4 +1,4 @@
-import type { DomainGetManyRequest } from '../../domain/models/request.ts'
+import type { DomainGetManyRequest } from '../../models/request.ts'
 
 const domainGetOneRequestToGetManyRequest = (
   field: string,

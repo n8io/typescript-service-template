@@ -1,9 +1,9 @@
-import { exampleResource } from '../../domain/models/resource.ts'
+import { exampleResource, schemaResource } from '../../domain/models/resource.ts'
 import { exampleAuditRecord } from '../../models/audit-record.ts'
-import * as Utils from '../../utils/transforms/domain-get-many-request-to-drizzle-query.ts'
 import type { initDatabase } from './database/init.ts'
 import { resourcesTable } from './database/schema.ts'
 import { ResourceRepository } from './resource.ts'
+import * as Utils2 from './utils/spi-get-many-request-to-paginated-result.ts'
 
 vi.mock('drizzle-orm')
 
@@ -76,51 +76,24 @@ describe('ResourceRepository', () => {
     })
 
     it('should return a resource object when getMany is called', async () => {
-      const db = mockDb()
-      const repository = new ResourceRepository({ db })
-      const results = await repository.getMany(spiRequest)
-
-      const {
-        items: [resource],
-      } = results
-
-      expect(resource).toBeDefined()
-    })
-
-    it('should call select twice, once to count and once to get the items', async () => {
-      const db = mockDb()
-      const repository = new ResourceRepository({ db })
-
-      await repository.getMany(spiRequest)
-
-      expect(db.select).toHaveBeenCalledTimes(2)
-    })
-
-    it('should call select twice, once to count and once to get the items', async () => {
-      const db = mockDb()
-      const repository = new ResourceRepository({ db })
-
-      await repository.getMany(spiRequest)
-
-      expect(db.select).toHaveBeenCalledTimes(2)
-    })
-
-    it('should call domainGetManyRequestToDrizzleQuery with the expected parameters', async () => {
-      const db = mockDb()
-      const repository = new ResourceRepository({ db })
-
-      const domainGetManyRequestToDrizzleQuerySpy = vi
-        .spyOn(Utils, 'domainGetManyRequestToDrizzleQuery')
-        .mockReturnValue({
-          limit: 10,
-          offset: 0,
-          orderBy: [],
-          where: undefined,
+      const spiGetManyRequestToPaginatedResultSpy = vi
+        .spyOn(Utils2, 'spiGetManyRequestToPaginatedResult')
+        .mockResolvedValue({
+          items: [exampleResource()],
+          itemsTotal: 1,
         })
 
+      const db = mockDb()
+      const repository = new ResourceRepository({ db })
+
       await repository.getMany(spiRequest)
 
-      expect(domainGetManyRequestToDrizzleQuerySpy).toHaveBeenCalledWith(spiRequest, resourcesTable)
+      expect(spiGetManyRequestToPaginatedResultSpy).toHaveBeenCalledWith({
+        db,
+        request: spiRequest,
+        schema: schemaResource,
+        table: resourcesTable,
+      })
     })
   })
 
