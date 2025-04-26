@@ -1,9 +1,9 @@
+// This script updates the package.json file to set the node version in the engines field
+// This allows us to have a single source of truth for the node version (.nvmrc)
+
 import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-
-// This script updates the package.json file to set the node version in the engines field
-// This allows us to have a single source of truth for the node version (.nvmrc)
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

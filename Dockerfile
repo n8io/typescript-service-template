@@ -1,4 +1,4 @@
-ARG NODE_VERSION=${NODE_VERSION?:-The NODE_VERSION build arg is required}-alpine
+ARG NODE_VERSION=${NODE_VERSION:?}-alpine
 
 FROM node:${NODE_VERSION}
 

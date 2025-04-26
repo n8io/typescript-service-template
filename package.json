@@ -6,7 +6,7 @@
   "scripts": {
     "db:generate": "drizzle-kit generate --config ./drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config ./drizzle.config.ts",
-    "docker:up": "docker compose up --build --no-log-prefix --watch service",
+    "docker:up": "NODE_VERSION=$(cat .nvmrc) docker compose up --build --no-log-prefix --watch service",
     "docker:build": "docker build --build-arg NODE_VERSION=$(cat .nvmrc) --no-cache -t \"$npm_package_name\" .",
     "lint": "npm run lint:types && npm run lint:style && npm run lint:dead-code && npm run lint:spelling && npm run lint:circular-dependencies && npm run lint:db-migrations",
     "lint:circular-dependencies": "madge --circular ./src/index.ts",
