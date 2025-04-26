@@ -1,3 +1,7 @@
+// This script runs after the package is installed and checks if Lefthook is installed.
+// If Lefthook is installed, it will check if the git hooks are initialized.
+// If not, it will install the git hooks.
+
 import { execSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 

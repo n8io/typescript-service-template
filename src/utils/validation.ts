@@ -9,7 +9,7 @@ import 'zod-openapi/extend'
 const string = z.string().trim().min(1)
 
 const date = z.coerce.date().openapi({
-  example: new Date('1900-01-01T00:00:00Z'),
+  example: new Date('1900-01-01T00:00:00.000Z'),
   format: OpenApiFormat.DATE_TIME,
 })
 

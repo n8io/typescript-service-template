@@ -30,9 +30,9 @@ const exampleResource = (overrides: Partial<Resource> = {}): Resource => ({
   gid: exampleGid(false),
   name: 'Jane Doe',
   timeZone: 'America/New_York',
-  createdAt: new Date(),
+  createdAt: new Date('1900-01-01T00:00:00.000Z'),
   createdBy: exampleAuditRecord({ type: 'USER' }),
-  updatedAt: new Date(),
+  updatedAt: new Date('1900-01-01T00:00:00.000Z'),
   updatedBy: exampleAuditRecord({ type: 'SYSTEM' }),
   ...overrides,
 })

@@ -3,7 +3,7 @@ services:
     build:
       context: .
       args:
-        NODE_VERSION: 22
+        NODE_VERSION: ${NODE_VERSION:?}
     init: true
     restart: unless-stopped
     stop_signal: SIGINT

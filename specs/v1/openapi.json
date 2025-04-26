@@ -21,7 +21,9 @@
           }
         },
         "operationId": "resourcesCreateOne",
-        "tags": ["Resources"],
+        "tags": [
+          "Resources"
+        ],
         "parameters": [
           {
             "name": "X-Request-Client-Id",
@@ -70,7 +72,10 @@
                             "example": "SYSTEM"
                           }
                         },
-                        "required": ["system", "type"]
+                        "required": [
+                          "system",
+                          "type"
+                        ]
                       },
                       {
                         "type": "object",
@@ -93,7 +98,10 @@
                             "example": "USER"
                           }
                         },
-                        "required": ["gid", "type"]
+                        "required": [
+                          "gid",
+                          "type"
+                        ]
                       }
                     ]
                   },
@@ -109,7 +117,11 @@
                     "example": "America/New_York"
                   }
                 },
-                "required": ["createdBy", "name", "timeZone"]
+                "required": [
+                  "createdBy",
+                  "name",
+                  "timeZone"
+                ]
               }
             }
           }
@@ -160,7 +172,14 @@
                       }
                     }
                   },
-                  "required": ["hasMore", "itemsTotal", "page", "pageSize", "pagesTotal", "items"],
+                  "required": [
+                    "hasMore",
+                    "itemsTotal",
+                    "page",
+                    "pageSize",
+                    "pagesTotal",
+                    "items"
+                  ],
                   "example": {
                     "hasMore": false,
                     "itemsTotal": 1,
@@ -172,13 +191,13 @@
                         "gid": "999.00000000-0000-0000-0000-000000000000",
                         "name": "Jane Doe",
                         "timeZone": "America/New_York",
-                        "createdAt": "2025-04-26T20:45:41.379Z",
+                        "createdAt": "1900-01-01T00:00:00.000Z",
                         "createdBy": {
                           "email": "em@il.com",
                           "gid": "999.00000000-0000-0000-0000-000000000000",
                           "type": "USER"
                         },
-                        "updatedAt": "2025-04-26T20:45:41.379Z",
+                        "updatedAt": "1900-01-01T00:00:00.000Z",
                         "updatedBy": {
                           "system": "SYSTEM",
                           "type": "SYSTEM"
@@ -192,7 +211,9 @@
           }
         },
         "operationId": "resourcesGetMany",
-        "tags": ["Resources"],
+        "tags": [
+          "Resources"
+        ],
         "parameters": [
           {
             "name": "X-Request-Client-Id",
@@ -312,7 +333,9 @@
           }
         },
         "operationId": "resourcesGetOne",
-        "tags": ["Resources"],
+        "tags": [
+          "Resources"
+        ],
         "parameters": [
           {
             "name": "X-Request-Client-Id",
@@ -363,7 +386,9 @@
           }
         },
         "operationId": "resourcesUpdateOne",
-        "tags": ["Resources"],
+        "tags": [
+          "Resources"
+        ],
         "parameters": [
           {
             "name": "X-Request-Client-Id",
@@ -430,7 +455,10 @@
                             "example": "SYSTEM"
                           }
                         },
-                        "required": ["system", "type"]
+                        "required": [
+                          "system",
+                          "type"
+                        ]
                       },
                       {
                         "type": "object",
@@ -453,12 +481,17 @@
                             "example": "USER"
                           }
                         },
-                        "required": ["gid", "type"]
+                        "required": [
+                          "gid",
+                          "type"
+                        ]
                       }
                     ]
                   }
                 },
-                "required": ["updatedBy"]
+                "required": [
+                  "updatedBy"
+                ]
               }
             }
           }
@@ -493,7 +526,10 @@
                     "example": "SYSTEM"
                   }
                 },
-                "required": ["system", "type"]
+                "required": [
+                  "system",
+                  "type"
+                ]
               },
               {
                 "type": "object",
@@ -516,7 +552,10 @@
                     "example": "USER"
                   }
                 },
-                "required": ["gid", "type"]
+                "required": [
+                  "gid",
+                  "type"
+                ]
               }
             ]
           },
@@ -548,7 +587,10 @@
                     "example": "SYSTEM"
                   }
                 },
-                "required": ["system", "type"]
+                "required": [
+                  "system",
+                  "type"
+                ]
               },
               {
                 "type": "object",
@@ -571,7 +613,10 @@
                     "example": "USER"
                   }
                 },
-                "required": ["gid", "type"]
+                "required": [
+                  "gid",
+                  "type"
+                ]
               }
             ]
           },
@@ -587,7 +632,15 @@
             "example": "America/New_York"
           }
         },
-        "required": ["createdAt", "createdBy", "gid", "updatedAt", "updatedBy", "name", "timeZone"]
+        "required": [
+          "createdAt",
+          "createdBy",
+          "gid",
+          "updatedAt",
+          "updatedBy",
+          "name",
+          "timeZone"
+        ]
       }
     }
   }
