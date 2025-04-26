@@ -9,6 +9,10 @@ vi.mock('@hono/node-server', () => ({
   }),
 }))
 
+vi.mock('./generate-all-openapi-specs.ts', () => ({
+  generateAllSpecs: vi.fn().mockResolvedValue(undefined),
+}))
+
 vi.mock('./http/init.ts', () => ({
   initHttp: () => ({
     fetch: vi.fn(),
