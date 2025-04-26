@@ -3,6 +3,7 @@ import type { Domain } from '../domain/init.ts'
 import type { AppStateManager, Closable } from '../utils/app-state-manager.ts'
 import { config } from '../utils/config.ts'
 import { logger } from '../utils/logger.ts'
+import { generateAllSpecs } from './generate-all-openapi-specs.ts'
 import { initHttp } from './http/init.ts'
 
 type Dependencies = {
@@ -12,8 +13,11 @@ type Dependencies = {
 
 const hostname = '0.0.0.0'
 
-const initApi = (dependencies: Dependencies) => {
-  const app = initHttp(dependencies)
+const initApi = async (dependencies: Dependencies) => {
+  const app = await initHttp(dependencies)
+
+  await generateAllSpecs(app)
+
   const { appStateManager } = dependencies
 
   const options: Parameters<typeof serve>[0] = {
