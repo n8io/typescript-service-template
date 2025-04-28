@@ -16,6 +16,7 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     mockReset: true,
+    setupFiles: ['zod-openapi/extend'],
     unstubEnvs: true,
   },
 })

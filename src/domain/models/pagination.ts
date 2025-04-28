@@ -1,8 +1,6 @@
 import { ZodSchema, z } from 'zod'
 import { validation } from '../../utils/validation.ts'
 
-import 'zod-openapi/extend'
-
 const schemaBasePagination = z.object({
   hasMore: validation.bool,
   itemsTotal: validation.number.int().min(0),

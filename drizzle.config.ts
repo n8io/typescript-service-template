@@ -1,3 +1,6 @@
+// Must be in the root of the project to make sure all schemas have access to the openapi extension
+import 'zod-openapi/extend'
+
 /* v8 ignore start */
 import { defineConfig } from 'drizzle-kit'
 
