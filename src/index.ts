@@ -1,3 +1,6 @@
+// Must be in the root of the project to make sure all schemas have access to the openapi extension
+import 'zod-openapi/extend'
+
 import { initApi } from './api/init.ts'
 import { initDomain } from './domain/init.ts'
 import { initSpi } from './spi/init.ts'

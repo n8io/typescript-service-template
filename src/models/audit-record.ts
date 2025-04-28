@@ -1,8 +1,6 @@
 import { z } from 'zod'
 import { exampleGid } from '../utils/generators/gid.ts'
 
-import 'zod-openapi/extend'
-
 const AuditRecordType = {
   SYSTEM: 'SYSTEM',
   USER: 'USER',
