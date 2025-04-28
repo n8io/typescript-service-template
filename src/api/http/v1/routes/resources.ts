@@ -13,8 +13,8 @@ resources.post(
   '/',
   generateOpenApiRouteConfig({
     operationId: 'resourcesCreateOne',
-    requestSchema: ResourceService.requestSchemas.createOne,
-    schemaResponse: ResourceService.responseSchemas.getOne,
+    requestSchema: ResourceService.schemas.request.createOne,
+    schemaResponse: ResourceService.schemas.response.getOne,
     tag: OpenApiTag.RESOURCES,
     type: RouteType.CREATE_ONE,
   }),
@@ -33,8 +33,8 @@ resources.get(
     defaultSortField: 'createdAt',
     filterableFields: ResourceService.filterableFields,
     operationId: 'resourcesGetMany',
-    requestSchema: ResourceService.requestSchemas.getMany,
-    schemaResponse: ResourceService.responseSchemas.getMany,
+    requestSchema: ResourceService.schemas.request.getMany,
+    schemaResponse: ResourceService.schemas.response.getMany,
     sortableFields: ResourceService.sortableFields,
     tag: OpenApiTag.RESOURCES,
     type: RouteType.GET_MANY,
@@ -44,7 +44,7 @@ resources.get(
     const params = new URL(ctx.req.url).searchParams
 
     const request = {
-      filters: urlSearchParamsToFilters(params, { baseSchema: ResourceService.schema }),
+      filters: urlSearchParamsToFilters(params, { baseSchema: ResourceService.schemas.core }),
       pagination: urlSearchParamsToPagination(params),
       sorting: urlSearchParamsToSort(params, { sortableFields: ResourceService.sortableFields }),
     } as DomainGetManyRequest
@@ -59,7 +59,7 @@ resources.get(
   '/:gid',
   generateOpenApiRouteConfig({
     operationId: 'resourcesGetOne',
-    schemaResponse: ResourceService.responseSchemas.getOne,
+    schemaResponse: ResourceService.schemas.response.getOne,
     tag: OpenApiTag.RESOURCES,
     type: RouteType.GET_ONE,
   }),
@@ -76,8 +76,8 @@ resources.patch(
   '/:gid',
   generateOpenApiRouteConfig({
     operationId: 'resourcesUpdateOne',
-    requestSchema: ResourceService.requestSchemas.updateOne,
-    schemaResponse: ResourceService.responseSchemas.getOne,
+    requestSchema: ResourceService.schemas.request.updateOne,
+    schemaResponse: ResourceService.schemas.response.getOne,
     tag: OpenApiTag.RESOURCES,
     type: RouteType.UPDATE_ONE,
   }),
