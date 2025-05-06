@@ -28,7 +28,7 @@ describe('initHttp', () => {
   })
 
   it('should have registered all the expected routes', async () => {
-    const app = initHttp(dependencies)
+    const app = await initHttp(dependencies)
 
     expect(app.routes).toMatchInlineSnapshot(`
       [

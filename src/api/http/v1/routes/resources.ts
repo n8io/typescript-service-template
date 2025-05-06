@@ -5,17 +5,17 @@ import { urlSearchParamsToPagination } from '../../../../utils/url-search-params
 import { urlSearchParamsToSort } from '../../../../utils/url-search-params/sorting.ts'
 import { OpenApiTag } from '../../models/openapi.ts'
 import { makeApp } from '../app.ts'
-import { RouteType, generateOpenApiRouteConfig } from '../openapi/generate-open-api-route-config.ts'
+import { RouteType, appendOpenApiMetadata } from '../openapi/append-open-api-metadata.ts'
 
 const resources = makeApp()
 
 resources.post(
   '/',
-  generateOpenApiRouteConfig({
+  appendOpenApiMetadata({
     operationId: 'resourcesCreateOne',
     requestSchema: ResourceService.schemas.request.createOne,
     schemaResponse: ResourceService.schemas.response.getOne,
-    tag: OpenApiTag.RESOURCES,
+    tags: [OpenApiTag.RESOURCES],
     type: RouteType.CREATE_ONE,
   }),
   async (ctx) => {
@@ -29,14 +29,14 @@ resources.post(
 
 resources.get(
   '/',
-  generateOpenApiRouteConfig({
+  appendOpenApiMetadata({
     defaultSortField: 'createdAt',
     filterableFields: ResourceService.filterableFields,
     operationId: 'resourcesGetMany',
     requestSchema: ResourceService.schemas.request.getMany,
     schemaResponse: ResourceService.schemas.response.getMany,
     sortableFields: ResourceService.sortableFields,
-    tag: OpenApiTag.RESOURCES,
+    tags: [OpenApiTag.RESOURCES],
     type: RouteType.GET_MANY,
   }),
   async (ctx) => {
@@ -57,10 +57,10 @@ resources.get(
 
 resources.get(
   '/:gid',
-  generateOpenApiRouteConfig({
+  appendOpenApiMetadata({
     operationId: 'resourcesGetOne',
     schemaResponse: ResourceService.schemas.response.getOne,
-    tag: OpenApiTag.RESOURCES,
+    tags: [OpenApiTag.RESOURCES],
     type: RouteType.GET_ONE,
   }),
   async (ctx) => {
@@ -74,11 +74,11 @@ resources.get(
 
 resources.patch(
   '/:gid',
-  generateOpenApiRouteConfig({
+  appendOpenApiMetadata({
     operationId: 'resourcesUpdateOne',
     requestSchema: ResourceService.schemas.request.updateOne,
     schemaResponse: ResourceService.schemas.response.getOne,
-    tag: OpenApiTag.RESOURCES,
+    tags: [OpenApiTag.RESOURCES],
     type: RouteType.UPDATE_ONE,
   }),
   async (ctx) => {

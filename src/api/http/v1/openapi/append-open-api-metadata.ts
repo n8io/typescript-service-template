@@ -3,7 +3,7 @@ import { resolver } from 'hono-openapi/zod'
 import type { ZodObject } from 'zod'
 import { validation } from '../../../../utils/validation.ts'
 import { OPEN_API_DEFAULT_HEADERS, OPEN_API_DEFAULT_PAGINATION_PARAMS } from '../../models/openapi.ts'
-import { sortable } from './copy.ts'
+import { copy } from './copy.ts'
 
 const RouteType = {
   CREATE_ONE: 'createOne',
@@ -14,6 +14,7 @@ const RouteType = {
 } as const
 
 type RouteType = (typeof RouteType)[keyof typeof RouteType]
+
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 type AnyZodObject = ZodObject<any>
 
@@ -29,7 +30,7 @@ type BaseRoute = {
   description?: string
   parameters?: unknown[]
   schemaResponse: AnyZodObject
-  tag: string
+  tags: string[]
 }
 
 type CreateOneRoute = Prettify<
@@ -76,7 +77,7 @@ type UpdateOneRoute = Prettify<
 
 type RouteConfig = CreateOneRoute | DeleteOneRoute | GetManyRoute | GetOneRoute | UpdateOneRoute
 
-const generateOpenApiRouteConfig = ({ description, operationId, schemaResponse, tag, type, ...rest }: RouteConfig) => {
+const appendOpenApiMetadata = ({ description, operationId, schemaResponse, tags, type, ...rest }: RouteConfig) => {
   let actualDescription: DescribeRouteOptions['description'] = description
   let actualParameters: DescribeRouteOptions['parameters'] = undefined
   let requestBody: DescribeRouteOptions['requestBody'] = undefined
@@ -106,7 +107,7 @@ const generateOpenApiRouteConfig = ({ description, operationId, schemaResponse, 
   } else if (type === RouteType.GET_MANY) {
     const { defaultSortField, filterableFields, requestSchema: schemaRequest, sortableFields } = rest as GetManyRoute
 
-    actualDescription = sortable(sortableFields)
+    actualDescription = copy.sortable(sortableFields)
 
     actualParameters = [
       ...OPEN_API_DEFAULT_HEADERS,
@@ -152,8 +153,8 @@ const generateOpenApiRouteConfig = ({ description, operationId, schemaResponse, 
         },
       },
     },
-    tags: [tag],
+    tags,
   })
 }
 
-export { RouteType, generateOpenApiRouteConfig }
+export { RouteType, appendOpenApiMetadata }

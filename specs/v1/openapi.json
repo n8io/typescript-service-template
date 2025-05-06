@@ -1,10 +1,34 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Hono Documentation",
-    "description": "Development documentation",
-    "version": "0.0.0"
+    "title": "Typescript Service Template",
+    "description": "\n🚀 An API for managing resources\n\n### Pagination\n\nAll endpoints that return a list of items support pagination via search parameters. \n\nThe following parameters are supported:\n\n- `page` - The page number to return. Note that the first page is `1`.\n- `pageSize` - The number of items to return per page\n\n#### Filtering\n\nMost filterable search parameters support the following operators:\n\n- `eq` - equal\n- `ne` - not equal\n- `gt` - greater than\n- `gte` - greater than or equal\n- `lt` - less than\n- `lte` - less than or equal\n- `in` - in\n- `nin` - not in\n- `search` - case insensitive search\n\n> [!NOTE] You can combine multiple operators in a single request.\n> For example `createdAt:gte=2023-01-01Z&createdAt:lt=2024-01-01Z`\n\n#### Sorting\n\nPaginated response allow sorting by multiple fields. \n\nFor example, to sort by `createdAt` descending and `name` ascending: `sort=-createdAt,name`\n\n> [!NOTE]\n> To sort a field in descending order, prefix it with a `-`\n",
+    "version": "v1"
   },
+  "servers": [
+    {
+      "description": "Local",
+      "url": "http://localhost:3000"
+    },
+    {
+      "description": "Testing",
+      "url": "https://testing.example.com"
+    },
+    {
+      "description": "Staging",
+      "url": "https://staging.example.com"
+    },
+    {
+      "description": "Production",
+      "url": "https://production.example.com"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Resources",
+      "description": "Manage resources"
+    }
+  ],
   "paths": {
     "/api/v1/resources": {
       "post": {
@@ -14,145 +38,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "createdAt": {
-                      "type": "string",
-                      "example": "1900-01-01T00:00:00.000Z",
-                      "format": "date-time"
-                    },
-                    "createdBy": {
-                      "oneOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "system": {
-                              "type": "string",
-                              "description": "The system that performed the action",
-                              "example": "SYSTEM"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "SYSTEM",
-                              "title": "System",
-                              "example": "SYSTEM"
-                            }
-                          },
-                          "required": [
-                            "system",
-                            "type"
-                          ]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "email": {
-                              "type": "string",
-                              "format": "email",
-                              "description": "The user who performed the action",
-                              "title": "Email",
-                              "example": "em@il.com"
-                            },
-                            "gid": {
-                              "type": "string",
-                              "example": "999.00000000-0000-0000-0000-000000000000"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "USER",
-                              "title": "User",
-                              "example": "USER"
-                            }
-                          },
-                          "required": [
-                            "gid",
-                            "type"
-                          ]
-                        }
-                      ]
-                    },
-                    "gid": {
-                      "type": "string",
-                      "minLength": 1,
-                      "example": "999.00000000-0000-0000-0000-000000000000",
-                      "description": "The unique identifier for the resource"
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "example": "1900-01-01T00:00:00.000Z",
-                      "format": "date-time"
-                    },
-                    "updatedBy": {
-                      "oneOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "system": {
-                              "type": "string",
-                              "description": "The system that performed the action",
-                              "example": "SYSTEM"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "SYSTEM",
-                              "title": "System",
-                              "example": "SYSTEM"
-                            }
-                          },
-                          "required": [
-                            "system",
-                            "type"
-                          ]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "email": {
-                              "type": "string",
-                              "format": "email",
-                              "description": "The user who performed the action",
-                              "title": "Email",
-                              "example": "em@il.com"
-                            },
-                            "gid": {
-                              "type": "string",
-                              "example": "999.00000000-0000-0000-0000-000000000000"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "USER",
-                              "title": "User",
-                              "example": "USER"
-                            }
-                          },
-                          "required": [
-                            "gid",
-                            "type"
-                          ]
-                        }
-                      ]
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "description": "The name of the resource",
-                      "example": "Jane Doe"
-                    },
-                    "timeZone": {
-                      "type": "string",
-                      "description": "The time zone of the resource",
-                      "example": "America/New_York"
-                    }
-                  },
-                  "required": [
-                    "createdAt",
-                    "createdBy",
-                    "gid",
-                    "updatedAt",
-                    "updatedBy",
-                    "name",
-                    "timeZone"
-                  ]
+                  "$ref": "#/components/schemas/Resource"
                 }
               }
             }
@@ -196,52 +82,19 @@
                   "createdBy": {
                     "oneOf": [
                       {
-                        "type": "object",
-                        "properties": {
-                          "system": {
-                            "type": "string",
-                            "description": "The system that performed the action",
-                            "example": "SYSTEM"
-                          },
-                          "type": {
-                            "type": "string",
-                            "const": "SYSTEM",
-                            "title": "System",
-                            "example": "SYSTEM"
-                          }
-                        },
-                        "required": [
-                          "system",
-                          "type"
-                        ]
+                        "$ref": "#/components/schemas/AuditRecordSystem"
                       },
                       {
-                        "type": "object",
-                        "properties": {
-                          "email": {
-                            "type": "string",
-                            "format": "email",
-                            "description": "The user who performed the action",
-                            "title": "Email",
-                            "example": "em@il.com"
-                          },
-                          "gid": {
-                            "type": "string",
-                            "example": "999.00000000-0000-0000-0000-000000000000"
-                          },
-                          "type": {
-                            "type": "string",
-                            "const": "USER",
-                            "title": "User",
-                            "example": "USER"
-                          }
-                        },
-                        "required": [
-                          "gid",
-                          "type"
-                        ]
+                        "$ref": "#/components/schemas/AuditRecordUser"
                       }
-                    ]
+                    ],
+                    "discriminator": {
+                      "propertyName": "type",
+                      "mapping": {
+                        "SYSTEM": "#/components/schemas/AuditRecordSystem",
+                        "USER": "#/components/schemas/AuditRecordUser"
+                      }
+                    }
                   },
                   "name": {
                     "type": "string",
@@ -259,7 +112,74 @@
                   "createdBy",
                   "name",
                   "timeZone"
-                ]
+                ],
+                "description": "A resource entity",
+                "example": {
+                  "gid": "999.00000000-0000-0000-0000-000000000000",
+                  "name": "Jane Doe",
+                  "timeZone": "America/New_York",
+                  "createdAt": "1900-01-01T00:00:00.000Z",
+                  "createdBy": {
+                    "email": "em@il.com",
+                    "gid": "999.00000000-0000-0000-0000-000000000000",
+                    "type": "USER"
+                  },
+                  "updatedAt": "1900-01-01T00:00:00.000Z",
+                  "updatedBy": {
+                    "system": "SYSTEM",
+                    "type": "SYSTEM"
+                  }
+                }
+              },
+              "components": {
+                "AuditRecordSystem": {
+                  "type": "object",
+                  "properties": {
+                    "system": {
+                      "type": "string",
+                      "description": "The system that performed the action",
+                      "example": "SYSTEM"
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "SYSTEM",
+                      "title": "System",
+                      "example": "SYSTEM"
+                    }
+                  },
+                  "required": [
+                    "system",
+                    "type"
+                  ],
+                  "description": "A system that performed the action"
+                },
+                "AuditRecordUser": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "The email of the user who performed the action",
+                      "title": "Email",
+                      "example": "em@il.com"
+                    },
+                    "gid": {
+                      "type": "string",
+                      "example": "999.00000000-0000-0000-0000-000000000000"
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "USER",
+                      "title": "User",
+                      "example": "USER"
+                    }
+                  },
+                  "required": [
+                    "gid",
+                    "type"
+                  ],
+                  "description": "A user who performed the action"
+                }
               }
             }
           }
@@ -306,145 +226,7 @@
                     "items": {
                       "type": "array",
                       "items": {
-                        "type": "object",
-                        "properties": {
-                          "createdAt": {
-                            "type": "string",
-                            "example": "1900-01-01T00:00:00.000Z",
-                            "format": "date-time"
-                          },
-                          "createdBy": {
-                            "oneOf": [
-                              {
-                                "type": "object",
-                                "properties": {
-                                  "system": {
-                                    "type": "string",
-                                    "description": "The system that performed the action",
-                                    "example": "SYSTEM"
-                                  },
-                                  "type": {
-                                    "type": "string",
-                                    "const": "SYSTEM",
-                                    "title": "System",
-                                    "example": "SYSTEM"
-                                  }
-                                },
-                                "required": [
-                                  "system",
-                                  "type"
-                                ]
-                              },
-                              {
-                                "type": "object",
-                                "properties": {
-                                  "email": {
-                                    "type": "string",
-                                    "format": "email",
-                                    "description": "The user who performed the action",
-                                    "title": "Email",
-                                    "example": "em@il.com"
-                                  },
-                                  "gid": {
-                                    "type": "string",
-                                    "example": "999.00000000-0000-0000-0000-000000000000"
-                                  },
-                                  "type": {
-                                    "type": "string",
-                                    "const": "USER",
-                                    "title": "User",
-                                    "example": "USER"
-                                  }
-                                },
-                                "required": [
-                                  "gid",
-                                  "type"
-                                ]
-                              }
-                            ]
-                          },
-                          "gid": {
-                            "type": "string",
-                            "minLength": 1,
-                            "example": "999.00000000-0000-0000-0000-000000000000",
-                            "description": "The unique identifier for the resource"
-                          },
-                          "updatedAt": {
-                            "type": "string",
-                            "example": "1900-01-01T00:00:00.000Z",
-                            "format": "date-time"
-                          },
-                          "updatedBy": {
-                            "oneOf": [
-                              {
-                                "type": "object",
-                                "properties": {
-                                  "system": {
-                                    "type": "string",
-                                    "description": "The system that performed the action",
-                                    "example": "SYSTEM"
-                                  },
-                                  "type": {
-                                    "type": "string",
-                                    "const": "SYSTEM",
-                                    "title": "System",
-                                    "example": "SYSTEM"
-                                  }
-                                },
-                                "required": [
-                                  "system",
-                                  "type"
-                                ]
-                              },
-                              {
-                                "type": "object",
-                                "properties": {
-                                  "email": {
-                                    "type": "string",
-                                    "format": "email",
-                                    "description": "The user who performed the action",
-                                    "title": "Email",
-                                    "example": "em@il.com"
-                                  },
-                                  "gid": {
-                                    "type": "string",
-                                    "example": "999.00000000-0000-0000-0000-000000000000"
-                                  },
-                                  "type": {
-                                    "type": "string",
-                                    "const": "USER",
-                                    "title": "User",
-                                    "example": "USER"
-                                  }
-                                },
-                                "required": [
-                                  "gid",
-                                  "type"
-                                ]
-                              }
-                            ]
-                          },
-                          "name": {
-                            "type": "string",
-                            "minLength": 1,
-                            "description": "The name of the resource",
-                            "example": "Jane Doe"
-                          },
-                          "timeZone": {
-                            "type": "string",
-                            "description": "The time zone of the resource",
-                            "example": "America/New_York"
-                          }
-                        },
-                        "required": [
-                          "createdAt",
-                          "createdBy",
-                          "gid",
-                          "updatedAt",
-                          "updatedBy",
-                          "name",
-                          "timeZone"
-                        ]
+                        "$ref": "#/components/schemas/Resource"
                       }
                     }
                   },
@@ -602,145 +384,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "createdAt": {
-                      "type": "string",
-                      "example": "1900-01-01T00:00:00.000Z",
-                      "format": "date-time"
-                    },
-                    "createdBy": {
-                      "oneOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "system": {
-                              "type": "string",
-                              "description": "The system that performed the action",
-                              "example": "SYSTEM"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "SYSTEM",
-                              "title": "System",
-                              "example": "SYSTEM"
-                            }
-                          },
-                          "required": [
-                            "system",
-                            "type"
-                          ]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "email": {
-                              "type": "string",
-                              "format": "email",
-                              "description": "The user who performed the action",
-                              "title": "Email",
-                              "example": "em@il.com"
-                            },
-                            "gid": {
-                              "type": "string",
-                              "example": "999.00000000-0000-0000-0000-000000000000"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "USER",
-                              "title": "User",
-                              "example": "USER"
-                            }
-                          },
-                          "required": [
-                            "gid",
-                            "type"
-                          ]
-                        }
-                      ]
-                    },
-                    "gid": {
-                      "type": "string",
-                      "minLength": 1,
-                      "example": "999.00000000-0000-0000-0000-000000000000",
-                      "description": "The unique identifier for the resource"
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "example": "1900-01-01T00:00:00.000Z",
-                      "format": "date-time"
-                    },
-                    "updatedBy": {
-                      "oneOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "system": {
-                              "type": "string",
-                              "description": "The system that performed the action",
-                              "example": "SYSTEM"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "SYSTEM",
-                              "title": "System",
-                              "example": "SYSTEM"
-                            }
-                          },
-                          "required": [
-                            "system",
-                            "type"
-                          ]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "email": {
-                              "type": "string",
-                              "format": "email",
-                              "description": "The user who performed the action",
-                              "title": "Email",
-                              "example": "em@il.com"
-                            },
-                            "gid": {
-                              "type": "string",
-                              "example": "999.00000000-0000-0000-0000-000000000000"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "USER",
-                              "title": "User",
-                              "example": "USER"
-                            }
-                          },
-                          "required": [
-                            "gid",
-                            "type"
-                          ]
-                        }
-                      ]
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "description": "The name of the resource",
-                      "example": "Jane Doe"
-                    },
-                    "timeZone": {
-                      "type": "string",
-                      "description": "The time zone of the resource",
-                      "example": "America/New_York"
-                    }
-                  },
-                  "required": [
-                    "createdAt",
-                    "createdBy",
-                    "gid",
-                    "updatedAt",
-                    "updatedBy",
-                    "name",
-                    "timeZone"
-                  ]
+                  "$ref": "#/components/schemas/Resource"
                 }
               }
             }
@@ -793,145 +437,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "createdAt": {
-                      "type": "string",
-                      "example": "1900-01-01T00:00:00.000Z",
-                      "format": "date-time"
-                    },
-                    "createdBy": {
-                      "oneOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "system": {
-                              "type": "string",
-                              "description": "The system that performed the action",
-                              "example": "SYSTEM"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "SYSTEM",
-                              "title": "System",
-                              "example": "SYSTEM"
-                            }
-                          },
-                          "required": [
-                            "system",
-                            "type"
-                          ]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "email": {
-                              "type": "string",
-                              "format": "email",
-                              "description": "The user who performed the action",
-                              "title": "Email",
-                              "example": "em@il.com"
-                            },
-                            "gid": {
-                              "type": "string",
-                              "example": "999.00000000-0000-0000-0000-000000000000"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "USER",
-                              "title": "User",
-                              "example": "USER"
-                            }
-                          },
-                          "required": [
-                            "gid",
-                            "type"
-                          ]
-                        }
-                      ]
-                    },
-                    "gid": {
-                      "type": "string",
-                      "minLength": 1,
-                      "example": "999.00000000-0000-0000-0000-000000000000",
-                      "description": "The unique identifier for the resource"
-                    },
-                    "updatedAt": {
-                      "type": "string",
-                      "example": "1900-01-01T00:00:00.000Z",
-                      "format": "date-time"
-                    },
-                    "updatedBy": {
-                      "oneOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "system": {
-                              "type": "string",
-                              "description": "The system that performed the action",
-                              "example": "SYSTEM"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "SYSTEM",
-                              "title": "System",
-                              "example": "SYSTEM"
-                            }
-                          },
-                          "required": [
-                            "system",
-                            "type"
-                          ]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "email": {
-                              "type": "string",
-                              "format": "email",
-                              "description": "The user who performed the action",
-                              "title": "Email",
-                              "example": "em@il.com"
-                            },
-                            "gid": {
-                              "type": "string",
-                              "example": "999.00000000-0000-0000-0000-000000000000"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "USER",
-                              "title": "User",
-                              "example": "USER"
-                            }
-                          },
-                          "required": [
-                            "gid",
-                            "type"
-                          ]
-                        }
-                      ]
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1,
-                      "description": "The name of the resource",
-                      "example": "Jane Doe"
-                    },
-                    "timeZone": {
-                      "type": "string",
-                      "description": "The time zone of the resource",
-                      "example": "America/New_York"
-                    }
-                  },
-                  "required": [
-                    "createdAt",
-                    "createdBy",
-                    "gid",
-                    "updatedAt",
-                    "updatedBy",
-                    "name",
-                    "timeZone"
-                  ]
+                  "$ref": "#/components/schemas/Resource"
                 }
               }
             }
@@ -993,57 +499,91 @@
                   "updatedBy": {
                     "oneOf": [
                       {
-                        "type": "object",
-                        "properties": {
-                          "system": {
-                            "type": "string",
-                            "description": "The system that performed the action",
-                            "example": "SYSTEM"
-                          },
-                          "type": {
-                            "type": "string",
-                            "const": "SYSTEM",
-                            "title": "System",
-                            "example": "SYSTEM"
-                          }
-                        },
-                        "required": [
-                          "system",
-                          "type"
-                        ]
+                        "$ref": "#/components/schemas/AuditRecordSystem"
                       },
                       {
-                        "type": "object",
-                        "properties": {
-                          "email": {
-                            "type": "string",
-                            "format": "email",
-                            "description": "The user who performed the action",
-                            "title": "Email",
-                            "example": "em@il.com"
-                          },
-                          "gid": {
-                            "type": "string",
-                            "example": "999.00000000-0000-0000-0000-000000000000"
-                          },
-                          "type": {
-                            "type": "string",
-                            "const": "USER",
-                            "title": "User",
-                            "example": "USER"
-                          }
-                        },
-                        "required": [
-                          "gid",
-                          "type"
-                        ]
+                        "$ref": "#/components/schemas/AuditRecordUser"
                       }
-                    ]
+                    ],
+                    "discriminator": {
+                      "propertyName": "type",
+                      "mapping": {
+                        "SYSTEM": "#/components/schemas/AuditRecordSystem",
+                        "USER": "#/components/schemas/AuditRecordUser"
+                      }
+                    }
                   }
                 },
                 "required": [
                   "updatedBy"
-                ]
+                ],
+                "description": "A resource entity",
+                "example": {
+                  "gid": "999.00000000-0000-0000-0000-000000000000",
+                  "name": "Jane Doe",
+                  "timeZone": "America/New_York",
+                  "createdAt": "1900-01-01T00:00:00.000Z",
+                  "createdBy": {
+                    "email": "em@il.com",
+                    "gid": "999.00000000-0000-0000-0000-000000000000",
+                    "type": "USER"
+                  },
+                  "updatedAt": "1900-01-01T00:00:00.000Z",
+                  "updatedBy": {
+                    "system": "SYSTEM",
+                    "type": "SYSTEM"
+                  }
+                }
+              },
+              "components": {
+                "AuditRecordSystem": {
+                  "type": "object",
+                  "properties": {
+                    "system": {
+                      "type": "string",
+                      "description": "The system that performed the action",
+                      "example": "SYSTEM"
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "SYSTEM",
+                      "title": "System",
+                      "example": "SYSTEM"
+                    }
+                  },
+                  "required": [
+                    "system",
+                    "type"
+                  ],
+                  "description": "A system that performed the action"
+                },
+                "AuditRecordUser": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "The email of the user who performed the action",
+                      "title": "Email",
+                      "example": "em@il.com"
+                    },
+                    "gid": {
+                      "type": "string",
+                      "example": "999.00000000-0000-0000-0000-000000000000"
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "USER",
+                      "title": "User",
+                      "example": "USER"
+                    }
+                  },
+                  "required": [
+                    "gid",
+                    "type"
+                  ],
+                  "description": "A user who performed the action"
+                }
               }
             }
           }
@@ -1052,6 +592,147 @@
     }
   },
   "components": {
-    "schemas": {}
+    "schemas": {
+      "Resource": {
+        "type": "object",
+        "properties": {
+          "createdAt": {
+            "type": "string",
+            "example": "1900-01-01T00:00:00.000Z",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AuditRecordSystem"
+              },
+              {
+                "$ref": "#/components/schemas/AuditRecordUser"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "SYSTEM": "#/components/schemas/AuditRecordSystem",
+                "USER": "#/components/schemas/AuditRecordUser"
+              }
+            }
+          },
+          "gid": {
+            "type": "string",
+            "minLength": 1,
+            "example": "999.00000000-0000-0000-0000-000000000000",
+            "description": "The unique identifier for the resource"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "1900-01-01T00:00:00.000Z",
+            "format": "date-time"
+          },
+          "updatedBy": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AuditRecordSystem"
+              },
+              {
+                "$ref": "#/components/schemas/AuditRecordUser"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "SYSTEM": "#/components/schemas/AuditRecordSystem",
+                "USER": "#/components/schemas/AuditRecordUser"
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The name of the resource",
+            "example": "Jane Doe"
+          },
+          "timeZone": {
+            "type": "string",
+            "description": "The time zone of the resource",
+            "example": "America/New_York"
+          }
+        },
+        "required": [
+          "createdAt",
+          "createdBy",
+          "gid",
+          "updatedAt",
+          "updatedBy",
+          "name",
+          "timeZone"
+        ],
+        "description": "A resource entity",
+        "example": {
+          "gid": "999.00000000-0000-0000-0000-000000000000",
+          "name": "Jane Doe",
+          "timeZone": "America/New_York",
+          "createdAt": "1900-01-01T00:00:00.000Z",
+          "createdBy": {
+            "email": "em@il.com",
+            "gid": "999.00000000-0000-0000-0000-000000000000",
+            "type": "USER"
+          },
+          "updatedAt": "1900-01-01T00:00:00.000Z",
+          "updatedBy": {
+            "system": "SYSTEM",
+            "type": "SYSTEM"
+          }
+        }
+      },
+      "AuditRecordSystem": {
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "string",
+            "description": "The system that performed the action",
+            "example": "SYSTEM"
+          },
+          "type": {
+            "type": "string",
+            "const": "SYSTEM",
+            "title": "System",
+            "example": "SYSTEM"
+          }
+        },
+        "required": [
+          "system",
+          "type"
+        ],
+        "description": "A system that performed the action"
+      },
+      "AuditRecordUser": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The email of the user who performed the action",
+            "title": "Email",
+            "example": "em@il.com"
+          },
+          "gid": {
+            "type": "string",
+            "example": "999.00000000-0000-0000-0000-000000000000"
+          },
+          "type": {
+            "type": "string",
+            "const": "USER",
+            "title": "User",
+            "example": "USER"
+          }
+        },
+        "required": [
+          "gid",
+          "type"
+        ],
+        "description": "A user who performed the action"
+      }
+    }
   }
 }

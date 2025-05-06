@@ -4,7 +4,9 @@ import { schemaEntity } from '../../models/entity.ts'
 import { exampleGid } from '../../utils/generators/gid.ts'
 import { validation } from '../../utils/validation.ts'
 
-const schemaResource = schemaEntity.extend({
+import 'zod-openapi/extend'
+
+const schemaResourceTemp = schemaEntity.extend({
   gid: validation.string.openapi({
     example: exampleGid(false),
     description: 'The unique identifier for the resource',
@@ -18,7 +20,7 @@ const schemaResource = schemaEntity.extend({
   }),
 })
 
-type Resource = Prettify<z.infer<typeof schemaResource>>
+type Resource = Prettify<z.infer<typeof schemaResourceTemp>>
 
 const exampleResource = (overrides: Partial<Resource> = {}): Resource => ({
   gid: exampleGid(false),
@@ -31,9 +33,10 @@ const exampleResource = (overrides: Partial<Resource> = {}): Resource => ({
   ...overrides,
 })
 
-schemaResource.openapi({
+const schemaResource = z.object(schemaResourceTemp.shape).openapi({
   description: 'A resource entity',
   example: exampleResource(),
+  ref: 'Resource',
 })
 
 export { exampleResource, schemaResource }

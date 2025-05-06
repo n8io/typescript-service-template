@@ -17,11 +17,8 @@ const initV1 = (dependencies: Dependencies) => {
   initMiddleware(dependencies)
 
   app.route(`/api/${version}/resources`, resources)
-
-  // This must be the last to capture all the
-  // applied routes and models
   app.route(`/api/${version}/docs`, docs)
-  app.get(`/api/${version}/openapi`, openapi(app))
+  app.get(`/api/${version}/openapi`, openapi)
 
   return app
 }
