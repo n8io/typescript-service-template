@@ -48,4 +48,9 @@ ${sortableFields
   .join('\n')}
 `
 
-export { introduction, sortable }
+const copy = {
+  introduction,
+  sortable,
+} as const
+
+export { copy }
