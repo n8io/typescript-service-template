@@ -1,0 +1,41 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Database Guide
+
+This project uses PostgreSQL with Drizzle ORM for database management.
+
+## Database Structure
+
+- Database models are defined in @src/spi/repositories/database/schema.ts
+- Database migrations are automatically generated as the Domain models are changed
+- Migrations are managed and applied through Drizzle Kit
+- Database configuration is in [drizzle.config.ts](mdc:drizzle.config.ts)
+
+## Working with Migrations
+
+1. Generate migrations:
+   ```bash
+   npm run db:generate
+   ```
+
+2. Apply migrations:
+   ```bash
+   npm run db:migrate
+   ```
+
+## Database Best Practices
+
+1. Always create migrations for schema changes
+2. Use TypeScript types from Drizzle for type safety
+3. Migration names are automatic whenever generated via `npm run db:migrate`
+4. Test migrations in development before applying to production
+5. Keep migrations idempotent when possible
+
+## Database Connection
+
+The database connection is managed through the SPI layer and configured via environment variables:
+- `DATABASE_URL` - PostgreSQL connection string
+
