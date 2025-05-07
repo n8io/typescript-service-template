@@ -2,11 +2,11 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { generateSpecs } from 'hono-openapi'
-import { logger } from '../utils/logger.ts'
-import { OpenApiTag } from './http/models/openapi.ts'
-import type { makeApp } from './http/v1/app.ts'
-import { version as v1Version } from './http/v1/models.ts'
-import { copy } from './http/v1/openapi/copy.ts'
+import { logger } from '../../utils/logger.ts'
+import { OpenApiTag } from './models/openapi.ts'
+import type { makeApp } from './v1/app.ts'
+import { version as v1Version } from './v1/models.ts'
+import { copy } from './v1/openapi/copy.ts'
 
 const tagMap: Record<OpenApiTag, string> = {
   [OpenApiTag.RESOURCES]: 'Manage resources',

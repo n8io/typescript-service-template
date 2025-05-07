@@ -1,0 +1,59 @@
+---
+description: Use when adding api routes
+globs: 
+alwaysApply: false
+---
+# API Development Rules
+
+## Project Structure
+- API routes should be organized in the `src/api/http/<version>/routes` directory
+- Each route file should export a router instance using `makeApp()`
+- Middleware should be placed in `src/api/http/middleware` or `src/api/http/common` accordingly
+- Types and interfaces should be defined in `src/models`, `src/api/http/models`, or `src/api/http/<version>/models.ts` accordingly
+
+## Route Organization
+- Group related routes using Hono's router grouping
+- Use descriptive route names that follow REST conventions
+- Keep route handlers focused and single-responsibility
+- Use middleware for cross-cutting concerns (auth, logging, etc.)
+
+## Type Safety
+- Always use TypeScript types for request/response bodies
+
+## Error Handling
+- Use Hono's error handling middleware
+- Create custom error classes for different error types
+- Return consistent error response formats
+- Include appropriate HTTP status codes
+
+## Middleware
+- Chain middleware in a logical order
+- Keep middleware focused and reusable
+- Use Hono's built-in middleware when possible
+- Document custom middleware with clear purposes
+
+## Testing
+- Write unit tests for route handlers
+- Test middleware in isolation
+- Use Hono's test utilities for route testing
+- Mock external dependencies appropriately
+
+## Code Style
+- Use async/await for asynchronous operations
+- Keep route handlers clean and focused
+- Use meaningful variable and function names
+- Add JSDoc comments for complex logic
+
+## Common Patterns
+- Use route parameters for resource identifiers
+- Implement pagination for list endpoints
+- Use query parameters for filtering and sorting
+- Return consistent response formats
+- Implement proper HTTP caching headers
+
+## Best Practices
+- Keep routes RESTful
+- Use appropriate HTTP methods
+- Use middleware for cross-cutting concerns
+- Add API documentation via the `appendOpenApiMetadata` utility
+- Implement proper testing
