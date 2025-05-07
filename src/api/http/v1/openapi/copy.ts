@@ -37,7 +37,12 @@ For example, to sort by \`createdAt\` descending and \`name\` ascending: \`sort=
 > To sort a field in descending order, prefix it with a \`-\`
 `
 
-const sortable = (sortableFields: string[]) => `
+const sortable = (sortableFields: string[]) => {
+  if (!sortableFields?.length) {
+    return ''
+  }
+
+  return `
 #### Sorting
 
 You can refine your results via the \`sort\` query parameter. The value of this parameter is a comma-separated list of fields to sort by:
@@ -47,10 +52,8 @@ ${sortableFields
   .map((field) => `- \`${field}\``)
   .join('\n')}
 `
+}
 
-const copy = {
-  introduction,
-  sortable,
-} as const
+const copy = { introduction, sortable } as const
 
 export { copy }
