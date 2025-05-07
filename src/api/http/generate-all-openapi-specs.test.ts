@@ -1,7 +1,7 @@
 import * as Fs from 'node:fs'
 import { Hono } from 'hono'
 import { generateAllSpecs } from './generate-all-openapi-specs.ts'
-import type { Env } from './http/v1/models.ts'
+import type { Env } from './v1/models.ts'
 
 vi.mock('node:fs', () => ({
   existsSync: vi.fn().mockReturnValue(true),

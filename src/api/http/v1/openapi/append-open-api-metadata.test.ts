@@ -45,8 +45,6 @@ describe('appendOpenApiMetadata', () => {
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
 
-    console.dir(result, { depth: 10 })
-
     expect(result.summary).toBe('Create One')
     expect(result.requestBody?.required).toBe(true)
     expect(result.parameters).toEqual(expect.arrayContaining([...OPEN_API_DEFAULT_HEADERS]))

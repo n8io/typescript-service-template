@@ -1,7 +1,7 @@
 import type { Domain } from '../../domain/init.ts'
 import type { AppStateManager } from '../../utils/app-state-manager.ts'
-import { generateAllSpecs } from '../generate-all-openapi-specs.ts'
 import { initCommon } from './common/init.ts'
+import { generateAllSpecs } from './generate-all-openapi-specs.ts'
 import { makeApp } from './v1/app.ts'
 import { initV1 } from './v1/init.ts'
 
