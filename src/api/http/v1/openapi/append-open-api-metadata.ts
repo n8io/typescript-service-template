@@ -19,12 +19,12 @@ type RouteType = (typeof RouteType)[keyof typeof RouteType]
 type AnyZodObject = ZodObject<any>
 
 const routeTypeToSummary: Record<RouteType, string> = {
-  [RouteType.CREATE_ONE]: 'Create One',
-  [RouteType.DELETE_ONE]: 'Delete One',
-  [RouteType.GET_MANY]: 'Get Many',
-  [RouteType.GET_ONE]: 'Get One',
-  [RouteType.UPDATE_ONE]: 'Update One',
-} as const
+  createOne: 'Create One',
+  deleteOne: 'Delete One',
+  getMany: 'Get Many',
+  getOne: 'Get One',
+  updateOne: 'Update One',
+}
 
 type BaseRoute = {
   description?: string
@@ -33,108 +33,116 @@ type BaseRoute = {
   tags: string[]
 }
 
-type CreateOneRoute = Prettify<
-  BaseRoute & {
-    operationId: `${string}${'CreateOne'}`
-    requestSchema: AnyZodObject
-    type: Extract<RouteType, 'createOne'>
-  }
->
+type CreateOneRoute = BaseRoute & {
+  operationId: `${string}${'CreateOne'}`
+  requestSchema: AnyZodObject
+  type: 'createOne'
+}
 
-type DeleteOneRoute = Prettify<
-  BaseRoute & {
-    operationId: `${string}${'DeleteOne'}`
-    type: Extract<RouteType, 'deleteOne'>
-  }
->
+type DeleteOneRoute = BaseRoute & {
+  operationId: `${string}${'DeleteOne'}`
+  type: 'deleteOne'
+}
 
-type GetManyRoute = Prettify<
-  BaseRoute & {
-    defaultSortField: string
-    filterableFields: string[]
-    operationId: `${string}${'GetMany'}`
-    parameters?: unknown[]
-    requestSchema: AnyZodObject
-    sortableFields: string[]
-    type: Extract<RouteType, 'getMany'>
-  }
->
+type GetManyRoute = BaseRoute & {
+  defaultSortField: string
+  filterableFields: string[]
+  operationId: `${string}${'GetMany'}`
+  requestSchema: AnyZodObject
+  sortableFields: string[]
+  type: 'getMany'
+}
 
-type GetOneRoute = Prettify<
-  BaseRoute & {
-    operationId: `${string}${'GetOne'}`
-    type: Extract<RouteType, 'getOne'>
-  }
->
+type GetOneRoute = BaseRoute & {
+  operationId: `${string}${'GetOne'}`
+  type: 'getOne'
+}
 
-type UpdateOneRoute = Prettify<
-  BaseRoute & {
-    operationId: `${string}${'UpdateOne'}`
-    requestSchema: AnyZodObject
-    type: Extract<RouteType, 'updateOne'>
-  }
->
+type UpdateOneRoute = BaseRoute & {
+  operationId: `${string}${'UpdateOne'}`
+  requestSchema: AnyZodObject
+  type: 'updateOne'
+}
 
 type RouteConfig = CreateOneRoute | DeleteOneRoute | GetManyRoute | GetOneRoute | UpdateOneRoute
 
-const appendOpenApiMetadata = ({ description, operationId, schemaResponse, tags, type, ...rest }: RouteConfig) => {
+const appendOpenApiMetadata = (config: RouteConfig) => {
+  const { description, operationId, schemaResponse, tags, type } = config
+
   let actualDescription: DescribeRouteOptions['description'] = description
   let actualParameters: DescribeRouteOptions['parameters'] = undefined
   let requestBody: DescribeRouteOptions['requestBody'] = undefined
 
-  if (type === RouteType.CREATE_ONE) {
-    const { requestSchema: schemaRequest } = rest as CreateOneRoute
+  switch (type) {
+    case 'createOne': {
+      const { requestSchema } = config
 
-    actualParameters = [...OPEN_API_DEFAULT_HEADERS]
+      actualParameters = [...OPEN_API_DEFAULT_HEADERS]
 
-    requestBody = {
-      required: true,
-      content: {
-        'application/json': resolver(schemaRequest).builder(),
-      },
-    }
-  } else if (type === RouteType.DELETE_ONE || type === RouteType.GET_ONE) {
-    actualParameters = [
-      ...OPEN_API_DEFAULT_HEADERS,
-      {
-        name: 'gid',
-        in: 'path',
-        description: 'The globally unique identifier',
+      requestBody = {
         required: true,
-        ...resolver(validation.gid).builder(),
-      },
-    ]
-  } else if (type === RouteType.GET_MANY) {
-    const { defaultSortField, filterableFields, requestSchema: schemaRequest, sortableFields } = rest as GetManyRoute
+        content: {
+          'application/json': resolver(requestSchema).builder(),
+        },
+      }
 
-    actualDescription = copy.sortable(sortableFields)
-
-    actualParameters = [
-      ...OPEN_API_DEFAULT_HEADERS,
-      ...filterableFields.toSorted().map((field) => ({
-        in: 'query',
-        name: field,
-        ...resolver(schemaRequest.shape[field]).builder(),
-      })),
-      ...OPEN_API_DEFAULT_PAGINATION_PARAMS,
-      {
-        description: 'Which field(s) and directions to [sort](#description/sorting) the results by',
-        example: defaultSortField,
-        in: 'query',
-        name: 'sort',
-        ...resolver(validation.string).builder(),
-      },
-    ]
-  } else if (type === RouteType.UPDATE_ONE) {
-    const { requestSchema: schemaRequest } = rest as UpdateOneRoute
-
-    actualParameters = [...OPEN_API_DEFAULT_HEADERS]
-
-    requestBody = {
-      content: {
-        'application/json': resolver(schemaRequest).builder(),
-      },
+      break
     }
+    case 'deleteOne':
+    case 'getOne': {
+      actualParameters = [
+        ...OPEN_API_DEFAULT_HEADERS,
+        {
+          name: 'gid',
+          in: 'path',
+          description: 'The globally unique identifier',
+          required: true,
+          ...resolver(validation.gid).builder(),
+        },
+      ]
+
+      break
+    }
+    case 'getMany': {
+      const { defaultSortField, filterableFields, requestSchema, sortableFields } = config
+
+      actualDescription = copy.sortable(sortableFields)
+
+      actualParameters = [
+        ...OPEN_API_DEFAULT_HEADERS,
+        ...filterableFields.toSorted().map((field) => ({
+          in: 'query',
+          name: field,
+          ...resolver(requestSchema.shape[field]).builder(),
+        })),
+        ...OPEN_API_DEFAULT_PAGINATION_PARAMS,
+        {
+          description: 'Which field(s) and directions to [sort](#description/sorting) the results by',
+          example: defaultSortField,
+          in: 'query',
+          name: 'sort',
+          ...resolver(validation.string).builder(),
+        },
+      ]
+
+      break
+    }
+    case 'updateOne': {
+      const { requestSchema } = config
+
+      actualParameters = [...OPEN_API_DEFAULT_HEADERS]
+
+      requestBody = {
+        content: {
+          'application/json': resolver(requestSchema).builder(),
+        },
+      }
+
+      break
+    }
+
+    default:
+      throw new Error(`Unhandled route type: ${type}`)
   }
 
   return describeRoute({
