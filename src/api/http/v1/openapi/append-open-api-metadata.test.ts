@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { OPEN_API_DEFAULT_HEADERS } from '../../models/openapi.ts'
+import { OPEN_API_DEFAULT_HEADERS, OPEN_API_DEFAULT_PAGINATION_PARAMS } from '../../models/openapi.ts'
 import { RouteType, appendOpenApiMetadata } from './append-open-api-metadata.ts'
 
 // Mocks
@@ -54,7 +54,6 @@ describe('appendOpenApiMetadata', () => {
     const result = appendOpenApiMetadata({
       type: RouteType.DELETE_ONE,
       operationId: 'EntityDeleteOne',
-      schemaResponse: baseResponseSchema,
       tags: baseTags,
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
@@ -134,5 +133,94 @@ describe('appendOpenApiMetadata', () => {
     expect(result.summary).toBe('Update One')
     expect(result.requestBody).toBeDefined()
     expect(result.parameters).toEqual(expect.arrayContaining([...OPEN_API_DEFAULT_HEADERS]))
+  })
+
+  it('should handle route with custom description', () => {
+    const customDescription = 'Custom route description'
+    const result = appendOpenApiMetadata({
+      type: RouteType.GET_ONE,
+      operationId: 'EntityGetOne',
+      description: customDescription,
+      schemaResponse: baseResponseSchema,
+      tags: baseTags,
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    }) as any
+
+    expect(result.description).toBe(customDescription)
+  })
+
+  it('should handle route without response schema', () => {
+    const result = appendOpenApiMetadata({
+      type: RouteType.DELETE_ONE,
+      operationId: 'EntityDeleteOne',
+      tags: baseTags,
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    }) as any
+
+    expect(result.responses).toEqual({
+      204: {
+        description: 'No content',
+      },
+    })
+  })
+
+  it('should handle route with response schema', () => {
+    const result = appendOpenApiMetadata({
+      type: RouteType.GET_ONE,
+      operationId: 'EntityGetOne',
+      schemaResponse: baseResponseSchema,
+      tags: baseTags,
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    }) as any
+
+    expect(result.responses).toEqual({
+      200: {
+        description: 'Success',
+        content: {
+          'application/json': {
+            schema: {
+              builder: expect.any(Function),
+              validator: expect.any(Function),
+            },
+          },
+        },
+      },
+    })
+  })
+
+  it('should throw error for unknown route type', () => {
+    expect(() =>
+      appendOpenApiMetadata({
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        type: 'unknown' as any,
+        operationId: 'EntityGetOne',
+        schemaResponse: baseResponseSchema,
+        tags: baseTags,
+      }),
+    ).toThrow('Unhandled route type: unknown')
+  })
+
+  it('should handle GET_MANY route with empty filterable and sortable fields', () => {
+    const requestSchema = z.object({})
+
+    const result = appendOpenApiMetadata({
+      type: RouteType.GET_MANY,
+      operationId: 'EntityGetMany',
+      defaultSortField: 'name',
+      filterableFields: [],
+      sortableFields: [],
+      requestSchema,
+      schemaResponse: baseResponseSchema,
+      tags: baseTags,
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    }) as any
+
+    expect(result.parameters).toEqual(
+      expect.arrayContaining([
+        ...OPEN_API_DEFAULT_HEADERS,
+        ...OPEN_API_DEFAULT_PAGINATION_PARAMS,
+        expect.objectContaining({ name: 'sort' }),
+      ]),
+    )
   })
 })

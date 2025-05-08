@@ -26,16 +26,38 @@ const routeTypeToSummary: Record<RouteType, string> = {
   updateOne: 'Update One',
 }
 
+const toResponse = (schemaResponse: AnyZodObject | undefined) => {
+  if (!schemaResponse) {
+    return {
+      204: {
+        description: 'No content',
+      },
+    }
+  }
+
+  return {
+    200: {
+      description: 'Success',
+      content: {
+        'application/json': {
+          schema: resolver(schemaResponse),
+        },
+      },
+    },
+  }
+}
+
 type BaseRoute = {
   description?: string
   parameters?: unknown[]
-  schemaResponse: AnyZodObject
+  schemaResponse?: AnyZodObject
   tags: string[]
 }
 
 type CreateOneRoute = BaseRoute & {
   operationId: `${string}${'CreateOne'}`
   requestSchema: AnyZodObject
+  schemaResponse: AnyZodObject
   type: 'createOne'
 }
 
@@ -49,18 +71,21 @@ type GetManyRoute = BaseRoute & {
   filterableFields: string[]
   operationId: `${string}${'GetMany'}`
   requestSchema: AnyZodObject
+  schemaResponse: AnyZodObject
   sortableFields: string[]
   type: 'getMany'
 }
 
 type GetOneRoute = BaseRoute & {
   operationId: `${string}${'GetOne'}`
+  schemaResponse: AnyZodObject
   type: 'getOne'
 }
 
 type UpdateOneRoute = BaseRoute & {
   operationId: `${string}${'UpdateOne'}`
   requestSchema: AnyZodObject
+  schemaResponse: AnyZodObject
   type: 'updateOne'
 }
 
@@ -72,6 +97,7 @@ const appendOpenApiMetadata = (config: RouteConfig) => {
   let actualDescription: DescribeRouteOptions['description'] = description
   let actualParameters: DescribeRouteOptions['parameters'] = undefined
   let requestBody: DescribeRouteOptions['requestBody'] = undefined
+  let actualResponses: DescribeRouteOptions['responses'] = toResponse(schemaResponse)
 
   switch (type) {
     case 'createOne': {
@@ -88,7 +114,22 @@ const appendOpenApiMetadata = (config: RouteConfig) => {
 
       break
     }
-    case 'deleteOne':
+    case 'deleteOne': {
+      actualParameters = [
+        ...OPEN_API_DEFAULT_HEADERS,
+        {
+          name: 'gid',
+          in: 'path',
+          description: 'The globally unique identifier',
+          required: true,
+          ...resolver(validation.gid).builder(),
+        },
+      ]
+
+      actualResponses = toResponse(schemaResponse)
+
+      break
+    }
     case 'getOne': {
       actualParameters = [
         ...OPEN_API_DEFAULT_HEADERS,
@@ -151,16 +192,7 @@ const appendOpenApiMetadata = (config: RouteConfig) => {
     operationId,
     parameters: actualParameters,
     requestBody,
-    responses: {
-      200: {
-        description: 'Success',
-        content: {
-          'application/json': {
-            schema: resolver(schemaResponse),
-          },
-        },
-      },
-    },
+    responses: actualResponses,
     tags,
   })
 }
