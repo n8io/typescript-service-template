@@ -272,9 +272,10 @@ This guide outlines the conventions for writing unit tests in this project.
    - All edge cases
 
 3. Use coverage reports to identify gaps
+   - Use `CI=true` to ensure tests are not ran interactively
    ```bash
    # Run tests with coverage
-   npm test -- --coverage
+   CI=true npm test -- --coverage
    ```
 
 4. Common coverage issues to watch for:
@@ -282,3 +283,23 @@ This guide outlines the conventions for writing unit tests in this project.
    - Untested conditional branches
    - Uncovered utility functions
    - Edge cases in data validation
+
+## Running Focused Tests
+
+1. When running tests for a specific file, focus coverage on that file only
+   ```bash
+   # Run tests for a specific file with focused coverage
+   CI=true npm test src/models/result.test.ts -- --coverage.enabled=true --coverage.include="src/models/result.ts"
+   ```
+
+2. Benefits of focused coverage:
+   - Clearer coverage reports for the file being tested
+   - No noise from unrelated files
+   - Easier to identify gaps in test coverage
+   - Faster test execution
+
+3. When running focused tests:
+   - Ignore overall project coverage thresholds
+   - Focus on achieving 100% coverage for the specific file
+   - Use the `--coverage.include` flag to specify the target file
+   - Use `CI=true` to ensure tests are not ran interactively
