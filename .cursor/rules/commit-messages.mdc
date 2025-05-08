@@ -1,5 +1,5 @@
 ---
-description: For generating git commit messages
+description: Use these rules when generating git commit messages for the project. It provides guidance on the required commit message format, including ticket numbers and emojis, and explains the validation process through pre-commit hooks. The rule is essential for maintaining consistent commit message standards, ensuring proper ticket references, and using the correct emoji indicators for different types of changes.
 globs: 
 alwaysApply: false
 ---

@@ -1,5 +1,5 @@
 ---
-description: 
+description: Use these rules when asked to run a command or set up the project
 globs: 
 alwaysApply: false
 ---
@@ -31,6 +31,7 @@ The primary development workflow uses Docker:
 While Docker is the recommended approach, these scripts are available for reference:
 - `npm run dev` - Start the development server with hot reload (not recommended)
 - `npm run test` - Run tests with coverage
+    - Please note, that when running tests via Chat we need to run in a subshell with (CI=true npm test) so it doesn't hang indefinitely
 - `npm run lint` - Run all linting checks
 - `npm run format` - Format code using Biome
 - `npm run db:generate` - Generate database migrations

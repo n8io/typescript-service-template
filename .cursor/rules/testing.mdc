@@ -1,5 +1,5 @@
 ---
-description: When generating tests
+description: Use these rules when writing or modifying unit tests, reviewing test code for adherence to project conventions, setting up test infrastructure or mocking, implementing test assertions or error handling, structuring test files or organizing test suites, working with Vitest-specific features or configurations, and ensuring proper test coverage and type safety in tests. The rule provides comprehensive guidance on test organization, mocking patterns, assertions, error testing, and best practices specific to this project's testing standards.
 globs: 
 alwaysApply: false
 ---

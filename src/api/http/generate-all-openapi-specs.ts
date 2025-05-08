@@ -25,7 +25,7 @@ const areSpecsEqual = (filePath: string, spec: string) => {
 
 const makeGenerateOpenApiSpec = (app: ReturnType<typeof makeApp>) => async (version: string) => {
   const __filename = fileURLToPath(import.meta.url)
-  const openApiSpecDirectory = resolve(dirname(__filename), '../../specs', version)
+  const openApiSpecDirectory = resolve(dirname(__filename), '../../../specs', version)
 
   if (!existsSync(openApiSpecDirectory)) {
     mkdirSync(openApiSpecDirectory, { recursive: true })

@@ -1,5 +1,5 @@
 ---
-description: 
+description: Use these rules when working with database operations, migrations, or schema changes in the project. It provides guidance on PostgreSQL and Drizzle ORM usage, including database structure, migration management, best practices, and connection configuration. The rule is essential for understanding how to properly handle database models, generate and apply migrations, maintain type safety, and configure database connections through environment variables.
 globs: 
 alwaysApply: false
 ---
@@ -9,8 +9,8 @@ This project uses PostgreSQL with Drizzle ORM for database management.
 
 ## Database Structure
 
-- Database models are defined in @src/spi/repositories/database/schema.ts
-- Database migrations are automatically generated as the Domain models are changed
+- Database models are defined in [schema.ts](mdc:src/spi/repositories/database/schema.ts)
+- Database migrations are automatically generated as the @src/domain/models change
 - Migrations are managed and applied through Drizzle Kit
 - Database configuration is in [drizzle.config.ts](mdc:drizzle.config.ts)
 

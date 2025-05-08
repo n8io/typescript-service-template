@@ -1,0 +1,67 @@
+---
+description: Use these rules when writing or reviewing code to ensure consistency and quality
+globs: 
+alwaysApply: false
+---
+# Clean Code Guidelines
+
+## Constants Over Magic Strings and Numbers
+
+- Replace hard-coded values with named constant variables
+- Use descriptive constant names that explain the value's purpose
+- Keep constants at the top of the file
+
+## Meaningful Names
+
+- Variables, functions, and classes should reveal their purpose
+- Names should explain why something exists and how it's used
+- Avoid abbreviations unless they're universally understood
+
+## Smart Comments
+
+- Don't comment on what the code does - make the code self-documenting
+- Use comments to explain why something is done a certain way
+- Document APIs, complex algorithms, and non-obvious side effects
+
+## Single Responsibility
+
+- Each function should do exactly one thing
+- Functions should be small and focused
+- If a function needs a comment to explain what it does, it probably should be split up
+
+## DRY (Don't Repeat Yourself)
+
+- Extract repeated code into reusable functions
+- Share common logic through proper abstraction
+- Extract common utilities to their common ancestor
+- Maintain single sources of truth
+
+## Clean Structure
+
+- Keep related code together, reference [project-structure.mdc](mdc:.cursor/rules/project-structure.mdc)
+- Organize code in a logical hierarchy, reference [project-structure.mdc](mdc:.cursor/rules/project-structure.mdc)
+- Use consistent file and folder naming conventions defined by [biome.jsonc](mdc:biome.jsonc)
+
+## Encapsulation
+
+- Hide implementation details
+- Expose clear interfaces
+- Move nested conditionals into well-named functions
+
+## Code Quality Maintenance
+
+- Refactor continuously, reference [code-quality.mdc](mdc:.cursor/rules/code-quality.mdc)
+- Fix technical debt early, reference [code-quality.mdc](mdc:.cursor/rules/code-quality.mdc)
+- Leave code cleaner than you found it, reference [code-quality.mdc](mdc:.cursor/rules/code-quality.mdc)
+
+## Testing
+
+- Write tests before fixing bugs, reference [testing.mdc](mdc:.cursor/rules/testing.mdc)
+- Keep tests readable and maintainable, reference [testing.mdc](mdc:.cursor/rules/testing.mdc)
+- Test edge cases and error conditions, reference [testing.mdc](mdc:.cursor/rules/testing.mdc)
+
+## Version Control
+
+- Write clear commit messages, reference [commit-messages.mdc](mdc:.cursor/rules/commit-messages.mdc)
+- Make small, focused commits, reference [commit-messages.mdc](mdc:.cursor/rules/commit-messages.mdc)
+- Use meaningful branch names, reference [branch-naming.mdc](mdc:.cursor/rules/branch-naming.mdc)
