@@ -24,13 +24,26 @@ alwaysApply: false
 
 - If possible, keep type definitions at the top of the file
 - Export types and implementations separately
-- Exports must only be at the bottom of the file
+- All exports must be located at the bottom of the file
+    - One export for type only exports. For example `export type { MyType }`
+    - One export for implementation exports. For example `export { myFunction }`
+    - For things that are both a type and a value type, combine the exports
+        - ❌ Don't do this
+        ```ts
+        export type { Foo }
+        export { Foo }
+        ```
+        - ✅ Do this instead
+        ```ts
+        export { Foo }
+        ```
 - Import types using the `import type` or `import { type foo }` syntaxes
 - Do not use barrel files, avoid them at all costs per [biome.jsonc](mdc:biome.jsonc)
 - All object properties should be alphabetized
 - All destructured properties should be alphabetized
 - All class public props/methods should be alphabetized
 - All class private props/methods should be alphabetized
+- Add empty lines around multiline statements for better readability
 
 ## Functions
 - Use explicit return types for public functions
@@ -49,3 +62,42 @@ alwaysApply: false
 - Implement proper error boundaries
 - Use try-catch blocks with typed catch clauses
 - Handle Promise rejections properly
+
+## Code Formatting
+- Add empty lines before and after multiline statements for better readability
+  ```typescript
+  // ❌ Don't do this
+  if (result.isOk()) {
+    const value = result.value
+    return processValue(value)
+  }
+
+  // ✅ Do this instead
+  if (result.isOk()) {
+    const value = result.value
+
+    return processValue(value)
+  }
+
+  // ❌ Don't do this - avoid promise chaining
+  const result = Promise.all([
+    fetchUserData(userId),
+    fetchUserPreferences(userId)
+  ]).then(([userData, preferences]) => {
+    return combineUserData(userData, preferences)
+  }).catch(error => {
+    return handleError(error)
+  })
+
+  // ✅ Do this instead - use async/await
+  try {
+    const [userData, preferences] = await Promise.all([
+      fetchUserData(userId),
+      fetchUserPreferences(userId)
+    ])
+
+    return combineUserData(userData, preferences)
+  } catch (error) {
+    return handleError(error)
+  }
+  ```
