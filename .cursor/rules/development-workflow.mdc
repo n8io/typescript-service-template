@@ -1,5 +1,5 @@
 ---
-description: Use these rules when asked to run a command or set up the project
+description: Use these rules when asked to run a command or set up the project. Specifically running commands like the following: lint, format, db migration generation, db migrate, and running tests.
 globs: 
 alwaysApply: false
 ---
