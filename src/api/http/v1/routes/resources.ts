@@ -14,7 +14,7 @@ resources.post(
   appendOpenApiMetadata({
     operationId: 'resourcesCreateOne',
     requestSchema: ResourceService.schemas.request.createOne,
-    schemaResponse: ResourceService.schemas.response.getOne,
+    responseSchema: ResourceService.schemas.response.getOne,
     tags: [OpenApiTag.RESOURCES],
     type: RouteType.CREATE_ONE,
   }),
@@ -34,7 +34,7 @@ resources.get(
     filterableFields: ResourceService.filterableFields,
     operationId: 'resourcesGetMany',
     requestSchema: ResourceService.schemas.request.getMany,
-    schemaResponse: ResourceService.schemas.response.getMany,
+    responseSchema: ResourceService.schemas.response.getMany,
     sortableFields: ResourceService.sortableFields,
     tags: [OpenApiTag.RESOURCES],
     type: RouteType.GET_MANY,
@@ -59,7 +59,7 @@ resources.get(
   '/:gid',
   appendOpenApiMetadata({
     operationId: 'resourcesGetOne',
-    schemaResponse: ResourceService.schemas.response.getOne,
+    responseSchema: ResourceService.schemas.response.getOne,
     tags: [OpenApiTag.RESOURCES],
     type: RouteType.GET_ONE,
   }),
@@ -77,7 +77,7 @@ resources.patch(
   appendOpenApiMetadata({
     operationId: 'resourcesUpdateOne',
     requestSchema: ResourceService.schemas.request.updateOne,
-    schemaResponse: ResourceService.schemas.response.getOne,
+    responseSchema: ResourceService.schemas.response.getOne,
     tags: [OpenApiTag.RESOURCES],
     type: RouteType.UPDATE_ONE,
   }),

@@ -1,5 +1,6 @@
 import type { z } from 'zod'
 import { DomainNotFoundError } from '../../models/custom-error.ts'
+import { pick } from '../../utils/fp.ts'
 import { gid } from '../../utils/generators/gid.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
 import { schemaDomainGetManyRequest } from '../models/request.ts'
@@ -16,11 +17,15 @@ class ResourceService {
   static schemas = {
     core: schemaResource,
     request: {
-      createOne: schemaResource.pick({
-        createdBy: true,
-        name: true,
-        timeZone: true,
-      }),
+      createOne: schemaResource
+        .pick({
+          createdBy: true,
+          name: true,
+          timeZone: true,
+        })
+        .openapi({
+          example: pick(exampleResource(), ['createdBy', 'name', 'timeZone']),
+        }),
       getMany: schemaResource,
       updateOne: schemaResource
         .pick({
@@ -28,9 +33,12 @@ class ResourceService {
           timeZone: true,
           updatedBy: true,
         })
-        .extend({
-          name: schemaResource.shape.name.optional(),
-          timeZone: schemaResource.shape.timeZone.optional(),
+        .partial({
+          name: true,
+          timeZone: true,
+        })
+        .openapi({
+          example: pick(exampleResource(), ['name', 'timeZone', 'updatedBy']),
         }),
     },
     response: {

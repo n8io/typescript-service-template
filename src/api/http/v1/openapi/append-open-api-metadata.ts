@@ -50,14 +50,14 @@ const toResponse = (schemaResponse: AnyZodObject | undefined) => {
 type BaseRoute = {
   description?: string
   parameters?: unknown[]
-  schemaResponse?: AnyZodObject
+  responseSchema?: AnyZodObject
   tags: string[]
 }
 
 type CreateOneRoute = BaseRoute & {
   operationId: `${string}${'CreateOne'}`
   requestSchema: AnyZodObject
-  schemaResponse: AnyZodObject
+  responseSchema: AnyZodObject
   type: 'createOne'
 }
 
@@ -71,33 +71,33 @@ type GetManyRoute = BaseRoute & {
   filterableFields: string[]
   operationId: `${string}${'GetMany'}`
   requestSchema: AnyZodObject
-  schemaResponse: AnyZodObject
+  responseSchema: AnyZodObject
   sortableFields: string[]
   type: 'getMany'
 }
 
 type GetOneRoute = BaseRoute & {
   operationId: `${string}${'GetOne'}`
-  schemaResponse: AnyZodObject
+  responseSchema: AnyZodObject
   type: 'getOne'
 }
 
 type UpdateOneRoute = BaseRoute & {
   operationId: `${string}${'UpdateOne'}`
   requestSchema: AnyZodObject
-  schemaResponse: AnyZodObject
+  responseSchema: AnyZodObject
   type: 'updateOne'
 }
 
 type RouteConfig = CreateOneRoute | DeleteOneRoute | GetManyRoute | GetOneRoute | UpdateOneRoute
 
 const appendOpenApiMetadata = (config: RouteConfig) => {
-  const { description, operationId, schemaResponse, tags, type } = config
+  const { description, operationId, responseSchema, tags, type } = config
 
   let actualDescription: DescribeRouteOptions['description'] = description
   let actualParameters: DescribeRouteOptions['parameters'] = undefined
   let requestBody: DescribeRouteOptions['requestBody'] = undefined
-  let actualResponses: DescribeRouteOptions['responses'] = toResponse(schemaResponse)
+  let actualResponses: DescribeRouteOptions['responses'] = toResponse(responseSchema)
 
   switch (type) {
     case 'createOne': {
@@ -108,7 +108,10 @@ const appendOpenApiMetadata = (config: RouteConfig) => {
       requestBody = {
         required: true,
         content: {
-          'application/json': resolver(requestSchema).builder(),
+          'application/json': {
+            // @ts-expect-error Fix this type error
+            schema: resolver(requestSchema).builder().schema,
+          },
         },
       }
 
@@ -126,7 +129,7 @@ const appendOpenApiMetadata = (config: RouteConfig) => {
         },
       ]
 
-      actualResponses = toResponse(schemaResponse)
+      actualResponses = toResponse(undefined)
 
       break
     }
@@ -175,7 +178,10 @@ const appendOpenApiMetadata = (config: RouteConfig) => {
 
       requestBody = {
         content: {
-          'application/json': resolver(requestSchema).builder(),
+          'application/json': {
+            // @ts-expect-error Fix this type error
+            schema: resolver(requestSchema).builder().schema,
+          },
         },
       }
 

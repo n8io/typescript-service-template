@@ -40,7 +40,7 @@ describe('appendOpenApiMetadata', () => {
       type: RouteType.CREATE_ONE,
       operationId: 'EntityCreateOne',
       requestSchema,
-      schemaResponse: baseResponseSchema,
+      responseSchema: baseResponseSchema,
       tags: baseTags,
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
@@ -76,7 +76,7 @@ describe('appendOpenApiMetadata', () => {
     const result = appendOpenApiMetadata({
       type: RouteType.GET_ONE,
       operationId: 'EntityGetOne',
-      schemaResponse: baseResponseSchema,
+      responseSchema: baseResponseSchema,
       tags: baseTags,
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
@@ -101,7 +101,7 @@ describe('appendOpenApiMetadata', () => {
       filterableFields: ['name', 'age'],
       sortableFields: ['name', 'age'],
       requestSchema,
-      schemaResponse: baseResponseSchema,
+      responseSchema: baseResponseSchema,
       tags: baseTags,
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
@@ -125,7 +125,7 @@ describe('appendOpenApiMetadata', () => {
       type: RouteType.UPDATE_ONE,
       operationId: 'EntityUpdateOne',
       requestSchema,
-      schemaResponse: baseResponseSchema,
+      responseSchema: baseResponseSchema,
       tags: baseTags,
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
@@ -141,7 +141,7 @@ describe('appendOpenApiMetadata', () => {
       type: RouteType.GET_ONE,
       operationId: 'EntityGetOne',
       description: customDescription,
-      schemaResponse: baseResponseSchema,
+      responseSchema: baseResponseSchema,
       tags: baseTags,
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
@@ -168,7 +168,7 @@ describe('appendOpenApiMetadata', () => {
     const result = appendOpenApiMetadata({
       type: RouteType.GET_ONE,
       operationId: 'EntityGetOne',
-      schemaResponse: baseResponseSchema,
+      responseSchema: baseResponseSchema,
       tags: baseTags,
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
@@ -194,7 +194,7 @@ describe('appendOpenApiMetadata', () => {
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         type: 'unknown' as any,
         operationId: 'EntityGetOne',
-        schemaResponse: baseResponseSchema,
+        responseSchema: baseResponseSchema,
         tags: baseTags,
       }),
     ).toThrow('Unhandled route type: unknown')
@@ -210,7 +210,7 @@ describe('appendOpenApiMetadata', () => {
       filterableFields: [],
       sortableFields: [],
       requestSchema,
-      schemaResponse: baseResponseSchema,
+      responseSchema: baseResponseSchema,
       tags: baseTags,
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }) as any
