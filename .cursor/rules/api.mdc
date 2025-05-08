@@ -1,5 +1,5 @@
 ---
-description: Use when adding api routes
+description: Use these rules when adding or modifying api routes in the project. It provides guidance on project structure, route organization, type safety, error handling, middleware usage, testing requirements, code style, common patterns, and best practices for API development. The rule is essential for maintaining consistent API standards, ensuring proper route organization, implementing type-safe endpoints, handling errors appropriately, and following RESTful conventions.
 globs: 
 alwaysApply: false
 ---
@@ -33,12 +33,17 @@ alwaysApply: false
 - Document custom middleware with clear purposes
 
 ## Testing
+
+Reference [testing.mdc](mdc:.cursor/rules/testing.mdc)
+
 - Write unit tests for route handlers
 - Test middleware in isolation
 - Use Hono's test utilities for route testing
 - Mock external dependencies appropriately
 
 ## Code Style
+
+Reference [code-quality.mdc](mdc:.cursor/rules/code-quality.mdc)
 - Use async/await for asynchronous operations
 - Keep route handlers clean and focused
 - Use meaningful variable and function names

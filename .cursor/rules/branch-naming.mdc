@@ -1,11 +1,15 @@
 ---
-description: 
+description: Use these rules when creating or working with git branches in the project. It provides guidance on the required branch naming conventions, including branch types, ticket numbers, and optional descriptive subjects. The rule is essential for maintaining consistent branch naming standards, ensuring proper ticket references, and following the project's branching strategy for different types of changes.
 globs: 
 alwaysApply: false
 ---
 # Branch Naming Convention
 
 This project enforces a strict branch naming convention to maintain consistency and clarity in the codebase.
+
+## Usage
+
+Inspect the changed files using `git status` and `git diff`
 
 ## Format
 

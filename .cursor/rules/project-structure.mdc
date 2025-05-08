@@ -1,5 +1,5 @@
 ---
-description: When a new file is generated
+description: Use these rules when determining where to make changes, implement features, modify api endpoints, create or modify utilities, or add a new external service
 globs: 
 alwaysApply: false
 ---
@@ -8,7 +8,7 @@ alwaysApply: false
 This is a TypeScript service template that follows a clean architecture pattern. The main components are:
 
 - [src/index.ts](mdc:src/index.ts) - The main entry point that initializes the application
-- [src/api/](mdc:src/api) - Contains API routes and controllers
+- [src/api/](mdc:src/api) - Contains API routes and controllers using Hono
 - [src/domain/](mdc:src/domain) - Contains business logic and domain models
 - [src/spi/](mdc:src/spi) - Service Provider Interface layer for external services
   - [src/spi/repositories/database/schema.ts](mdc:src/spi/repositories/database/schema.ts) - Database models and schema definitions
@@ -68,8 +68,8 @@ src/
 ```
 
 The application follows a layered architecture:
-1. API Layer (Presentation)
-2. Domain Layer (Business Logic)
-3. SPI Layer (External Services)
+1. API Layer (How clients access the domain)
+2. Domain Layer (Business logic)
+3. SPI Layer (External services)
 
 Each layer is initialized in sequence in the main entry point, with dependencies flowing from top to bottom.
