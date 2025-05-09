@@ -1,6 +1,6 @@
 import * as Fs from 'node:fs'
 import { Hono } from 'hono'
-import { generateAllSpecs } from './generate-all-openapi-specs.ts'
+import { generateAllOpenApiSpecs } from './generate-all-openapi-specs.ts'
 import type { Env } from './v1/models.ts'
 
 vi.mock('node:fs', () => ({
@@ -18,7 +18,7 @@ vi.mock('../utils/logger.ts', () => ({
 
 vi.mock('hono-openapi')
 
-describe('generateAllSpecs', () => {
+describe('generateAllOpenApiSpecs', () => {
   describe('when GENERATE_OPENAPI_SPEC is truthy', () => {
     beforeEach(() => {
       vi.stubEnv('GENERATE_OPENAPI_SPEC', 'true')
@@ -33,7 +33,7 @@ describe('generateAllSpecs', () => {
       test('should generate an openapi spec', async () => {
         const app = new Hono<Env>()
 
-        await generateAllSpecs(app)
+        await generateAllOpenApiSpecs(app)
 
         const fs = await import('node:fs')
 
@@ -57,7 +57,7 @@ describe('generateAllSpecs', () => {
       test('should generate an openapi spec', async () => {
         const app = new Hono<Env>()
 
-        await generateAllSpecs(app)
+        await generateAllOpenApiSpecs(app)
 
         const fs = await import('node:fs')
 
@@ -79,7 +79,7 @@ describe('generateAllSpecs', () => {
 
       test('should NOT write an openapi spec', async () => {
         const app = new Hono<Env>()
-        const specs = await generateAllSpecs(app)
+        const specs = await generateAllOpenApiSpecs(app)
 
         const fs = await import('node:fs')
 
@@ -100,7 +100,7 @@ describe('generateAllSpecs', () => {
     test('should not generate an openapi spec', async () => {
       const app = new Hono<Env>()
 
-      await generateAllSpecs(app)
+      await generateAllOpenApiSpecs(app)
 
       const fs = await import('node:fs')
 

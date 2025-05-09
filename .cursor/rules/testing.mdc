@@ -1,5 +1,5 @@
 ---
-description: Use these rules when running, writing, or modifying unit tests, reviewing test code for adherence to project conventions, setting up test infrastructure or mocking, implementing test assertions or error handling, structuring test files or organizing test suites, working with Vitest-specific features or configurations, and ensuring proper test coverage and type safety in tests. The rule provides comprehensive guidance on test organization, mocking patterns, assertions, error testing, and best practices specific to this project's testing standards.
+description: Use these rules when running, writing, or modifying tests, reviewing test code for adherence to project conventions, setting up test infrastructure or mocking, implementing test assertions or error handling, structuring test files or organizing test suites, working with Vitest-specific features or configurations, and ensuring proper test coverage and type safety in tests. The rule provides comprehensive guidance on test organization, mocking patterns, assertions, error testing, and best practices specific to this project's testing standards.
 globs: 
 alwaysApply: false
 ---
@@ -21,9 +21,6 @@ This guide outlines the conventions for writing and running unit tests in this p
    
    # Verify Node version matches .nvmrc
    node --version
-   
-   # If version doesn't match, run
-   nvm use
    ```
 
 3. **Automated Version Check**
@@ -34,30 +31,14 @@ This guide outlines the conventions for writing and running unit tests in this p
 4. **Common Version Issues**
    - If tests fail with unexpected errors, first verify Node version
    - If `nvm use` fails, ensure `.nvmrc` exists and contains the correct version
-   - If version issues persist, run `nvm install` followed by `nvm use`
+   - If version issues persist, run `nvm install`
 
 ## Pre-Test Checks
 
-1. **Node.js Version Check**
-   ```bash
-   # First time setup
-   nvm install
-   
-   # Verify Node version matches .nvmrc
-   node --version
-   ```
-
-2. **Required Environment Variables**
-   ```bash
-   # Set CI environment variable to run tests in non-interactive mode
-   export CI=true
-   ```
-
-3. **Pre-Test Checklist**
+1. **Pre-Test Checklist**
    - [ ] Run `nvm install` at least once
-   - [ ] Verify Node version matches `.nvmrc`
-   - [ ] Set `CI=true` environment variable
    - [ ] Ensure all dependencies are installed (`npm install`)
+   - [ ] Set `CI=true` environment variable
 
 ## Vitest Usage
 
@@ -265,6 +246,26 @@ This guide outlines the conventions for writing and running unit tests in this p
    }))
    ```
 
+## Running Focused Tests
+
+1. When running tests for a specific file, focus coverage on that file only
+   ```bash
+   # Run tests for a specific file with focused coverage
+   nvm install && CI=true npm test src/models/result.test.ts --coverage.include="src/models/result.ts"
+   ```
+
+2. Benefits of focused coverage:
+   - Clearer coverage reports for the file being tested
+   - No noise from unrelated files
+   - Easier to identify gaps in test coverage
+   - Faster test execution
+
+3. When running focused tests:
+   - Ignore overall project coverage thresholds
+   - Focus on achieving 100% coverage for the specific file
+   - Use the `--coverage.include` flag to specify the target file
+   - Use `CI=true` to ensure tests are not ran interactively
+
 ## Type Safety in Tests
 
 1. It's acceptable to use `unknown` in tests to simplify test setup
@@ -327,7 +328,7 @@ This guide outlines the conventions for writing and running unit tests in this p
    - Use `CI=true` to ensure tests are not ran interactively
    ```bash
    # Run tests with coverage
-   CI=true npm test -- --coverage
+   nvm install && CI=true npm test
    ```
 
 4. Common coverage issues to watch for:
@@ -335,23 +336,3 @@ This guide outlines the conventions for writing and running unit tests in this p
    - Untested conditional branches
    - Uncovered utility functions
    - Edge cases in data validation
-
-## Running Focused Tests
-
-1. When running tests for a specific file, focus coverage on that file only
-   ```bash
-   # Run tests for a specific file with focused coverage
-   CI=true npm test src/models/result.test.ts -- --coverage.enabled=true --coverage.include="src/models/result.ts"
-   ```
-
-2. Benefits of focused coverage:
-   - Clearer coverage reports for the file being tested
-   - No noise from unrelated files
-   - Easier to identify gaps in test coverage
-   - Faster test execution
-
-3. When running focused tests:
-   - Ignore overall project coverage thresholds
-   - Focus on achieving 100% coverage for the specific file
-   - Use the `--coverage.include` flag to specify the target file
-   - Use `CI=true` to ensure tests are not ran interactively
