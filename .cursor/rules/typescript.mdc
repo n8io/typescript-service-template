@@ -39,11 +39,6 @@ alwaysApply: false
         ```
 - Import types using the `import type` or `import { type foo }` syntaxes
 - Do not use barrel files, avoid them at all costs per [biome.jsonc](mdc:biome.jsonc)
-- All object properties should be alphabetized
-- All destructured properties should be alphabetized
-- All class public props/methods should be alphabetized
-- All class private props/methods should be alphabetized
-- Add empty lines around multiline statements for better readability
 
 ## Functions
 - Use explicit return types for public functions
@@ -64,6 +59,12 @@ alwaysApply: false
 - Handle Promise rejections properly
 
 ## Code Formatting
+
+- All object properties should be alphabetized
+- All destructured properties should be alphabetized
+- All class public props/methods should be alphabetized
+- All class private props/methods should be alphabetized
+- Add empty lines around multiline statements for better readability
 - Add empty lines before and after multiline statements for better readability
   ```typescript
   // ❌ Don't do this

@@ -1,11 +1,63 @@
 ---
-description: Use these rules when writing or modifying unit tests, reviewing test code for adherence to project conventions, setting up test infrastructure or mocking, implementing test assertions or error handling, structuring test files or organizing test suites, working with Vitest-specific features or configurations, and ensuring proper test coverage and type safety in tests. The rule provides comprehensive guidance on test organization, mocking patterns, assertions, error testing, and best practices specific to this project's testing standards.
+description: Use these rules when running, writing, or modifying unit tests, reviewing test code for adherence to project conventions, setting up test infrastructure or mocking, implementing test assertions or error handling, structuring test files or organizing test suites, working with Vitest-specific features or configurations, and ensuring proper test coverage and type safety in tests. The rule provides comprehensive guidance on test organization, mocking patterns, assertions, error testing, and best practices specific to this project's testing standards.
 globs: 
 alwaysApply: false
 ---
 # Unit Test Conventions
 
-This guide outlines the conventions for writing unit tests in this project.
+This guide outlines the conventions for writing and running unit tests in this project.
+
+## Node Version Management
+
+1. **Required Node Version**
+   - The project uses `.nvmrc` to specify the required Node version
+   - Always ensure you're using the correct Node version before running tests
+   - The version is enforced through `.nvmrc` and should not be modified without team consensus
+
+2. **Node Version Setup**
+   ```bash
+   # First time setup or when .nvmrc changes
+   nvm install
+   
+   # Verify Node version matches .nvmrc
+   node --version
+   
+   # If version doesn't match, run
+   nvm use
+   ```
+
+3. **Automated Version Check**
+   - The project includes a pre-test hook that verifies Node version
+   - If you see version mismatch errors, run `nvm use` to switch to the correct version
+   - Never override the Node version requirement - it ensures consistent test behavior
+
+4. **Common Version Issues**
+   - If tests fail with unexpected errors, first verify Node version
+   - If `nvm use` fails, ensure `.nvmrc` exists and contains the correct version
+   - If version issues persist, run `nvm install` followed by `nvm use`
+
+## Pre-Test Checks
+
+1. **Node.js Version Check**
+   ```bash
+   # First time setup
+   nvm install
+   
+   # Verify Node version matches .nvmrc
+   node --version
+   ```
+
+2. **Required Environment Variables**
+   ```bash
+   # Set CI environment variable to run tests in non-interactive mode
+   export CI=true
+   ```
+
+3. **Pre-Test Checklist**
+   - [ ] Run `nvm install` at least once
+   - [ ] Verify Node version matches `.nvmrc`
+   - [ ] Set `CI=true` environment variable
+   - [ ] Ensure all dependencies are installed (`npm install`)
 
 ## Vitest Usage
 
