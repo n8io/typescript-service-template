@@ -76,7 +76,7 @@ const makeGenerateOpenApiSpec = (app: ReturnType<typeof makeApp>) => async (vers
   return stringifiedSpec
 }
 
-const generateAllSpecs = async (app: ReturnType<typeof makeApp>) => {
+const generateAllOpenApiSpecs = async (app: ReturnType<typeof makeApp>) => {
   // biome-ignore lint/nursery/noProcessEnv: <explanation>
   if (!process.env.GENERATE_OPENAPI_SPEC) {
     return []
@@ -93,4 +93,4 @@ const generateAllSpecs = async (app: ReturnType<typeof makeApp>) => {
   return specs
 }
 
-export { generateAllSpecs }
+export { generateAllOpenApiSpecs }

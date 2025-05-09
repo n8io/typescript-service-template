@@ -1,0 +1,12 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+General Rules
+
+1. When we want to run any `npm` commands, we must first run the following: `nvm install`
+2. When we want to run tests, we must run the following: `nvm install && export CI=true`
+3. Anytime we create or modify a `.ts` file, we must adhere to the guidelines set forth in [clean-code.mdc](mdc:.cursor/rules/clean-code.mdc), [code-quality.mdc](mdc:.cursor/rules/code-quality.mdc), and [typescript.mdc](mdc:.cursor/rules/typescript.mdc) 
+4. Always check the [package.json](mdc:package.json) for a script that might accomplish the goal first, if one exists ask if I want to run it instead of generating your own command.
+5. Whenever the word `test` is mentioned, please include the [testing.mdc](mdc:.cursor/rules/testing.mdc) rules in your prompt

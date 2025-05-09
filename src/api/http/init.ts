@@ -1,7 +1,7 @@
 import type { Domain } from '../../domain/init.ts'
 import type { AppStateManager } from '../../utils/app-state-manager.ts'
 import { initCommon } from './common/init.ts'
-import { generateAllSpecs } from './generate-all-openapi-specs.ts'
+import { generateAllOpenApiSpecs } from './generate-all-openapi-specs.ts'
 import { makeApp } from './v1/app.ts'
 import { initV1 } from './v1/init.ts'
 
@@ -16,7 +16,7 @@ const initHttp = async ({ appStateManager, domain }: Dependencies) => {
   app.route('/', initCommon({ appStateManager }))
   app.route('/', initV1({ app, domain }))
 
-  await generateAllSpecs(app)
+  await generateAllOpenApiSpecs(app)
 
   return app
 }
