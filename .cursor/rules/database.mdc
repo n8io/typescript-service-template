@@ -23,7 +23,7 @@ nvm install && npm run db:generate
 
 ## Database Best Practices
 
-1. Never directly create, modify, or apply migrations
+1. Never directly create, modify, or apply migration files in `src/spi/repositories/database/migrations/*`
 2. Migrations are automatically generated after [schema.ts](mdc:src/spi/repositories/database/schema.ts) changes (and its dependencies) are made and the following command is ran: `nvm install && npm run db:migrate`
 
 ## Database Connection
