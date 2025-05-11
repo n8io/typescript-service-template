@@ -1,6 +1,6 @@
 ---
 description: This rule defines the proper usage of mocks and assertions in test files.
-globs:
+globs: *.test.ts
 alwaysApply: false
 ---
 # Mocking and Assertions in Tests

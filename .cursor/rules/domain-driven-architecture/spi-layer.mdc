@@ -1,6 +1,6 @@
 ---
 description: In regards to project structure, this rule enforces the proper organization and implementation of Service Provider Interfaces (SPI) that define abstractions for infrastructure dependencies.
-globs:
+globs: src/spi/**/*
 alwaysApply: false
 ---
 # SPI Layer Organization

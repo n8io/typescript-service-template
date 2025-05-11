@@ -1,6 +1,6 @@
 ---
 description: This rule defines the code coverage requirements and best practices for the project.
-globs:
+globs: *.test.ts
 alwaysApply: false
 ---
 # Code Coverage Requirements
