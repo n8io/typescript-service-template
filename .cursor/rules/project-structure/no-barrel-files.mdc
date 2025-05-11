@@ -1,0 +1,38 @@
+---
+description: This rule ensures we don't use barrel files (index.ts) for the sole purpose of re-exporting modules.
+globs:
+alwaysApply: false
+---
+# No Barrel Files
+
+## Description
+Avoid using barrel files (index.ts) for re-exporting modules. Import directly from specific files instead.
+
+## Examples
+✅ Valid:
+```typescript
+// Import directly from the specific file
+import { UserService } from './api/user-service.ts';
+import { DatabaseConfig } from './config/database-config.ts';
+```
+
+❌ Invalid:
+```typescript
+// Don't use barrel files
+import { UserService } from './api';
+import { DatabaseConfig } from './config';
+```
+
+## Rationale
+Avoiding barrel files:
+1. Makes dependencies more explicit and traceable
+2. Improves build performance by enabling better tree-shaking
+3. Reduces the risk of circular dependencies
+4. Makes the codebase more maintainable
+
+## Implementation
+When importing modules:
+1. Always import directly from the specific file
+2. Use the full relative path to the file
+3. Include the file extension (.ts)
+4. Avoid creating index.ts files for re-exporting

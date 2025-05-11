@@ -1,0 +1,57 @@
+# Local Development Best Practices
+
+This project is designed to be developed using Docker. Local/native development is not officially supported and discouraged.
+
+## Docker Development (Recommended)
+
+The primary development workflow uses Docker:
+
+1. Start the service in Docker with hot reload:
+
+   ```bash
+   npm run docker:up
+   ```
+
+   This command:
+   - Builds the Docker image if needed
+   - Starts the service with hot reload enabled
+   - Mounts your local code into the container
+   - Sets up all required dependencies
+
+2. Build the Docker image manually (if needed):
+
+   ```bash
+   npm run docker:build
+   ```
+
+## Available Scripts
+
+While Docker is the recommended approach, these `package.json` scripts are available for reference:
+
+- `npm run dev` - Start the development server with hot reload (not recommended)
+- `npm run test` - Run tests with coverage
+  - Please note, that when running tests via Chat we need to run in a subshell with (`CI=true npm test`) so it doesn't hang indefinitely
+- `npm run lint` - Run all linting checks
+- `npm run format` - Format code using Biome
+- `npm run db:generate` - Generate database migrations
+- `npm run db:migrate` - Apply database migrations
+
+## Code Quality
+
+The project enforces code quality through:
+
+- TypeScript for type safety
+- Biome for code formatting and linting
+- Vitest for testing
+- Drizzle for database migrations
+- Branch name validation for consistent git workflow
+
+## Environment Setup
+
+The project uses `.env` files for configuration. Make sure to:
+
+1. Copy `.env.example` to `.env`
+2. Update the values as needed
+3. Never commit `.env` files to version control
+
+Note: When using Docker, environment variables are automatically handled through the Docker configuration.

@@ -1,0 +1,34 @@
+---
+description: This rule outlines best practices for handling sensitive information and credentials in terminal commands and project configuration.
+globs:
+alwaysApply: false
+---
+# Sensitive Data Handling
+
+## Description
+This rule outlines best practices for handling sensitive information and credentials in terminal commands and project configuration.
+
+## Why
+Proper handling of sensitive data prevents security breaches, protects credentials, and maintains the integrity of the development environment.
+
+## How
+1. Use environment variables for sensitive information
+2. Never commit sensitive data or credentials to version control
+3. Use .env files for local development (and ensure they're in .gitignore)
+4. Use secure secret management systems for production environments
+
+## Example
+```bash
+# Correct way
+export API_KEY=your_secret_key
+npm run start
+
+# Incorrect way
+npm run start --api-key=your_secret_key  # Exposing secret in command line
+```
+
+## Related
+- Environment variables
+- Security
+- Credential management
+- Secret handling

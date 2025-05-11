@@ -1,0 +1,39 @@
+---
+description: In regards to commit messages, this rule defines the allowed types for commit messages
+globs:
+alwaysApply: false
+---
+# Commit Message Types
+
+## Description
+Defines the allowed types for commit messages.
+
+## Rule
+The commit type must be one of the following:
+- `feat`: A new feature
+- `fix`: A bug fix
+- `test`: Adding missing tests or correcting existing tests
+- `chore`: Changes to the build process or auxiliary tools and libraries
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+
+## Examples
+✅ Valid:
+```
+feat(ABC-123): ✨ Add new feature
+fix(XYZ-987): 🐛 Fix bug
+test(QWE-456): ✅ Add tests
+chore(DEV-100): 🔧 Update dependencies
+refactor(OPS-321): ♻️ Improve code structure
+```
+
+❌ Invalid:
+```
+feature(ABC-123): ✨ Add new feature
+bugfix(XYZ-987): 🐛 Fix bug
+update(DEV-100): 🔧 Update dependencies
+```
+
+## Notes
+- Type must be lowercase
+- Must be one of the predefined types
+- Cannot be abbreviated or modified

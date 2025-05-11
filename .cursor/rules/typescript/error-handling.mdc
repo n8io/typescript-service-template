@@ -1,0 +1,66 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# Error Handling
+
+## Rules
+
+1. Create custom error types for domain-specific errors
+2. Use Result types for operations that can fail
+3. Implement proper error boundaries
+4. Use try-catch blocks with typed catch clauses
+5. Handle Promise rejections properly
+
+## Examples
+
+```typescript
+// ❌ Bad
+async function validateUser(user: unknown): Promise<User> {
+  if (!isUser(user)) {
+    throw new Error("Invalid user data");
+  }
+
+  return user;
+}
+
+// ✅ Good
+type Result<T, E = Error> = {
+  success: true;
+  value: T;
+} | {
+  success: false;
+  error: E;
+};
+
+class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+async function validateUser(user: unknown): Promise<Result<User, ValidationError>> {
+  try {
+    if (!isUser(user)) {
+      throw new ValidationError("Invalid user data");
+    }
+    
+    return { success: true, value: user };
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return { success: false, error };
+    }
+    throw error;
+  }
+}
+```
+
+## Rationale
+
+- Custom error types provide better error context and type safety
+- Result types make error handling explicit and type-safe
+- Error boundaries prevent error propagation
+- Typed catch clauses enable better error handling
+- Proper Promise rejection handling prevents unhandled rejections

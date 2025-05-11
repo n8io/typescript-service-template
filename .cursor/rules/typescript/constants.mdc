@@ -1,0 +1,78 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# Constants Over Magic Strings and Numbers
+
+## Description
+This rule enforces the use of named constants instead of magic strings and numbers in TypeScript code, making the code more maintainable and self-documenting.
+
+## Why
+- Improves code readability and maintainability
+- Makes code more self-documenting
+- Prevents typos and inconsistencies
+- Makes refactoring easier
+- Centralizes configuration values
+- Makes testing easier
+
+## How
+- Replace hard-coded values with named constant variables
+- Use descriptive constant names that explain the value's purpose
+- Keep constants at the top of the file or in a dedicated constants file
+- Use TypeScript's `const` keyword for immutable values
+- Group related constants together
+- Use enums for related constant values
+- Use readonly properties for object constants
+
+## Examples
+
+❌ Bad:
+```typescript
+const calculateDiscount = (price: number) => {
+  return price * 0.1; // Magic number
+}
+
+if (status === "pending") { // Magic string
+  // ...
+}
+
+const maxRetries = 3; // Magic number
+const timeout = 5000; // Magic number in milliseconds
+```
+
+✅ Good:
+```typescript
+const DISCOUNT_RATE = 0.1;
+
+const ORDER_STATUS = {
+  PENDING: "pending",
+  COMPLETED: "completed",
+  CANCELLED: "cancelled"
+} as const;
+
+const RETRY_CONFIG = {
+  MAX_ATTEMPTS: 3,
+  TIMEOUT_MS: 5000,
+  BACKOFF_FACTOR: 1.5
+} as const;
+
+function calculateDiscount(price: number) {
+  return price * DISCOUNT_RATE;
+}
+
+if (status === ORDER_STATUS.PENDING) {
+  // ...
+}
+
+function retryOperation() {
+  for (let attempt = 1; attempt <= RETRY_CONFIG.MAX_ATTEMPTS; attempt++) {
+    // ... retry logic
+  }
+}
+```
+
+## Related Rules
+- [Meaningful Names](./meaningful-names.mdc)
+- [Clean Structure](./clean-structure.mdc)
+- [Type System](./type-system.mdc)

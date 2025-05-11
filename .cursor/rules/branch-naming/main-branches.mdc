@@ -1,0 +1,30 @@
+---
+description: This rule enforces the naming convention for main branches in the repository
+globs:
+alwaysApply: false
+---
+# Main Branch Naming Convention
+
+## Description
+This rule enforces the naming convention for main branches in the repository.
+
+## Rule
+Main branches must be named exactly as one of the following:
+- `develop`
+- `candidate`
+- `main`
+
+## Examples
+✅ Valid:
+- `develop`
+- `candidate`
+- `main`
+
+❌ Invalid:
+- `master`
+- `staging`
+- `production`
+- `main-branch`
+
+## Rationale
+Maintaining consistent main branch names across the repository ensures clear understanding of the codebase's structure and deployment flow.

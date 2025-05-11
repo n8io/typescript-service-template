@@ -1,0 +1,54 @@
+---
+description: This rule defines the proper usage of mocks and assertions in test files.
+globs:
+alwaysApply: false
+---
+# Mocking and Assertions in Tests
+
+## Description
+This rule defines the proper usage of mocks and assertions in test files.
+
+## Requirements
+- Use `vi.mock()` for module mocking
+- Use `vi.spyOn()` for method spying
+- Reset mocks between tests
+- Use specific assertions that test one thing
+- Test both success and error cases
+- Use proper error testing patterns
+
+## Examples
+```typescript
+// Module mocking
+vi.mock('./utils/config.ts', () => ({
+  config: { mock: 'config' }
+}))
+
+// Method spying
+const spy = vi.spyOn(service, 'method')
+
+// Specific assertions
+expect(result.status).toBe(200)
+expect(mockService.createOne).toHaveBeenCalledWith(expectedData)
+
+// Error testing
+it('should throw when input is invalid', () => {
+  expect(() => validateInput(invalidData)).toThrow()
+})
+
+// Async error testing
+it('should reject when database fails', async () => {
+  await expect(service.createOne(data)).rejects.toThrow()
+})
+```
+
+## Error Prevention
+- Use `beforeEach` to reset mocks
+- Use type assertions and `unknown` when necessary
+- Document complex test setups
+- Use error type guards when available
+
+## Related Rules
+- None
+
+## Tags
+#testing #mocking #assertions #error-handling

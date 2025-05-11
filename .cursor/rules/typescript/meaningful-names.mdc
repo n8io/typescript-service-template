@@ -1,0 +1,43 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# Meaningful Names
+
+## Description
+This rule enforces the use of clear, descriptive, and meaningful names for variables, functions, classes, and other identifiers in TypeScript code.
+
+## Why
+- Improves code readability and maintainability
+- Makes code self-documenting
+- Reduces the need for comments
+- Makes code easier to understand for other developers
+
+## How
+- Use names that reveal intent and purpose
+- Choose clarity over brevity
+- Avoid abbreviations unless universally understood
+- Use consistent naming conventions
+- Make names pronounceable and searchable
+- Use domain-specific terminology when appropriate
+
+## Examples
+
+❌ Bad:
+```typescript
+const d = 5; // Days
+const fn = (x: number) => x * 2;
+const usr = { name: "John" };
+```
+
+✅ Good:
+```typescript
+const daysUntilExpiration = 5;
+const doubleValue = (value: number) => value * 2;
+const user = { name: "John" };
+```
+
+## Related Rules
+- [Constants Over Magic Strings](./constants.mdc)
+- [Clean Structure](./clean-structure.mdc)

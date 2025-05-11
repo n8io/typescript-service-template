@@ -1,0 +1,25 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Verify Information
+
+## Description
+Always verify information before presenting it. Do not make assumptions or speculate without clear evidence.
+
+## Examples
+✅ Good:
+- "Based on the code in file X, the function Y is used for..."
+- "According to the documentation, this feature requires..."
+
+❌ Bad:
+- "I think this might be used for..."
+- "This probably works by..."
+- "I assume this is because..."
+
+## Implementation
+- Always cite specific sources when making claims
+- Use direct references to code or documentation
+- Avoid speculative language
+- When uncertain, explicitly state what is known vs unknown

@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Provide Real File Links
+
+## Description
+Give links to the real files, not x.md.
+
+## Examples
+✅ Good:
+- "See src/components/Button.tsx"
+- "Check lib/utils/helpers.js"
+- "Review tests/unit/User.test.ts"
+
+❌ Bad:
+- "See x.md"
+- "Check the documentation"
+- "Review the test file"
+
+## Implementation
+- Use actual file paths
+- Reference specific files
+- Provide complete file locations
+- Avoid placeholder references

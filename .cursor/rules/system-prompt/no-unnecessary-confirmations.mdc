@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# No Unnecessary Confirmations
+
+## Description
+Don't ask for confirmation of information already provided in the context.
+
+## Examples
+✅ Good:
+- Use provided information directly
+- Proceed with available context
+- Make decisions based on given data
+
+❌ Bad:
+- "Is this the correct file?"
+- "Should I proceed with these changes?"
+- "Is this what you meant?"
+
+## Implementation
+- Trust the provided context
+- Avoid redundant verification
+- Act on available information
+- Only ask for missing information

@@ -1,0 +1,17 @@
+---
+description: The rule defines how tests should be ran by an Agent
+globs:
+alwaysApply: true
+---
+# How to run tests
+
+## Description
+The rule defines how tests should be ran by an Agent
+
+## Examples
+```shell
+nvm install && CI=true npm test
+```
+
+## Tags
+#testing #vitest #test-organization

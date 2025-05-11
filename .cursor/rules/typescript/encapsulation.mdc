@@ -1,0 +1,75 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# Encapsulation
+
+## Description
+This rule guides proper encapsulation in TypeScript code, ensuring that implementation details are hidden and clear interfaces are exposed.
+
+## Why
+- Reduces coupling between components
+- Makes code more maintainable
+- Protects internal implementation details
+- Makes refactoring easier
+- Improves code security
+
+## How
+- Hide implementation details
+- Expose clear interfaces
+- Move nested conditionals into well-named functions
+- Use access modifiers appropriately (private, protected, public)
+- Keep internal state private
+- Provide controlled access to internal state through methods
+
+## Examples
+
+❌ Bad:
+```typescript
+class User {
+  public password: string;
+  public isAdmin: boolean;
+  
+  constructor(password: string, isAdmin: boolean) {
+    this.password = password;
+    this.isAdmin = isAdmin;
+  }
+}
+
+// Usage
+const user = new User("secret123", true);
+console.log(user.password); // Direct access to sensitive data
+```
+
+✅ Good:
+```typescript
+class User {
+  private password: string;
+  private isAdmin: boolean;
+  
+  constructor(password: string, isAdmin: boolean) {
+    this.password = password;
+    this.isAdmin = isAdmin;
+  }
+  
+  public validatePassword(input: string): boolean {
+    return this.password === input;
+  }
+  
+  public hasAdminAccess(): boolean {
+    return this.isAdmin;
+  }
+}
+
+// Usage
+const user = new User("secret123", true);
+
+if (user.validatePassword("secret123")) {
+  // Handle successful authentication
+}
+```
+
+## Related Rules
+- [Single Responsibility](./single-responsibility.mdc)
+- [Clean Structure](./clean-structure.mdc)

@@ -1,0 +1,38 @@
+---
+description: In regards to commit messages, this rule enforces the basic structure of commit messages according to the project's conventions.
+globs:
+alwaysApply: false
+---
+# Commit Message Format Structure
+
+## Description
+Enforces the basic structure of commit messages according to the project's conventions.
+
+## Rule
+The commit message must follow this format:
+```
+<type>(<ticket>): <emoji> <subject>
+
+<body>
+```
+
+## Examples
+✅ Valid:
+```
+feat(ABC-123): ✨ Implement new feature
+fix(XYZ-987): 🐛 Resolve issue with login
+
+Additional details here.
+```
+
+❌ Invalid:
+```
+feat: implement new feature
+fix(XYZ-987) resolve issue
+feat(ABC-123) implement feature
+```
+
+## Notes
+- The type, ticket, emoji, and subject must be on the first line
+- The body (if present) must be separated by a blank line
+- Each component must be properly formatted according to their specific rules

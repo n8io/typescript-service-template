@@ -1,0 +1,25 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# No Understanding Feedback
+
+## Description
+Avoid giving feedback about understanding in comments or documentation.
+
+## Examples
+✅ Good:
+- "This function handles user authentication"
+- "The database schema defines the following tables"
+
+❌ Bad:
+- "I understand this code does..."
+- "This is my understanding of how it works"
+- "Let me explain my understanding"
+
+## Implementation
+- Write documentation in a direct, authoritative voice
+- Focus on facts and implementation details
+- Avoid meta-commentary about comprehension
+- Present information as established fact

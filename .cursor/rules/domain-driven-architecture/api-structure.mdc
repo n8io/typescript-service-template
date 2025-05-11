@@ -1,0 +1,50 @@
+---
+description: This rule enforces the proper organization and structure of API code within the application
+globs:
+alwaysApply: false
+---
+# API Structure and Organization
+
+## Description
+This rule enforces the proper organization and structure of API code within the application.
+
+## Requirements
+- API code must be placed within the `src/api` directory
+- HTTP routes must be organized in `src/api/http/<version>/routes`
+- API types and constants must be defined in either:
+  - `src/api/http/models` or
+  - `src/api/http/<version>/models.ts`
+- Each route file must export a router instance using `makeApp()`
+- Middleware must be placed in either:
+  - `src/api/http/<version>/middleware` or
+  - `src/api/http/<version>/common`
+
+## Rationale
+Proper organization of API code ensures:
+- Clear separation of concerns
+- Consistent structure across the application
+- Easy navigation and maintenance
+- Standardized routing and middleware handling
+
+## Examples
+✅ Correct:
+```typescript
+// src/api/http/v1/routes/users.ts
+import { makeApp } from '../../../common/makeApp';
+
+export const router = makeApp()
+  .get('/users', async (c) => {
+    // Handler implementation
+  });
+```
+
+❌ Incorrect:
+```typescript
+// src/routes/users.ts
+import { Hono } from 'hono';
+
+const app = new Hono();
+app.get('/users', async (c) => {
+  // Handler implementation
+});
+```

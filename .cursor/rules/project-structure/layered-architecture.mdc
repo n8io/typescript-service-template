@@ -1,0 +1,53 @@
+---
+description: This rule identifies the project file structure. The application follows a clean, domain-driven architecture pattern with three main layers: API, Domain, and SPI (Service Provider Interface).
+globs:
+alwaysApply: false
+---
+# Layered Architecture Pattern
+
+## Description
+The application follows a clean, domain-driven architecture pattern with three main layers: API, Domain, and SPI (Service Provider Interface).
+
+## Structure
+```
+src/
+├── api/          # API Layer (How clients access the domain)
+├── domain/       # Domain Layer (Business logic)
+├── spi/          # SPI Layer (External services)
+└── utils/        # Utility functions and helpers
+```
+
+## Layer Responsibilities
+
+### API Layer
+- Contains API routes and controllers using Hono
+- Handles HTTP requests and responses
+- Input validation and request parsing
+- Response formatting
+
+### Domain Layer
+- Contains business logic and domain models
+- Core business rules and workflows
+- Domain entities and value objects
+- Business operations and use cases
+
+### SPI Layer
+- Service Provider Interface for external services
+- Database repositories and models
+- External API clients
+- Infrastructure implementations
+
+## Rationale
+This layered architecture:
+1. Separates concerns clearly
+2. Makes the codebase more maintainable
+3. Enables better testing and mocking
+4. Follows domain-driven design principles
+
+## Implementation
+When adding new features:
+1. Place API routes in the appropriate version directory under `api/`
+2. Put business logic in the `domain/` layer
+3. Add external service implementations in the `spi/` layer
+4. Keep utility functions in the `utils/` directory
+5. Maintain dependencies flowing from top to bottom (API → Domain → SPI)

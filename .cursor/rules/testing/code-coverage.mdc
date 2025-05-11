@@ -1,0 +1,44 @@
+---
+description: This rule defines the code coverage requirements and best practices for the project.
+globs:
+alwaysApply: false
+---
+# Code Coverage Requirements
+
+## Description
+This rule defines the code coverage requirements and best practices for the project.
+
+## Requirements
+- Minimum coverage thresholds:
+  - Branches: 90%
+  - Functions: 90%
+  - Lines: 90%
+  - Statements: 90%
+- Cover all code paths in conditional statements
+- Cover all function calls
+- Cover all error handling cases
+- Cover all edge cases
+
+## Examples
+```bash
+# Run tests with coverage
+nvm install && CI=true npm test
+
+# Run focused coverage for specific file
+nvm install && CI=true npm test src/models/result.test.ts --coverage.include="src/models/result.ts"
+```
+
+## Error Prevention
+- Use `CI=true` to ensure tests are not run interactively
+- Use coverage reports to identify gaps
+- Watch for common coverage issues:
+  - Missing error case coverage
+  - Untested conditional branches
+  - Uncovered utility functions
+  - Edge cases in data validation
+
+## Related Rules
+- None
+
+## Tags
+#testing #coverage #quality

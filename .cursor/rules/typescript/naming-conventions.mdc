@@ -1,0 +1,53 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# Naming Conventions
+
+## Rules
+
+1. Use PascalCase for type names and interfaces
+2. Use camelCase for variables and functions
+3. Use UPPER_CASE for constants
+4. Use descriptive names with auxiliary verbs (e.g., isLoading, hasError)
+
+## Examples
+
+```typescript
+// ✅ Good
+type UserProfile = {
+  id: string;
+  name: string;
+};
+
+const MAX_RETRY_COUNT = 3;
+let isLoading = false;
+const hasError = true;
+
+function getUserData(): Promise<UserProfile> {
+  // ...
+}
+
+// ❌ Bad
+type userProfile = {
+  id: string;
+  name: string;
+};
+
+const maxRetryCount = 3;
+let loading = false;
+const error = true;
+
+function getData(): Promise<userProfile> {
+  // ...
+}
+```
+
+## Rationale
+
+- Consistent naming conventions improve code readability and maintainability
+- PascalCase for types makes them easily distinguishable from variables
+- camelCase for variables and functions follows JavaScript conventions
+- UPPER_CASE for constants makes them stand out as configuration values
+- Auxiliary verbs in boolean variables make their purpose clear

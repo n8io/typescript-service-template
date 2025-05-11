@@ -1,0 +1,39 @@
+---
+description: This rule ensures that the correct Node.js version is used before executing any npm commands by automatically running `nvm install` first.
+globs:
+alwaysApply: false
+---
+# Ensure Correct Node.js Version for NPM Commands
+
+## Description
+This rule ensures that the correct Node.js version is used before executing any npm commands by automatically running `nvm install` first.
+
+## Why
+Using the wrong Node.js version can lead to compatibility issues, unexpected behavior, and potential security vulnerabilities. This rule helps maintain consistency across development environments.
+
+## How
+Before executing any npm command, the rule will automatically run `nvm install` to ensure the correct Node.js version is active.
+
+## Example
+When you run:
+```bash
+npm install
+```
+
+The rule will first execute:
+```bash
+nvm install
+```
+
+Then proceed with your npm command.
+
+## Implementation
+The rule should be triggered before any npm command execution and should:
+1. Check if nvm is available
+2. Run `nvm install` to ensure correct Node.js version
+3. Proceed with the original npm command
+
+## Related
+- Node Version Manager (nvm)
+- npm
+- Node.js versioning

@@ -1,0 +1,85 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# DRY (Don't Repeat Yourself)
+
+## Description
+This rule enforces the DRY principle in TypeScript code, ensuring that code duplication is minimized through proper abstraction and reuse.
+
+## Why
+- Reduces maintenance burden
+- Ensures consistency across the codebase
+- Makes changes easier to implement
+- Reduces the chance of bugs
+- Improves code quality
+
+## How
+- Extract repeated code into reusable functions
+- Share common logic through proper abstraction
+- Extract common utilities to their common ancestor
+- Maintain single sources of truth
+- Use inheritance and composition appropriately
+- Create utility functions for common operations
+
+## Examples
+
+❌ Bad:
+```typescript
+// Duplicated validation logic
+function validateUser(user: User) {
+  if (!user.email || !user.email.includes('@')) {
+    throw new Error('Invalid email');
+  }
+  if (!user.name || user.name.length < 2) {
+    throw new Error('Invalid name');
+  }
+}
+
+function validateAdmin(admin: Admin) {
+  if (!admin.email || !admin.email.includes('@')) {
+    throw new Error('Invalid email');
+  }
+  if (!admin.name || admin.name.length < 2) {
+    throw new Error('Invalid name');
+  }
+}
+```
+
+✅ Good:
+```typescript
+type Validatable = {
+  email: string;
+  name: string;
+}
+
+const validateEmail = (email: string): void => {
+  if (!email || !email.includes('@')) {
+    throw new Error('Invalid email');
+  }
+}
+
+const validateName = (name: string): void => {
+  if (!name || name.length < 2) {
+    throw new Error('Invalid name');
+  }
+}
+
+const validateEntity = <T extends Validatable>(entity: T): void => {
+  validateEmail(entity.email);
+  validateName(entity.name);
+}
+
+const validateUser = (user: User): void => {
+  validateEntity(user);
+}
+
+function validateAdmin(admin: Admin): void {
+  validateEntity(admin);
+}
+```
+
+## Related Rules
+- [Single Responsibility](./single-responsibility.mdc)
+- [Clean Structure](./clean-structure.mdc)

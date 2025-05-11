@@ -1,0 +1,54 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# Code Organization
+
+## Rules
+
+1. Keep type definitions at the top of the file
+2. Export types and implementations separately
+3. All exports must be located at the bottom of the file
+4. Use `import type` or `import { type foo }` syntax for type imports
+5. Avoid barrel files
+
+## Examples
+
+```typescript
+// ✅ Good
+// Types at the top
+type User = {
+  id: string;
+  name: string;
+};
+
+// Implementation
+function getUser(id: string): User {
+  return { id, name: "John" };
+}
+
+// Exports at the bottom
+export type { User };
+export { getUser };
+
+// ❌ Bad
+function getUser(id: string): User {
+  return { id, name: "John" };
+}
+
+type User = {
+  id: string;
+  name: string;
+};
+
+export { getUser, User };
+```
+
+## Rationale
+
+- Placing types at the top makes them immediately visible and accessible
+- Separate type exports improve code organization and make dependencies clear
+- Bottom exports make it easy to see what the module exposes
+- Type-only imports prevent accidental usage of types as values
+- Avoiding barrel files reduces complexity and improves build performance

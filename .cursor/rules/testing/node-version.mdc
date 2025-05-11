@@ -1,0 +1,39 @@
+---
+description: This rule enforces proper Node version management for running tests in the project.
+globs:
+alwaysApply: false
+---
+# Node Version Management for Testing
+
+## Description
+This rule enforces proper Node version management for running tests in the project.
+
+## Requirements
+- Use `.nvmrc` to specify the required Node version
+- Run `nvm install` when first setting up or when `.nvmrc` changes
+- Verify Node version matches `.nvmrc` before running tests
+- Never override Node version requirements
+- Use `nvm use` to switch to correct version if mismatch occurs
+
+## Examples
+```bash
+# First time setup
+nvm install
+
+# Verify version
+node --version
+
+# Switch to correct version
+nvm use
+```
+
+## Error Prevention
+- Pre-test hook verifies Node version
+- Version mismatch errors indicate need to run `nvm use`
+- Unexpected test failures should first check Node version
+
+## Related Rules
+- None
+
+## Tags
+#testing #node #version-management

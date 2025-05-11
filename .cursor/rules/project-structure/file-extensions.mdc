@@ -1,0 +1,39 @@
+---
+description: In regards to file generation, this rule ensures specific file extensions based on the file type and purpose.
+globs:
+alwaysApply: false
+---
+# File Extensions: Standard Extensions
+
+## Description
+Use specific file extensions based on the file type and purpose.
+
+## Examples
+✅ Valid:
+- `.ts` for TypeScript source files
+- `.test.ts` for test files
+- `.d.ts` for type declaration files
+- `.mjs` for ES modules
+- `.json` for JSON files
+- `.jsonc` for JSON with comments
+
+❌ Invalid:
+- `.js` for TypeScript files
+- `.tsx` for non-React TypeScript files
+- `.txt` for source code files
+
+## Rationale
+Using the correct file extensions helps:
+1. Maintain consistency across the codebase
+2. Enable proper IDE support and syntax highlighting
+3. Make the purpose of each file clear
+4. Support proper module resolution
+
+## Implementation
+When creating new files:
+1. Use `.ts` for all TypeScript source files
+2. Use `.test.ts` for test files
+3. Use `.d.ts` for type declaration files
+4. Use `.mjs` for ES modules
+5. Use `.json` for JSON files
+6. Use `.jsonc` for JSON files that need comments

@@ -1,0 +1,47 @@
+---
+description: This rule defines the code quality tools and practices that must be followed in the project
+globs:
+alwaysApply: false
+---
+# Code Quality Tools
+
+## Description
+This rule defines the code quality tools and practices that must be followed in the project.
+
+## Requirements
+- Use TypeScript for type safety
+- Use Biome for code formatting and linting
+- Use Vitest for testing
+- Use Drizzle for database migrations
+- Follow branch name validation for consistent git workflow
+
+## Rationale
+These tools ensure consistent code quality, type safety, and maintainable codebase across the project.
+
+## Examples
+✅ Good:
+```bash
+# Format code
+npm run format
+
+# Run linting
+npm run lint
+
+# Run tests
+npm run test
+
+# Generate database migrations
+npm run db:generate
+
+# Apply database migrations
+npm run db:migrate
+```
+
+❌ Bad:
+```bash
+# Skipping code quality checks
+git commit -m "Quick fix" --no-verify
+```
+
+## References
+- Local Development Best Practices documentation

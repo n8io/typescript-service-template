@@ -1,0 +1,35 @@
+---
+description: This rule enforces the best practices for handling database migration files in the project.
+globs:
+alwaysApply: false
+---
+# Migration Files Handling
+
+## Description
+This rule enforces the best practices for handling database migration files in the project.
+
+## Requirements
+- Migration files in `src/spi/repositories/database/migrations/*` are read-only
+- Direct creation, modification, or application of migration files is prohibited
+- Migrations must be generated automatically through the proper workflow
+
+## Implementation
+1. Never directly create or modify files in the migrations directory
+2. Always use the command `nvm install && npm run db:migrate` to generate migrations
+3. Migrations are automatically generated based on changes to `schema.ts` and its dependencies
+
+## Rationale
+This practice ensures consistent and safe database schema evolution by:
+- Preventing manual errors in migration files
+- Maintaining a single source of truth for schema changes
+- Ensuring all migrations are properly tracked and versioned
+
+## Examples
+✅ Correct:
+- Making changes to `schema.ts`
+- Running `npm run db:migrate` to generate migrations
+
+❌ Incorrect:
+- Directly editing files in the migrations directory
+- Manually creating migration files
+- Copying migration files from other projects

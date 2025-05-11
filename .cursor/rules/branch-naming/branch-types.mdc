@@ -1,0 +1,34 @@
+---
+description: This rule enforces the required type prefix for feature and bugfix branches
+globs:
+alwaysApply: false
+---
+# Branch Type Prefix Convention
+
+## Description
+This rule enforces the required type prefix for feature and bugfix branches.
+
+## Rule
+All feature and bugfix branches must start with one of the following type prefixes:
+- `feat/`: For new features
+- `fix/`: For bug fixes
+- `hotfix/`: For urgent production fixes
+- `chore/`: For maintenance tasks
+- `test/`: For test-related changes
+
+## Examples
+✅ Valid:
+- `feat/ABC-123`
+- `fix/ABC-456`
+- `hotfix/ABC-789`
+- `chore/ABC-101`
+- `test/ABC-202`
+
+❌ Invalid:
+- `feature/ABC-123`
+- `bugfix/ABC-456`
+- `ABC-123`
+- `new-feature/ABC-123`
+
+## Rationale
+Using consistent type prefixes helps categorize changes and maintain a clear history of modifications in the repository.

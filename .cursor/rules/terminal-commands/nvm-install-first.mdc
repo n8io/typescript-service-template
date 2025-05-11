@@ -1,0 +1,32 @@
+---
+description: This rule ensures that `nvm install` is run before executing any npm commands to maintain consistent Node.js version usage across the project.
+globs: 
+alwaysApply: false
+---
+# NVM Install First
+
+## Description
+This rule ensures that `nvm install` is run before executing any npm commands to maintain consistent Node.js version usage across the project.
+
+## Why
+Running `nvm install` before npm commands ensures that the correct Node.js version is being used, preventing version mismatch issues and maintaining consistency across the development team.
+
+## How
+1. Always run `nvm install` before executing any npm commands
+2. This ensures the correct Node.js version is active in your environment
+3. The command will install the version specified in `.nvmrc` if it exists
+
+## Example
+```bash
+# Correct way
+nvm install
+npm install
+
+# Incorrect way
+npm install  # Without running nvm install first
+```
+
+## Related
+- Node Version Manager (NVM)
+- npm commands
+- Node.js version management

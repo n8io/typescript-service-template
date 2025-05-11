@@ -1,0 +1,75 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# Single Responsibility
+
+## Description
+This rule enforces the Single Responsibility Principle (SRP) in TypeScript code, ensuring that each function, class, or module has only one reason to change.
+
+## Why
+- Makes code more maintainable and easier to understand
+- Reduces the impact of changes
+- Makes testing easier
+- Improves code reusability
+- Makes debugging simpler
+
+## How
+- Each function should do exactly one thing
+- Functions should be small and focused
+- If a function needs a comment to explain what it does, it probably should be split up
+- Keep functions under 20 lines when possible
+- Extract complex logic into separate functions
+- Use meaningful function names that describe their single responsibility
+
+## Examples
+
+❌ Bad:
+```typescript
+function processUserData(user: User) {
+  // Validates user data
+  if (!user.email || !user.name) {
+    throw new Error('Invalid user data');
+  }
+  
+  // Formats user data
+  const formattedUser = {
+    email: user.email.toLowerCase(),
+    name: user.name.trim()
+  };
+  
+  // Saves to database
+  database.save(formattedUser);
+  
+  // Sends welcome email
+  emailService.sendWelcomeEmail(formattedUser.email);
+}
+```
+
+✅ Good:
+```typescript
+function validateUserData(user: User): void {
+  if (!user.email || !user.name) {
+    throw new Error('Invalid user data');
+  }
+}
+
+function formatUserData(user: User): FormattedUser {
+  return {
+    email: user.email.toLowerCase(),
+    name: user.name.trim()
+  };
+}
+
+function processUserData(user: User): void {
+  validateUserData(user);
+  const formattedUser = formatUserData(user);
+  database.save(formattedUser);
+  emailService.sendWelcomeEmail(formattedUser.email);
+}
+```
+
+## Related Rules
+- [Meaningful Names](./meaningful-names.mdc)
+- [Clean Structure](./clean-structure.mdc)
