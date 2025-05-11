@@ -1,0 +1,41 @@
+---
+description: When generating a commit message, this rule defines the required emoji usage in commit messages based on the commit type.
+globs:
+alwaysApply: false
+---
+# Commit Message Emoji Usage
+
+## Description
+Defines the required emoji usage in commit messages based on the commit type.
+
+## Rule
+Each commit type has an associated emoji that must be used:
+- `feat`: ✨ (sparkles)
+- `fix`: 🐛 (bug)
+- `test`: ✅ (check mark)
+- `chore`: 🔧 (wrench)
+- `refactor`: ♻️ (recycle)
+
+## Examples
+✅ Valid:
+```
+feat(ABC-123): ✨ Add new feature
+fix(XYZ-987): 🐛 Fix bug
+test(QWE-456): ✅ Add tests
+chore(DEV-100): 🔧 Update dependencies
+refactor(OPS-321): ♻️ Improve code structure
+```
+
+❌ Invalid:
+```
+feat(ABC-123): 🐛 Add new feature
+fix(XYZ-987): ✨ Fix bug
+feat(ABC-123): Add new feature
+fix(XYZ-987): 🐞 Fix bug
+```
+
+## Notes
+- Must include exactly one emoji
+- Emoji must match the commit type
+- Must have a space after the emoji
+- Cannot use alternative emojis for the same meaning

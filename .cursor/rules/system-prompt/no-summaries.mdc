@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# No Summaries
+
+## Description
+Don't summarize changes made.
+
+## Examples
+✅ Good:
+- Present changes directly
+- Show the actual code modifications
+- Let the code speak for itself
+
+❌ Bad:
+- "Here's a summary of what I changed"
+- "To summarize the modifications"
+- "In summary, I've made these changes"
+
+## Implementation
+- Present changes directly without meta-commentary
+- Focus on the actual code modifications
+- Avoid redundant explanations
+- Let the code be self-documenting

@@ -1,0 +1,79 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js,*.json,*.jsonc
+alwaysApply: false
+---
+# Code Formatting
+
+## Rules
+
+1. Alphabetize object properties
+2. Alphabetize destructured properties
+3. Alphabetize class public props/methods
+4. Alphabetize class private props/methods
+5. Add empty lines around multiline statements
+6. Avoid promise chaining
+7. Group variable definitions closely together and add empty lines before and after variable each group
+
+## Examples
+
+```typescript
+// ✅ Good
+const config = {
+  apiKey: "123",
+  endpoint: "https://api.example.com",
+  timeout: 5000,
+  version: "1.0"
+};
+
+class UserService {
+  private readonly apiClient: ApiClient;
+  private readonly logger: Logger;
+
+  constructor(apiClient: ApiClient, logger: Logger) {
+    this.apiClient = apiClient;
+    this.logger = logger;
+  }
+
+  async getUser(id: string): Promise<User> {
+    const response = await this.apiClient.get(`/users/${id}`);
+
+    this.logger.info("User fetched", { id });
+
+    return response.data;
+  }
+}
+
+// ❌ Bad
+const config = {
+  timeout: 5000,
+  apiKey: "123",
+  version: "1.0",
+  endpoint: "https://api.example.com"
+};
+
+class UserService {
+  private readonly logger: Logger;
+  private readonly apiClient: ApiClient;
+
+  constructor(apiClient: ApiClient, logger: Logger) {
+    this.apiClient = apiClient;
+    this.logger = logger;
+  }
+
+  async getUser(id: string): Promise<User> {
+    return this.apiClient.get(`/users/${id}`)
+      .then(response => {
+        this.logger.info("User fetched", { id });
+        return response.data;
+      });
+  }
+}
+```
+
+## Rationale
+
+- Alphabetized properties make code more maintainable and easier to scan
+- Empty lines improve readability by separating logical blocks
+- Avoiding promise chaining makes code more readable and easier to debug
+- Consistent formatting makes code reviews easier and reduces merge conflicts

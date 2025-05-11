@@ -1,0 +1,30 @@
+---
+description: This rule enforces the required format for ticket numbers in branch names
+globs:
+alwaysApply: false
+---
+# Ticket Number Format Convention
+
+## Description
+This rule enforces the required format for ticket numbers in branch names.
+
+## Rule
+Ticket numbers in branch names must follow the format `ABC-123` where:
+- `ABC` is the project prefix (letters only)
+- `123` is the ticket number (numbers only)
+- The prefix and number are separated by a hyphen
+
+## Examples
+✅ Valid:
+- `feat/ABC-123`
+- `fix/XYZ-456`
+- `chore/PROJ-789`
+
+❌ Invalid:
+- `feat/123-ABC`
+- `fix/ABC123`
+- `chore/ABC_123`
+- `feat/123`
+
+## Rationale
+Consistent ticket number formatting ensures proper tracking and reference of work items across the project.

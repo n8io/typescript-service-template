@@ -1,0 +1,35 @@
+---
+description: This rule defines the proper way to handle environment configuration in the project
+globs:
+alwaysApply: false
+---
+# Environment Setup
+
+## Description
+This rule defines the proper way to handle environment configuration in the project.
+
+## Requirements
+- Copy `.env.example` to `.env` for local development
+- Update environment variables in `.env` as needed
+- Never commit `.env` files to version control
+- When using Docker, environment variables are handled through Docker configuration
+
+## Rationale
+Proper environment configuration ensures consistent behavior across different development environments and prevents sensitive information from being exposed in version control.
+
+## Examples
+✅ Good:
+```bash
+cp .env.example .env
+# Edit .env with appropriate values
+```
+
+❌ Bad:
+```bash
+# Committing .env files
+git add .env
+git commit -m "Add environment configuration"
+```
+
+## References
+- Local Development Best Practices documentation

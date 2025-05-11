@@ -1,0 +1,31 @@
+---
+description: This rule enforces the use of Docker for local development, which is the recommended approach for this project
+globs:
+alwaysApply: false
+---
+# Docker Development
+
+## Description
+This rule enforces the use of Docker for local development, which is the recommended approach for this project.
+
+## Requirements
+- Use Docker for local development instead of native development
+- Use `npm run docker:up` to start the service with hot reload
+- Use `npm run docker:build` to manually build the Docker image when needed
+
+## Rationale
+Docker provides a consistent development environment, ensures all dependencies are properly configured, and simplifies the setup process for new developers.
+
+## Examples
+✅ Good:
+```bash
+npm run docker:up
+```
+
+❌ Bad:
+```bash
+npm run dev  # Native development is not recommended
+```
+
+## References
+- Local Development Best Practices documentation

@@ -1,0 +1,36 @@
+---
+description: This rule emphasizes the importance of using predefined npm scripts from package.json instead of running commands directly.
+globs:
+alwaysApply: false
+---
+# Use NPM Scripts
+
+## Description
+This rule emphasizes the importance of using predefined npm scripts from package.json instead of running commands directly.
+
+## Why
+Using npm scripts provides consistency, simplifies command execution, and ensures that all team members use the same command configurations and options.
+
+## How
+1. Check package.json for available scripts before running custom commands
+2. Use `npm run <script-name>` to execute predefined scripts
+3. Avoid running commands directly when an equivalent npm script exists
+
+## Example
+```bash
+# Correct way
+npm run build
+npm run test
+npm run start
+
+# Incorrect way
+tsc  # Instead of npm run build
+jest  # Instead of npm run test
+node dist/index.js  # Instead of npm run start
+```
+
+## Related
+- npm scripts
+- package.json
+- Build automation
+- Development workflow

@@ -1,0 +1,24 @@
+---
+description: In regards to making changes to files, this rule ensures the agent makes changes file by file and give users a chance to spot mistakes.
+globs:
+alwaysApply: false
+---
+# File-by-File Changes
+
+## Description
+Make changes file by file and give users a chance to spot mistakes.
+
+## Examples
+✅ Good:
+- "I'll modify file X first, then we can review it before moving to file Y"
+- "Let's handle these changes one file at a time"
+
+❌ Bad:
+- "I'll make all the changes across multiple files at once"
+- "Here are all the changes needed across the codebase"
+
+## Implementation
+- Present changes for one file at a time
+- Wait for user review before proceeding to next file
+- Keep related changes together within a single file
+- Provide clear context for each file's changes

@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# No Unnecessary Updates
+
+## Description
+Don't suggest updates or changes to files when there are no actual modifications needed.
+
+## Examples
+✅ Good:
+- Only suggest changes when necessary
+- Keep files unchanged if they work
+- Focus on required modifications
+
+❌ Bad:
+- "Let's update this file anyway"
+- "We should modify this for consistency"
+- "I'll make some improvements here"
+
+## Implementation
+- Only suggest changes when needed
+- Don't modify working code
+- Avoid unnecessary updates
+- Focus on required changes only

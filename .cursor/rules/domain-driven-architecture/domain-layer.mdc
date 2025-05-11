@@ -1,0 +1,62 @@
+---
+description: In regards to project structures, this rule enforces the proper organization and principles of the domain layer, which contains the core business logic of the application.
+globs:
+alwaysApply: false
+---
+# Domain Layer Organization
+
+## Description
+This rule enforces the proper organization and principles of the domain layer, which contains the core business logic of the application.
+
+## Requirements
+- Domain code must be placed within the `src/domain` directory
+- Domain layer must be:
+  - Pure (no side effects)
+  - Framework-agnostic
+  - Independent of infrastructure
+- Must contain:
+  - Business entities (e.g., Order, Customer)
+  - Business rules and policies
+  - Domain services
+  - Value objects
+
+## Rationale
+The domain layer is the heart of the application and should:
+- Represent core business logic
+- Be independent of external concerns
+- Be easily testable
+- Be maintainable and understandable
+
+## Examples
+✅ Correct:
+```typescript
+// src/domain/entities/Order.ts
+export class Order {
+  private readonly items: OrderItem[];
+  private readonly customerId: string;
+
+  constructor(items: OrderItem[], customerId: string) {
+    this.items = items;
+    this.customerId = customerId;
+  }
+
+  public calculateTotal(): Money {
+    return this.items.reduce((total, item) => 
+      total.add(item.getPrice()), Money.zero());
+  }
+}
+```
+
+❌ Incorrect:
+```typescript
+// src/domain/Order.ts
+import { Database } from '../infrastructure/database';
+
+export class Order {
+  constructor(private db: Database) {}
+
+  async save() {
+    await this.db.orders.insert(this);
+  }
+}
+```

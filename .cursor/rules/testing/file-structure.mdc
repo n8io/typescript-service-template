@@ -1,0 +1,46 @@
+---
+description: This rule defines the proper organization and naming of test files in the project.
+globs:
+alwaysApply: false
+---
+# Test File Structure
+
+## Description
+This rule defines the proper organization and naming of test files in the project.
+
+## Requirements
+- Test files must be co-located with the files they test
+- Test files must use the `.test.ts` extension
+- Test files should be in the same directory as the implementation
+- Test files should mirror the structure of the implementation files
+
+## Examples
+```
+✅ Correct structure:
+src/
+  domain/
+    services/
+      resource.ts
+      resource.test.ts
+
+❌ Incorrect structure:
+src/
+  domain/
+    services/
+      resource.ts
+tests/
+  domain/
+    services/
+      resource.test.ts
+```
+
+## Error Prevention
+- Use Biome rules to enforce file naming conventions
+- Use TypeScript path aliases to maintain proper imports
+- Use IDE settings to group test files with their implementations
+
+## Related Rules
+- None
+
+## Tags
+#testing #file-structure #organization

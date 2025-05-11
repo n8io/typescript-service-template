@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Preserve Existing Code
+
+## Description
+Don't remove unrelated code or functionalities. Pay attention to preserving existing structures.
+
+## Examples
+✅ Good:
+- Make targeted changes to specific functionality
+- Maintain existing code patterns
+- Preserve unrelated features
+
+❌ Bad:
+- "Let's rewrite this entire file"
+- "I'll remove this unused code"
+- "We should refactor everything"
+
+## Implementation
+- Make minimal necessary changes
+- Preserve existing code structure
+- Don't remove seemingly unused code
+- Maintain consistency with existing patterns

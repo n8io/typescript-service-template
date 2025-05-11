@@ -1,0 +1,54 @@
+---
+description:
+globs: *.ts,*.tsx,*.mjs,*.js
+alwaysApply: false
+---
+# Smart Comments
+
+## Description
+This rule guides the proper use of comments in TypeScript code, emphasizing when and how to write meaningful comments that add value to the codebase.
+
+## Why
+- Comments should explain the "why" not the "what"
+- Good comments help future developers understand complex decisions
+- Comments can document non-obvious side effects
+- Comments help maintain knowledge about the codebase
+
+## How
+- Don't comment on what the code does - make the code self-documenting
+- Use comments to explain why something is done a certain way
+- Document APIs, complex algorithms, and non-obvious side effects
+- Keep comments up to date with code changes
+- Use JSDoc for public APIs and interfaces
+- Comment on complex business logic or domain-specific decisions
+
+## Examples
+
+❌ Bad:
+```typescript
+// Function to add two numbers
+function add(a: number, b: number) {
+  return a + b;
+}
+```
+
+✅ Good:
+```typescript
+/**
+ * Adds two numbers together
+ * @param a - First number to add
+ * @param b - Second number to add
+ * @returns The sum of a and b
+ * @throws {Error} If either parameter is not a number
+ */
+const add = (a: number, b: number): number => {
+  if (typeof a !== 'number' || typeof b !== 'number') {
+    throw new Error('Parameters must be numbers');
+  }
+  return a + b;
+}
+```
+
+## Related Rules
+- [Meaningful Names](./meaningful-names.mdc)
+- [Clean Structure](./clean-structure.mdc)

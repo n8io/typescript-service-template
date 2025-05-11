@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# No Whitespace Suggestions
+
+## Description
+Don't suggest whitespace changes.
+
+## Examples
+✅ Good:
+- Focus on functional changes
+- Address code logic and structure
+- Suggest meaningful improvements
+
+❌ Bad:
+- "Add a blank line here"
+- "Fix the indentation"
+- "Remove extra spaces"
+
+## Implementation
+- Ignore whitespace-only changes
+- Focus on substantive code modifications
+- Let code formatters handle whitespace
+- Prioritize functional improvements

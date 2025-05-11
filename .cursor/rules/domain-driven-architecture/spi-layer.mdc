@@ -1,0 +1,62 @@
+---
+description: In regards to project structure, this rule enforces the proper organization and implementation of Service Provider Interfaces (SPI) that define abstractions for infrastructure dependencies.
+globs:
+alwaysApply: false
+---
+# SPI Layer Organization
+
+## Description
+This rule enforces the proper organization and implementation of Service Provider Interfaces (SPI) that define abstractions for infrastructure dependencies.
+
+## Requirements
+- SPI code must be placed within the `src/domain` directory
+- SPI interfaces must be defined in the domain layer
+- SPI implementations must be in the infrastructure layer
+- Follow the pattern:
+  - Define interface in domain layer (e.g., `SpiUserRepository`)
+  - Implement in infrastructure layer
+- Must maintain domain layer independence from infrastructure
+
+## Rationale
+SPI layer organization ensures:
+- Clear separation between domain and infrastructure
+- Domain remains decoupled from specific implementations
+- Easy testing through interface mocking
+- Flexibility to change infrastructure without affecting domain logic
+
+## Examples
+✅ Correct:
+```typescript
+// src/domain/repositories/SpiUserRepository.ts
+export type SpiUserRepository = {
+  findById(id: string): Promise<User | null>;
+  save(user: User): Promise<void>;
+};
+
+// src/infrastructure/repositories/UserRepository.ts
+export class UserRepository implements SpiUserRepository {
+  constructor(private db: Database) {}
+
+  async findById(id: string): Promise<User | null> {
+    return this.db.users.findById(id);
+  }
+
+  async save(user: User): Promise<void> {
+    await this.db.users.save(user);
+  }
+}
+```
+
+❌ Incorrect:
+```typescript
+// src/domain/UserRepository.ts
+import { Database } from '../infrastructure/database';
+
+export class UserRepository {
+  constructor(private db: Database) {}
+
+  async findById(id: string) {
+    return this.db.users.findById(id);
+  }
+}
+```

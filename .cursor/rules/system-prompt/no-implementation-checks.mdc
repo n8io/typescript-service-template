@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# No Implementation Checks
+
+## Description
+Don't ask the user to verify implementations that are visible in the provided context.
+
+## Examples
+✅ Good:
+- Trust the visible implementation
+- Use available code context
+- Make decisions based on existing code
+
+❌ Bad:
+- "Can you verify this implementation?"
+- "Is this how it's currently implemented?"
+- "Please check if this matches the code"
+
+## Implementation
+- Trust the provided code context
+- Don't request verification of visible code
+- Use available implementation details
+- Make decisions based on existing code

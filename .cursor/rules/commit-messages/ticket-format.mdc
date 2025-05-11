@@ -1,0 +1,38 @@
+---
+description: In regards to commit messages, this rule defines the required format for ticket numbers in commit messages.
+globs:
+alwaysApply: false
+---
+# Commit Message Ticket Format
+
+## Description
+Defines the required format for ticket numbers in commit messages.
+
+## Rule
+The ticket must be in the format `ABC-123` where:
+- `ABC` is the project prefix (uppercase letters)
+- `123` is the ticket number
+- Must be enclosed in parentheses
+
+## Examples
+✅ Valid:
+```
+feat(ABC-123): ✨ Add new feature
+fix(XYZ-987): 🐛 Fix bug
+test(QWE-456): ✅ Add tests
+```
+
+❌ Invalid:
+```
+feat(abc-123): ✨ Add new feature
+fix(123): 🐛 Fix bug
+feat(ABC123): ✨ Add new feature
+feat(ABC_123): ✨ Add new feature
+```
+
+## Notes
+- Project prefix must be uppercase
+- Must include a hyphen between prefix and number
+- Must be enclosed in parentheses
+- No spaces allowed
+- No special characters allowed

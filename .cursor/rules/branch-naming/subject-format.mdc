@@ -1,0 +1,31 @@
+---
+description: This rule defines how branch names should be constructed
+globs:
+alwaysApply: false
+---
+# Branch Subject Format Convention
+
+## Description
+This rule enforces the format for optional subjects in branch names.
+
+## Rule
+When including a subject in a branch name:
+- Must start with a hyphen after the ticket number
+- Must contain only letters, numbers, and hyphens
+- Must be lowercase
+- Must be descriptive but concise
+
+## Examples
+✅ Valid:
+- `feat/ABC-123-add-user-authentication`
+- `fix/ABC-456-login-error`
+- `chore/ABC-101-update-dependencies`
+
+❌ Invalid:
+- `feat/ABC-123_Add_User_Authentication`
+- `fix/ABC-456 Login Error`
+- `chore/ABC-101#update-dependencies`
+- `feat/ABC-123-Add-User-Authentication`
+
+## Rationale
+Consistent subject formatting improves readability and makes branch purposes immediately clear to team members.

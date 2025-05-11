@@ -1,0 +1,11 @@
+Objective: Generate individual Agent Select Cursor rules based on the best practices outlined in the referenced document (`@{BEST_PRACTICES_DOC_PATH}`).
+
+Instructions:
+1.  For each distinct best practice found in the document, create a separate Agent Select rule file (`.mdc`). All the rules should be grouped by the requirements document in a. `@{BEST_PRACTICES_MDC_PATH}` directory
+2.  Follow all formatting and content requirements defined in your system prompt (`@rule-generating-agent`) for creating Agent Select rules.
+3.  After generation, confirm success by listing the paths of the created rule files.
+
+---
+Variable Definitions:
+BEST_PRACTICES_DOC_PATH=.cursor/docs/testing-best-practices.md
+BEST_PRACTICES_MDC_PATH=.cursor/rules/testing

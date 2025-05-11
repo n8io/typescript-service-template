@@ -1,0 +1,45 @@
+---
+description: This rule provides a structured approach to troubleshooting common issues with npm and Node.js in the project.
+globs:
+alwaysApply: false
+---
+# Troubleshooting Common Issues
+
+## Description
+This rule provides a structured approach to troubleshooting common issues with npm and Node.js in the project.
+
+## Why
+Having a systematic approach to troubleshooting helps resolve issues quickly and maintains project stability.
+
+## How
+1. Clear npm cache when experiencing package-related issues:
+   ```bash
+   npm cache clean --force
+   ```
+
+2. Reset node_modules when experiencing dependency issues:
+   ```bash
+   rm -rf node_modules
+   nvm install
+   npm install
+   ```
+
+3. Follow the troubleshooting steps in order:
+   - Start with cache clearing
+   - If issues persist, proceed with node_modules reset
+   - Ensure correct Node.js version is installed
+
+## Example
+```bash
+# Complete troubleshooting process
+npm cache clean --force
+rm -rf node_modules
+nvm install
+npm install
+```
+
+## Related
+- npm cache
+- Dependency management
+- Node.js version management
+- Project maintenance

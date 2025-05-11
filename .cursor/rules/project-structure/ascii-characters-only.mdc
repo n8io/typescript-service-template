@@ -1,0 +1,29 @@
+---
+description: This rule enforces that all filenames must use ASCII characters only, avoiding special characters and Unicode
+globs:
+alwaysApply: false
+---
+# File Naming: ASCII Characters Only
+
+## Description
+All filenames must use ASCII characters only, avoiding special characters and Unicode.
+
+## Examples
+✅ Valid:
+- `user-profile.ts`
+- `api-routes.ts`
+- `database-schema.ts`
+
+❌ Invalid:
+- `user-profile-📝.ts`
+- `user-profile-é.ts`
+- `api-routes-→.ts`
+
+## Rationale
+Using only ASCII characters ensures maximum compatibility across different operating systems, version control systems, and development tools. It prevents potential issues with character encoding and makes the codebase more portable.
+
+## Implementation
+When creating new files or renaming existing ones:
+1. Use only standard ASCII characters (a-z, A-Z, 0-9, and hyphens)
+2. Avoid Unicode characters, emojis, or special symbols
+3. Keep filenames simple and descriptive

@@ -1,0 +1,36 @@
+---
+description: This rule defines the proper way to execute tests in the project, particularly when running tests with an Agent.
+globs:
+alwaysApply: false
+---
+# Test Execution
+
+## Description
+This rule defines the proper way to execute tests in the project, particularly when running tests with an Agent.
+
+## Requirements
+- Run tests with coverage using `npm run test`
+- When running tests via Chat, use `CI=true npm test` to prevent hanging
+- Ensure all tests pass before committing changes
+
+## Rationale
+Proper test execution ensures code quality and prevents regressions. The CI environment variable prevents test runners from hanging in certain environments.
+
+## Examples
+✅ Good:
+```bash
+# Normal test execution
+npm run test
+
+# Test execution via Chat
+CI=true npm test
+```
+
+❌ Bad:
+```bash
+# Running tests without CI flag in Chat environment
+npm test  # May hang indefinitely
+```
+
+## References
+- Local Development Best Practices documentation

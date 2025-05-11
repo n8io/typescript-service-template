@@ -1,0 +1,51 @@
+---
+description: This rule defines the proper usage of Vitest functions and utilities in test files.
+globs:
+alwaysApply: false
+---
+# Vitest Usage in Tests
+
+## Description
+This rule defines the proper usage of Vitest functions and utilities in test files.
+
+## Requirements
+- Use global Vitest functions without importing them
+- Only import specific utilities that aren't globally available
+- Use proper test organization with describe blocks
+- Follow Arrange-Act-Assert pattern
+- Use descriptive test names
+
+## Examples
+```typescript
+// ✅ Correct usage
+describe('MyService', () => {
+  beforeEach(() => {
+    // setup
+  })
+  
+  it('should return 404 when resource is not found', () => {
+    // Arrange
+    const service = new MyService()
+    
+    // Act
+    const result = service.getResource('non-existent')
+    
+    // Assert
+    expect(result.status).toBe(404)
+  })
+})
+
+// ❌ Incorrect usage
+import { describe, it, expect } from 'vitest' // Don't import global functions
+```
+
+## Error Prevention
+- Use Biome rules to prevent importing global Vitest functions
+- Use TypeScript to ensure proper typing of test assertions
+- Use descriptive test names to make failures more understandable
+
+## Related Rules
+- None
+
+## Tags
+#testing #vitest #test-organization

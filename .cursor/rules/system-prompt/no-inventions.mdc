@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# No Inventions
+
+## Description
+Don't invent changes other than what's explicitly requested.
+
+## Examples
+✅ Good:
+- Implement exactly what was asked for
+- Follow the specified requirements
+- Make only requested modifications
+
+❌ Bad:
+- "I also added this feature"
+- "While we're at it, let's also..."
+- "I took the liberty to add..."
+
+## Implementation
+- Stick to explicitly requested changes
+- Don't add extra features or modifications
+- Focus on the specific task at hand
+- Ask for clarification if needed

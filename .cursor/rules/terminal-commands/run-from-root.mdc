@@ -1,0 +1,33 @@
+---
+description: This rule ensures that all terminal commands are executed from the project root directory to maintain consistency and prevent path-related issues.
+globs:
+alwaysApply: false
+---
+# Run Commands from Project Root
+
+## Description
+This rule ensures that all terminal commands are executed from the project root directory to maintain consistency and prevent path-related issues.
+
+## Why
+Running commands from the project root ensures that all relative paths and configurations are correctly resolved, preventing unexpected behavior and maintaining consistency across different environments.
+
+## How
+1. Always navigate to the project root directory before running commands
+2. Use `cd` to change to the project root if you're in a subdirectory
+3. Verify you're in the correct directory by checking for key project files (package.json, etc.)
+
+## Example
+```bash
+# Correct way
+cd /path/to/project/root
+npm install
+
+# Incorrect way
+cd /path/to/project/root/src
+npm install  # Running from subdirectory
+```
+
+## Related
+- Project structure
+- Command execution
+- Path resolution

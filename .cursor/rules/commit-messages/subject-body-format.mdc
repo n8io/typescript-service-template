@@ -1,0 +1,49 @@
+---
+description: In regards to commit messages, this rule defines the formatting requirements for commit message subjects and bodies.
+globs:
+alwaysApply: false
+---
+# Commit Message Subject and Body Format
+
+## Description
+Defines the formatting requirements for commit message subjects and bodies.
+
+## Rule
+Subject must:
+- When possible, the subject's ticket number can and should be derived from the branch name
+- Start with a capital letter
+- Be a single line
+- Not end with a period
+- Be written in the imperative (as you would instruct a person to do some work)
+
+Body (optional) must:
+- Be separated from the subject by a blank line
+- Can contain multiple lines
+- Can include bullet points
+- Bullet points should be written in the imperative
+
+## Examples
+✅ Valid:
+```
+feat(ABC-123): ✨ Implement new feature
+fix(XYZ-987): 🐛 Resolve issue with login
+
+- Do a thing
+- Apply an update to this other file
+- Move this code over there
+```
+
+❌ Invalid:
+```
+feat(ABC-123): ✨ implement new feature
+fix(XYZ-987): 🐛 Fix bug.
+feat(ABC-123): ✨ Add feature
+Additional details without blank line
+```
+
+## Notes
+- Subject must be imperative and clear
+- Body is optional but must be properly formatted if present
+- Bullet points should be complete sentences
+- No trailing punctuation in subject
+- Must maintain proper spacing between sections

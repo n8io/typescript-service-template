@@ -1,0 +1,26 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# No Current Implementation
+
+## Description
+Don't show or discuss the current implementation unless specifically requested.
+
+## Examples
+✅ Good:
+- Focus on requested changes
+- Present new implementations
+- Address specific requirements
+
+❌ Bad:
+- "Here's how it's currently implemented"
+- "Let me explain the existing code"
+- "The current implementation shows"
+
+## Implementation
+- Focus on requested changes
+- Don't discuss existing code unless asked
+- Present new solutions directly
+- Avoid unnecessary implementation details

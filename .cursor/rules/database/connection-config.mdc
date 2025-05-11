@@ -1,0 +1,37 @@
+---
+description: This rule defines the best practices for configuring database connections in the project
+globs:
+alwaysApply: false
+---
+# Database Connection Configuration
+
+## Description
+This rule defines the best practices for configuring database connections in the project.
+
+## Requirements
+- Database connections must be managed through the SPI layer
+- Connection configuration must be done via environment variables
+- PostgreSQL connection string must be provided through the `DATABASE_URL` environment variable
+
+## Implementation
+1. All database connections must be initialized through the SPI layer
+2. The `DATABASE_URL` environment variable must be properly set
+3. Connection strings must follow the PostgreSQL connection string format
+
+## Rationale
+This practice ensures:
+- Consistent database connection management across the application
+- Secure handling of database credentials
+- Easy configuration across different environments
+- Proper separation of concerns through the SPI layer
+
+## Examples
+✅ Correct:
+- Using environment variables for database configuration
+- Managing connections through the SPI layer
+- Following the PostgreSQL connection string format
+
+❌ Incorrect:
+- Hardcoding database credentials in the code
+- Creating database connections outside the SPI layer
+- Using non-standard connection string formats
