@@ -1,6 +1,6 @@
 ---
 description: This rule enforces proper Node version management for running tests in the project.
-globs:
+globs: *.test.ts
 alwaysApply: false
 ---
 # Node Version Management for Testing

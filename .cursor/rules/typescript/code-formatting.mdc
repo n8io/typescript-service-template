@@ -13,7 +13,7 @@ alwaysApply: false
 4. Alphabetize class private props/methods
 5. Add empty lines around multiline statements
 6. Avoid promise chaining
-7. Group variable definitions closely together and add empty lines before and after variable each group
+7. Group variable definitions closely together and add empty lines before and after each variable definition group
 
 ## Examples
 

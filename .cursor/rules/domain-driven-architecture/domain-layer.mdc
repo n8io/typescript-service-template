@@ -1,6 +1,6 @@
 ---
 description: In regards to project structures, this rule enforces the proper organization and principles of the domain layer, which contains the core business logic of the application.
-globs:
+globs: src/domain/**/*
 alwaysApply: false
 ---
 # Domain Layer Organization

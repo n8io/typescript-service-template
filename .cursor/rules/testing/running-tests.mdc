@@ -1,6 +1,6 @@
 ---
 description: The rule defines how tests should be ran by an Agent
-globs:
+globs: *.test.ts
 alwaysApply: true
 ---
 # How to run tests

@@ -1,6 +1,6 @@
 ---
 description: This rule enforces the best practices for handling database migration files in the project.
-globs:
+globs: src/spi/repositories/database/migrations/**/*
 alwaysApply: false
 ---
 # Migration Files Handling

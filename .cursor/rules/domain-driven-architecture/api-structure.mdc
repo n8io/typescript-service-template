@@ -1,6 +1,6 @@
 ---
 description: This rule enforces the proper organization and structure of API code within the application
-globs:
+globs: src/api/**/*
 alwaysApply: false
 ---
 # API Structure and Organization
@@ -18,6 +18,13 @@ This rule enforces the proper organization and structure of API code within the 
 - Middleware must be placed in either:
   - `src/api/http/<version>/middleware` or
   - `src/api/http/<version>/common`
+- Route files should sort the methods in the following order:
+  - POST (create)
+  - DELETE (delete)
+  - GET (get many)
+  - GET (get one)
+  - PATCH (update one)
+  - PUT (upsert one)
 
 ## Rationale
 Proper organization of API code ensures:

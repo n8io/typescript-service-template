@@ -1,6 +1,6 @@
 ---
 description: This rule defines the proper organization and naming of test files in the project.
-globs:
+globs: *.test.ts
 alwaysApply: false
 ---
 # Test File Structure
