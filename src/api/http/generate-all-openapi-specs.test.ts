@@ -10,7 +10,7 @@ vi.mock('node:fs', () => ({
   writeFileSync: vi.fn().mockReturnValue(undefined),
 }))
 
-vi.mock('../utils/logger.ts', () => ({
+vi.mock('../../utils/logger.ts', () => ({
   logger: {
     info: vi.fn(),
   },

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { OpenApiFormat } from '../api/http/models/openapi.ts'
-import { exampleGid } from './generators/gid.ts'
+import { exampleGid, isGid } from './generators/gid.ts'
 
 const string = z.string().trim().min(1)
 
@@ -90,9 +90,13 @@ const timeZone = string
   .transform((timeZone) => Intl.DateTimeFormat(undefined, { timeZone }).resolvedOptions().timeZone)
   .openapi({ example: 'America/New_York' })
 
-const gid = string.openapi({
-  example: exampleGid(false),
-})
+const gid = string
+  .refine(isGid, (value) => ({
+    message: `The given value (${value}) is not a valid GID. GIDs are globally unique identifiers that are formatted as 3-4 digits, a dot, and then the UUID. E.g. 123.00000000-0000-0000-0000-000000000000`,
+  }))
+  .openapi({
+    example: exampleGid(false),
+  })
 
 const validation = {
   bool,
