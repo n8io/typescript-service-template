@@ -1,3 +1,4 @@
+import { exampleGid } from './generators/gid.ts'
 import { paginate, validation } from './validation.ts'
 
 describe('validation', () => {
@@ -87,6 +88,34 @@ describe('validation', () => {
     })
   })
 
+  describe('gid', () => {
+    const schema = validation.gid
+
+    it('should return a string for valid gids', () => {
+      const gid = exampleGid()
+
+      expect(schema.parse(gid)).toBe(gid)
+    })
+
+    it('should throw an error for invalid gids', () => {
+      expect(() => schema.parse('NOT_A_GID')).toThrow()
+    })
+  })
+
+  describe('locale', () => {
+    const schema = validation.locale
+
+    it('should return a string for valid locales', () => {
+      expect(schema.parse('en-US')).toBe('en-US')
+    })
+
+    it('should throw an error for invalid locales', () => {
+      expect(() => schema.parse('en')).toThrow()
+      expect(() => schema.parse('hello')).toThrow()
+      expect(() => schema.parse({})).toThrow()
+    })
+  })
+
   describe('number', () => {
     const schema = validation.number
 
@@ -134,35 +163,6 @@ describe('validation', () => {
     })
   })
 
-  describe('locale', () => {
-    const schema = validation.locale
-
-    it('should return a string for valid locales', () => {
-      expect(schema.parse('en-US')).toBe('en-US')
-    })
-
-    it('should throw an error for invalid locales', () => {
-      expect(() => schema.parse('en')).toThrow()
-      expect(() => schema.parse('hello')).toThrow()
-      expect(() => schema.parse({})).toThrow()
-    })
-  })
-
-  describe('timeZone', () => {
-    const schema = validation.timeZone
-
-    it('should return a string for valid time zones', () => {
-      expect(schema.parse('America/NEW_YORK')).toBe('America/New_York')
-    })
-
-    it('should throw an error for invalid time zones', () => {
-      expect(() => schema.parse(123)).toThrow()
-      expect(() => schema.parse(false)).toThrow()
-      expect(() => schema.parse('hello')).toThrow()
-      expect(() => schema.parse({})).toThrow()
-    })
-  })
-
   describe('paginate', () => {
     it('should parse a valid object', () => {
       expect(
@@ -184,6 +184,21 @@ describe('validation', () => {
 
     it('should not have an items property', () => {
       expect(paginate.shape).not.toHaveProperty('items')
+    })
+  })
+
+  describe('timeZone', () => {
+    const schema = validation.timeZone
+
+    it('should return a string for valid time zones', () => {
+      expect(schema.parse('America/NEW_YORK')).toBe('America/New_York')
+    })
+
+    it('should throw an error for invalid time zones', () => {
+      expect(() => schema.parse(123)).toThrow()
+      expect(() => schema.parse(false)).toThrow()
+      expect(() => schema.parse('hello')).toThrow()
+      expect(() => schema.parse({})).toThrow()
     })
   })
 })

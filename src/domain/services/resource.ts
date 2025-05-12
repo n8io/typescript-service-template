@@ -2,9 +2,10 @@ import type { z } from 'zod'
 import { DomainNotFoundError } from '../../models/custom-error.ts'
 import { pick } from '../../utils/fp.ts'
 import { gid } from '../../utils/generators/gid.ts'
+import { validation } from '../../utils/validation.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
 import { schemaDomainGetManyRequest } from '../models/request.ts'
-import { type Resource, exampleResource, schemaResource } from '../models/resource.ts'
+import { exampleResource, schemaResource } from '../models/resource.ts'
 import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
 import { domainGetOneRequestToGetManyRequest } from './utils/domain-get-one-request-to-get-many-request.ts'
 import { spiRepositoryGetManyResponseToDomainPaginatedResponse } from './utils/spi-get-many-response-to-domain-paginated-response.ts'
@@ -14,6 +15,13 @@ type Dependencies = {
 }
 
 class ResourceService {
+  static propsMeta: Record<'create' | 'filter' | 'sort' | 'update', (keyof z.infer<typeof schemaResource>)[]> = {
+    create: ['name', 'timeZone'],
+    filter: ['createdAt', 'gid', 'name', 'timeZone', 'updatedAt'],
+    sort: ['createdAt', 'gid', 'name', 'timeZone', 'updatedAt'],
+    update: ['name', 'timeZone'],
+  }
+
   static schemas = {
     core: schemaResource,
     request: {
@@ -24,9 +32,12 @@ class ResourceService {
           timeZone: true,
         })
         .openapi({
-          example: pick(exampleResource(), ['createdBy', 'name', 'timeZone']),
+          example: pick(exampleResource(), ['createdBy', ...ResourceService.propsMeta.create]) as ReturnType<
+            typeof exampleResource
+          >,
         }),
       getMany: schemaResource,
+      getOne: validation.gid,
       updateOne: schemaResource
         .pick({
           name: true,
@@ -38,7 +49,7 @@ class ResourceService {
           timeZone: true,
         })
         .openapi({
-          example: pick(exampleResource(), ['name', 'timeZone', 'updatedBy']),
+          example: pick(exampleResource(), [...ResourceService.propsMeta.update, 'updatedBy']),
         }),
     },
     response: {
@@ -46,9 +57,6 @@ class ResourceService {
       getOne: schemaResource,
     },
   } as const
-
-  static sortableFields: (keyof Resource)[] = ['createdAt', 'gid', 'name', 'timeZone', 'updatedAt']
-  static filterableFields: (keyof Resource)[] = structuredClone(this.sortableFields)
 
   private dependencies: Dependencies
 
@@ -60,12 +68,13 @@ class ResourceService {
     request: z.infer<typeof ResourceService.schemas.request.createOne>,
   ): Promise<Prettify<z.infer<typeof ResourceService.schemas.response.getOne>>> {
     const spiRequest = ResourceService.schemas.request.createOne.parse(request)
+    const now = new Date()
 
     const created = await this.dependencies.repository.createOne({
       ...spiRequest,
-      createdAt: new Date(),
+      createdAt: now,
       gid: gid(),
-      updatedAt: new Date(),
+      updatedAt: now,
       updatedBy: request.createdBy,
     })
 
@@ -87,9 +96,11 @@ class ResourceService {
   }
 
   async getOne(gid: string): Promise<Prettify<z.infer<typeof ResourceService.schemas.response.getOne>>> {
+    const validGid = ResourceService.schemas.request.getOne.parse(gid)
+
     const {
       items: [found],
-    } = await this.getMany(domainGetOneRequestToGetManyRequest('gid', gid))
+    } = await this.getMany(domainGetOneRequestToGetManyRequest('gid', validGid))
 
     if (!found) {
       throw new DomainNotFoundError(`Resource with gid ${gid} not found`)
@@ -99,9 +110,10 @@ class ResourceService {
   }
 
   async updateOne(gid: string, updates: z.infer<typeof ResourceService.schemas.request.updateOne>) {
+    const validGid = ResourceService.schemas.request.getOne.parse(gid)
     const spiRequest = ResourceService.schemas.request.updateOne.parse(updates)
 
-    const updated = await this.dependencies.repository.updateOne(gid, {
+    const updated = await this.dependencies.repository.updateOne(validGid, {
       ...spiRequest,
       updatedAt: new Date(),
     })

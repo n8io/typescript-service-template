@@ -31,11 +31,11 @@ resources.get(
   '/',
   appendOpenApiMetadata({
     defaultSortField: 'createdAt',
-    filterableFields: ResourceService.filterableFields,
+    filterableFields: ResourceService.propsMeta.filter,
     operationId: 'resourcesGetMany',
     requestSchema: ResourceService.schemas.request.getMany,
     responseSchema: ResourceService.schemas.response.getMany,
-    sortableFields: ResourceService.sortableFields,
+    sortableFields: ResourceService.propsMeta.sort,
     tags: [OpenApiTag.RESOURCES],
     type: RouteType.GET_MANY,
   }),
@@ -46,7 +46,7 @@ resources.get(
     const request = {
       filters: urlSearchParamsToFilters(params, { baseSchema: ResourceService.schemas.core }),
       pagination: urlSearchParamsToPagination(params),
-      sorting: urlSearchParamsToSort(params, { sortableFields: ResourceService.sortableFields }),
+      sorting: urlSearchParamsToSort(params, { sortableFields: ResourceService.propsMeta.sort }),
     } as DomainGetManyRequest
 
     const paginated = await services.resource.getMany(request)

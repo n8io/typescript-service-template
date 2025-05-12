@@ -1,11 +1,32 @@
 import { exampleAuditRecord } from '../../models/audit-record.ts'
 import { DomainNotFoundError } from '../../models/custom-error.ts'
+import * as Validation from '../../utils/validation.ts'
 import { exampleResource } from '../models/resource.ts'
 import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
 import { ResourceService } from './resource.ts'
 
+vi.mock('../../utils/validation.ts', async (importOriginal) => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  const orig: any = await importOriginal()
+
+  return {
+    ...orig,
+    validation: {
+      ...orig.validation,
+      gid: {
+        ...orig.validation.gid,
+        parse: vi.fn().mockReturnValue('GID'),
+      },
+    },
+  }
+})
+
 describe('ResourceService', () => {
   const mockResource = exampleResource()
+
+  beforeEach(() => {
+    vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue('GID')
+  })
 
   describe('createOne', () => {
     it('should create a resource and return it', async () => {
@@ -117,13 +138,12 @@ describe('ResourceService', () => {
         repository: mockRepository,
       })
 
-      const gid = 'GID'
-      const response = await resourceService.getOne(gid)
+      const response = await resourceService.getOne('GID')
 
       expect(mockRepository.getMany).toHaveBeenCalledWith({
         filters: {
           gid: {
-            eq: gid,
+            eq: 'GID',
           },
         },
         pagination: {
@@ -165,6 +185,8 @@ describe('ResourceService', () => {
   describe('updateOne', () => {
     it('should update the resource and return the updated resource', async () => {
       const mockResource = exampleResource()
+
+      vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue(mockResource.gid)
 
       const mockRepository = {
         getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
