@@ -32,13 +32,14 @@ This guide outlines the conventions for writing and running unit tests in this p
 ## Pre-Test Checks
 
 1. **Pre-Test Checklist**
-   - [ ] Run `nvm install` at least once
+   - [ ] Run `nvm use` at least once
    - [ ] Ensure all dependencies are installed (`npm install`)
    - [ ] Set `CI=true` environment variable
 
 ## Vitest Usage
 
-1. Most Vitest functions are globally available and should not be imported
+1. As an agent, you should never run tests interactively. This can be done by prefixing test commands with `CI=true`.
+2. Most Vitest functions are globally available and should not be imported
    - ✅ Use `describe`, `it`, `expect`, `vi` directly
    - ✅ Use `beforeEach`, `afterEach`, `beforeAll`, `afterAll` directly
    - ❌ Don't import from 'vitest'
