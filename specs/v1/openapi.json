@@ -115,13 +115,13 @@
                 ],
                 "description": "A resource entity",
                 "example": {
+                  "name": "Jane Doe",
+                  "timeZone": "America/New_York",
                   "createdBy": {
                     "email": "em@il.com",
                     "gid": "999.00000000-0000-0000-0000-000000000000",
                     "type": "USER"
-                  },
-                  "name": "Jane Doe",
-                  "timeZone": "America/New_York"
+                  }
                 }
               }
             }
