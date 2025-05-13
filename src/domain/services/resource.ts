@@ -15,13 +15,22 @@ type Dependencies = {
 }
 
 class ResourceService {
-  static propsMeta: Record<'create' | 'filter' | 'sort' | 'update', (keyof z.infer<typeof schemaResource>)[]> = {
-    create: ['name', 'timeZone'],
+  /**
+   * @description The properties that are used to create, filter, sort and update a resource.
+   */
+  static propsMeta: Record<
+    'create' | 'filter' | 'sort' | 'update',
+    (keyof Prettify<z.infer<typeof schemaResource>>)[]
+  > = {
+    create: ['name', 'timeZone', 'createdBy'],
     filter: ['createdAt', 'gid', 'name', 'timeZone', 'updatedAt'],
     sort: ['createdAt', 'gid', 'name', 'timeZone', 'updatedAt'],
-    update: ['name', 'timeZone'],
+    update: ['name', 'timeZone', 'updatedBy'],
   }
 
+  /**
+   * @description The schemas for the service. These are used to validate the requests and responses.
+   */
   static schemas = {
     core: schemaResource,
     request: {
@@ -32,9 +41,7 @@ class ResourceService {
           timeZone: true,
         })
         .openapi({
-          example: pick(exampleResource(), ['createdBy', ...ResourceService.propsMeta.create]) as ReturnType<
-            typeof exampleResource
-          >,
+          example: pick(exampleResource(), ResourceService.propsMeta.create) as ReturnType<typeof exampleResource>,
         }),
       getMany: schemaResource,
       getOne: validation.gid,
@@ -49,7 +56,7 @@ class ResourceService {
           timeZone: true,
         })
         .openapi({
-          example: pick(exampleResource(), [...ResourceService.propsMeta.update, 'updatedBy']),
+          example: pick(exampleResource(), ResourceService.propsMeta.update) as ReturnType<typeof exampleResource>,
         }),
     },
     response: {
