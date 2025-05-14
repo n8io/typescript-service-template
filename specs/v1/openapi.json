@@ -113,6 +113,7 @@
                   "name",
                   "timeZone"
                 ],
+                "additionalProperties": false,
                 "description": "A resource entity",
                 "example": {
                   "name": "Jane Doe",
@@ -460,6 +461,7 @@
                 "required": [
                   "updatedBy"
                 ],
+                "additionalProperties": false,
                 "description": "A resource entity",
                 "example": {
                   "name": "Jane Doe",

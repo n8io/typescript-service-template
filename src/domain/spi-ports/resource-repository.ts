@@ -13,4 +13,4 @@ type SpiResourceRepository = {
   updateOne: (gid: string, request: SpiUpdateOneRequest) => Promise<Resource>
 }
 
-export type { SpiGetManyRequest, SpiResourceRepository, SpiUpdateOneRequest }
+export type { SpiGetManyRequest, SpiResourceRepository }
