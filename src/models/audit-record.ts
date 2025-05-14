@@ -62,4 +62,5 @@ const exampleAuditRecord = (overrides: Partial<AuditRecord> = {}): AuditRecord =
   return exampleAuditRecordSystem(overrides as Partial<AuditRecordSystem>)
 }
 
+export type { AuditRecord }
 export { exampleAuditRecord, schemaAuditRecord }
