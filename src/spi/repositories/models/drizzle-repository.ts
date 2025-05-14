@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import type { PgTable } from 'drizzle-orm/pg-core'
 import type { z } from 'zod'
 import type { SpiPaginatedResponse } from '../../../domain/spi-ports/paginated.ts'
@@ -14,8 +14,7 @@ type Dependencies = {
 
 abstract class DrizzleRepository<
   Schema extends z.ZodObject<z.ZodRawShape>,
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  Table extends PgTable<any>,
+  Table extends PgTable,
   Entity = z.infer<Schema>,
   CreateRequest = Entity,
   UpdateRequest = Partial<Entity> & {
@@ -42,6 +41,11 @@ abstract class DrizzleRepository<
     const [created] = await this.dependencies.db.insert(this.table).values(dbRecord).returning()
 
     return this.schema.parse(created) as Entity
+  }
+
+  async deleteMany(gids: string[]): Promise<void> {
+    // @ts-expect-error - TODO: fix this
+    await this.dependencies.db.delete(this.table).where(inArray(this.table.gid, gids))
   }
 
   async getMany(request: SpiGetManyRequest): Promise<SpiPaginatedResponse<Entity>> {
