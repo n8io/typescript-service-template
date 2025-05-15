@@ -83,6 +83,7 @@
         }
       },
       "suspicious": {
+        "noConsoleLog": "warn",
         "noEvolvingTypes": "error",
         "noMisplacedAssertion": "error",
         "useErrorMessage": "error"

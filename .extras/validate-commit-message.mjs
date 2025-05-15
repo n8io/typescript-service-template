@@ -29,9 +29,12 @@ const regExp =
 const valid = regExp.test(commitMessage)
 
 if (valid) {
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log('👍 Your commit message is valid ')
 } else {
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log("COMMIT ABORTED: The commit message doesn't meet the required format. See below for examples.")
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log(exampleText)
   process.exitCode = 1
 }

@@ -1,8 +1,9 @@
-import { SQL, getTableName, inArray } from 'drizzle-orm'
-import { PgDialect, type PgTable } from 'drizzle-orm/pg-core'
+import { getTableName, inArray } from 'drizzle-orm'
+import { type PgTable } from 'drizzle-orm/pg-core'
 import type { z } from 'zod'
 import type { SpiPaginatedResponse } from '../../../domain/spi-ports/paginated.ts'
 import type { SpiGetManyRequest } from '../../../domain/spi-ports/resource-repository.ts'
+import type { AuditRecord } from '../../../models/audit-record.ts'
 import type { initDatabase } from '../database/init.ts'
 import { schemaDbRecord } from '../models/db-record.ts'
 import type { UpdateByGid } from '../utils/domain-updates-to-drizzle-query.ts'
@@ -55,16 +56,12 @@ abstract class DrizzleRepository<
     }) as Promise<SpiPaginatedResponse<Entity>>
   }
 
-  async updateMany(updates: NonEmptyArray<UpdateByGid>): Promise<void> {
-    const query = await domainUpdatesToDrizzleQuery(getTableName(this.table), updates)
+  async updateMany(updates: NonEmptyArray<UpdateByGid>, updatedBy: AuditRecord, updatedAt: Date): Promise<void> {
+    const query = await domainUpdatesToDrizzleQuery(getTableName(this.table), updates, updatedBy, updatedAt)
 
     if (!query) {
       return
     }
-
-    const dialect = new PgDialect()
-    const queryToSql = (query: SQL) => dialect.sqlToQuery(query)
-    console.log(queryToSql(query))
 
     await this.dependencies.db.execute(query)
   }
