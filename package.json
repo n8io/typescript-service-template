@@ -90,7 +90,7 @@
     "zod-openapi": "^4"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1",
+    "@biomejs/biome": "^2.0.0-beta.4",
     "@total-typescript/tsconfig": "^1",
     "@types/node": "^22",
     "@types/pg": "^8",

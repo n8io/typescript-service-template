@@ -7,17 +7,18 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": [
-      "coverage",
-      "dist",
-      "node_modules",
-      "out",
-      "build",
-      "public",
-      "tmp",
-      "temp",
-      "package*.json",
-      "specs/**/*"
+    "includes": [
+      "**",
+      "!**/coverage",
+      "!**/dist",
+      "!**/node_modules",
+      "!**/out",
+      "!**/build",
+      "!**/public",
+      "!**/tmp",
+      "!**/temp",
+      "!**/package*.json",
+      "!**/specs/**/*"
     ]
   },
   "formatter": {
@@ -25,33 +26,36 @@
     "indentStyle": "space",
     "lineWidth": 120
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
       "correctness": {
-        "noUnusedVariables": "error",
-        "noUnusedImports": "error"
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error"
       },
-      "nursery": {
-        "noProcessEnv": "error",
-        "noTemplateCurlyInString": "error",
-        "useAtIndex": "error"
-      },
+      "nursery": {},
       "performance": {
         "noAccumulatingSpread": "error",
         "noBarrelFile": "error",
         "noDelete": "error"
       },
+      "recommended": true,
       "style": {
         "noDefaultExport": "error",
+        "noInferrableTypes": "error",
         "noNegationElse": "error",
+        "noParameterAssign": "error",
+        "noProcessEnv": "error",
+        "noUnusedTemplateLiteral": "error",
+        "noUselessElse": "error",
+        "useAsConstAssertion": "error",
+        "useAtIndex": "error",
         "useConsistentArrayType": "error",
         "useConst": "error",
+        "useDefaultParameterLast": "error",
         "useDefaultSwitchClause": "error",
+        "useEnumInitializers": "error",
         "useExportType": "off",
         // cspell:disable-next-line
         "useFilenamingConvention": {
@@ -61,31 +65,45 @@
             "requireAscii": true
           }
         },
-        "useImportType": "off",
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "separatedType"
+          }
+        },
         "useNamingConvention": {
           "level": "error",
           "options": {
             "conventions": [
               {
+                "formats": ["camelCase", "CONSTANT_CASE"],
                 "selector": {
                   "kind": "typeProperty"
-                },
-                "formats": ["camelCase", "CONSTANT_CASE"]
+                }
               },
               {
+                "formats": ["camelCase", "CONSTANT_CASE"],
                 "selector": {
                   "kind": "objectLiteralProperty"
-                },
-                "formats": ["camelCase", "CONSTANT_CASE"]
+                }
               }
             ]
           }
-        }
+        },
+        "useNumberNamespace": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error"
       },
       "suspicious": {
-        "noConsoleLog": "warn",
+        "noConsole": {
+          "level": "warn",
+          "options": {
+            "allow": ["log"]
+          }
+        },
         "noEvolvingTypes": "error",
         "noMisplacedAssertion": "error",
+        "noTemplateCurlyInString": "error",
         "useErrorMessage": "error"
       }
     }
