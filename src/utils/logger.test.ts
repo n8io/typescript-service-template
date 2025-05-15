@@ -80,7 +80,7 @@ describe('getBindings', () => {
     const tracer = trace.getTracer('test')
     const span = tracer.startSpan('test-span')
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: ???
     let result: any
 
     context.with(trace.setSpan(context.active(), span), () => {
@@ -90,9 +90,9 @@ describe('getBindings', () => {
     const { traceId, spanId } = span.spanContext()
 
     expect(result).toEqual({
-      // biome-ignore lint/style/useNamingConvention: <explanation>
+      // biome-ignore lint/style/useNamingConvention: ???
       span_id: spanId,
-      // biome-ignore lint/style/useNamingConvention: <explanation>
+      // biome-ignore lint/style/useNamingConvention: ???
       trace_id: traceId,
     })
 

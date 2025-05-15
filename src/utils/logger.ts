@@ -1,5 +1,6 @@
 import { context, trace } from '@opentelemetry/api'
-import { type LoggerOptions, pino } from 'pino'
+import type { LoggerOptions } from 'pino'
+import { pino } from 'pino'
 
 const pretty = {
   options: {
@@ -18,15 +19,15 @@ const getBindings = () => {
   }
 
   return {
-    // biome-ignore lint/style/useNamingConvention: <explanation>
+    // biome-ignore lint/style/useNamingConvention: ???
     span_id: spanContext.spanId,
-    // biome-ignore lint/style/useNamingConvention: <explanation>
+    // biome-ignore lint/style/useNamingConvention: ???
     trace_id: spanContext.traceId,
   }
 }
 
 const getPinoConfig = (): LoggerOptions => {
-  // biome-ignore lint/nursery/noProcessEnv: Access process env directly because this is a top level, core utility
+  // biome-ignore lint/style/noProcessEnv: Access process env directly because this is a top level, core utility
   const { LOG_LEVEL: level = 'info', NODE_ENV } = process.env
   const enabled = NODE_ENV !== 'test'
   const areLogsPretty = NODE_ENV !== 'production'

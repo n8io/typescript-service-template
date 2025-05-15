@@ -77,7 +77,7 @@ const makeGenerateOpenApiSpec = (app: ReturnType<typeof makeApp>) => async (vers
 }
 
 const generateAllOpenApiSpecs = async (app: ReturnType<typeof makeApp>) => {
-  // biome-ignore lint/nursery/noProcessEnv: <explanation>
+  // biome-ignore lint/style/noProcessEnv: We need to check the environment variable directly instead of via config
   if (!process.env.GENERATE_OPENAPI_SPEC) {
     return []
   }

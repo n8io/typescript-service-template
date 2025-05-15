@@ -1,11 +1,11 @@
-import { type DomainGetManyRequest } from '../../../../domain/models/request.ts'
+import type { DomainGetManyRequest } from '../../../../domain/models/request.ts'
 import { ResourceService } from '../../../../domain/services/resource.ts'
 import { urlSearchParamsToFilters } from '../../../../utils/url-search-params/filters.ts'
 import { urlSearchParamsToPagination } from '../../../../utils/url-search-params/pagination.ts'
 import { urlSearchParamsToSort } from '../../../../utils/url-search-params/sorting.ts'
 import { OpenApiTag } from '../../models/openapi.ts'
 import { makeApp } from '../app.ts'
-import { RouteType, appendOpenApiMetadata } from '../openapi/append-open-api-metadata.ts'
+import { appendOpenApiMetadata, RouteType } from '../openapi/append-open-api-metadata.ts'
 
 const resources = makeApp()
 

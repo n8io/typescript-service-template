@@ -45,7 +45,7 @@ describe('spiGetManyRequestToPaginatedResult', () => {
       db: mockDb,
       request,
       schema: schemaResource,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: We need to pass a PgTableWithColumns to the function
       table: {} as PgTableWithColumns<any>,
     }
 

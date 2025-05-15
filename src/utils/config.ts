@@ -1,10 +1,10 @@
-import { z } from 'zod'
+import type { z } from 'zod'
 import { schemaConfig } from '../models/config.ts'
 import { AppConfigIncompleteError } from '../models/custom-error.ts'
 
 type Config = z.infer<typeof schemaConfig>
 
-// biome-ignore lint/nursery/noProcessEnv: <explanation>
+// biome-ignore lint/style/noProcessEnv: We need to parse the environment variables
 const results = schemaConfig.safeParse(process.env)
 
 if (!results.success) {

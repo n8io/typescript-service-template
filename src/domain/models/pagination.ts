@@ -1,4 +1,5 @@
-import { ZodSchema, z } from 'zod'
+import type { ZodSchema } from 'zod'
+import { z } from 'zod'
 import { validation } from '../../utils/validation.ts'
 
 const schemaBasePagination = z.object({

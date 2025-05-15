@@ -1,6 +1,6 @@
+import type { date } from 'drizzle-orm/pg-core'
 import {
   boolean,
-  date,
   index,
   integer,
   jsonb,
@@ -13,8 +13,8 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
-
-import { ZodFirstPartyTypeKind, ZodObject, type ZodRawShape, type ZodTypeAny, z } from 'zod'
+import type { ZodObject, ZodRawShape, ZodTypeAny } from 'zod'
+import { ZodFirstPartyTypeKind, z } from 'zod'
 
 type DrizzleColumn = ReturnType<
   | typeof uuid
@@ -34,7 +34,7 @@ const unwrapZodType = (zodType: ZodTypeAny) => {
   let current = zodType
   let isNullable = false
   let isOptional = false
-  let defaultValue: unknown = undefined
+  let defaultValue: unknown
 
   while (true) {
     const type = current._def.typeName
@@ -81,14 +81,14 @@ const mapZodToDrizzle: Record<string, ColumnBuilder> = {
   [ZodFirstPartyTypeKind.ZodString]: (name, zodType) => {
     const checks = zodType._def.checks
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: ???
     const isUuid = checks?.some((c: any) => c.kind === 'uuid')
 
     return isUuid ? uuid(name) : varchar(name, { length: 255 })
   },
 
   [ZodFirstPartyTypeKind.ZodNumber]: (name, zodType) => {
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: ???
     const isInt = zodType._def.checks?.some((c: any) => c.kind === 'int')
 
     return isInt ? integer(name) : numeric(name)

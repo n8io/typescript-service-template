@@ -44,7 +44,7 @@ describe('initDatabase', () => {
   })
 
   it('should close the database connection when close is called', async () => {
-    let closeable: Closable | undefined = undefined
+    let closeable: Closable | undefined
 
     const registerClosableDependency = vi.fn().mockImplementation((c: Closable) => {
       closeable = c
@@ -63,14 +63,13 @@ describe('initDatabase', () => {
 
     expect(closeable).toBeDefined()
 
-    // @ts-expect-error ???
     await closeable?.close()
 
     expect(pool.end).toHaveBeenCalled()
   })
 
   it('should check the database connection status when isConnected is called', async () => {
-    let monitorable: Monitorable | undefined = undefined
+    let monitorable: Monitorable | undefined
 
     const registerClosableDependency = vi.fn().mockImplementation(() => {})
 
@@ -89,7 +88,6 @@ describe('initDatabase', () => {
 
     expect(monitorable).toBeDefined()
 
-    // @ts-expect-error ???
     const isConnected = await monitorable?.isConnected()
 
     expect(pool.query).toHaveBeenCalledWith('SELECT 1')
@@ -97,7 +95,7 @@ describe('initDatabase', () => {
   })
 
   it('should report isConnected false when isConnected fails', async () => {
-    let monitorable: Monitorable | undefined = undefined
+    let monitorable: Monitorable | undefined
 
     vi.spyOn(pool, 'query').mockImplementationOnce(() => {
       throw new Error('Connection failed')
@@ -120,7 +118,6 @@ describe('initDatabase', () => {
 
     expect(monitorable).toBeDefined()
 
-    // @ts-expect-error ???
     const isConnected = await monitorable?.isConnected()
 
     expect(pool.query).toHaveBeenCalledWith('SELECT 1')

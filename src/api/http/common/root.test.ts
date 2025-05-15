@@ -10,7 +10,7 @@ describe('root', () => {
 
     const response = await app.request('/', {
       headers: {
-        // biome-ignore lint/style/useNamingConvention: <explanation>
+        // biome-ignore lint/style/useNamingConvention: ???
         Accept: 'application/json',
       },
     })
@@ -38,7 +38,7 @@ describe('root', () => {
 
     const response = await app.request('/', {
       headers: {
-        // biome-ignore lint/style/useNamingConvention: <explanation>
+        // biome-ignore lint/style/useNamingConvention: ???
         Accept: 'application/json',
       },
     })
