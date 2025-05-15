@@ -10,6 +10,7 @@ const hookPath = '.git/hooks/pre-commit'
 const isLefthookInitialized = existsSync(hookPath) && readFileSync(hookPath, 'utf8').includes('lefthook')
 
 if (isLefthookInstalled && !isLefthookInitialized) {
+  // biome-ignore lint/suspicious/noConsoleLog: <explanation>
   console.log('🥊 Installing lefthook git hooks...')
   execSync('npx lefthook install', { stdio: 'inherit' })
 }

@@ -13,7 +13,7 @@
     "lint:dead-code": "knip",
     "lint:db-migrations": "./.extras/check-for-db-drift.sh",
     "lint:spelling": "cspell --quiet .",
-    "lint:style": "biome check",
+    "lint:style": "biome check --error-on-warnings",
     "lint:types": "tsc --noEmit",
     "format": "biome check --write",
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",

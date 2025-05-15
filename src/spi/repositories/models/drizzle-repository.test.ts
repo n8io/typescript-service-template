@@ -168,6 +168,8 @@ describe('DrizzleRepository', () => {
   })
 
   describe('updateMany', () => {
+    const updatedBy = exampleAuditRecord()
+
     describe('when no updates are provided', () => {
       beforeEach(() => {
         vi.spyOn(DomainUpdatesToDrizzleQuery, 'domainUpdatesToDrizzleQuery').mockReturnValue(undefined)
@@ -187,7 +189,7 @@ describe('DrizzleRepository', () => {
           },
         ]
 
-        await repository.updateMany(updateRequests)
+        await repository.updateMany(updateRequests, updatedBy, new Date())
 
         expect(db.execute).not.toHaveBeenCalled()
       })
@@ -215,16 +217,16 @@ describe('DrizzleRepository', () => {
           {
             gid,
             name: 'UPDATED_NAME',
-            updatedAt: new Date(),
-            updatedBy: exampleAuditRecord(),
           },
         ]
 
-        await repository.updateMany(updateRequests)
+        await repository.updateMany(updateRequests, updatedBy, new Date())
 
         expect(DomainUpdatesToDrizzleQuery.domainUpdatesToDrizzleQuery).toHaveBeenCalledWith(
           mockTableName,
           updateRequests,
+          updatedBy,
+          expect.any(Date),
         )
 
         expect(db.execute).toHaveBeenCalledWith(mockQuery)

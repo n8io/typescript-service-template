@@ -1,4 +1,5 @@
 import { SQL, sql } from 'drizzle-orm'
+import type { AuditRecord } from '../../../models/audit-record.ts'
 
 type JsonValue = Date | string | number | boolean | null | undefined | JsonObject | JsonArray
 
@@ -10,7 +11,6 @@ type JsonArray = JsonValue[]
 
 type UpdateByGid = {
   gid: string
-  updatedAt?: Date
   [key: string]: JsonValue
 }
 
@@ -32,7 +32,12 @@ const formatValue = (value: Exclude<JsonValue, undefined>): SQL => {
   return sql`${value}`
 }
 
-const domainUpdatesToDrizzleQuery = (tableName: string, updates: UpdateByGid[], now = new Date()): SQL | undefined => {
+const domainUpdatesToDrizzleQuery = (
+  tableName: string,
+  updates: UpdateByGid[],
+  updatedBy: AuditRecord,
+  updatedAt = new Date(),
+): SQL | undefined => {
   const allFields = new Set<string>()
 
   // Filter out updates that only have undefined values
@@ -46,6 +51,7 @@ const domainUpdatesToDrizzleQuery = (tableName: string, updates: UpdateByGid[], 
 
   // Always add updatedAt to the fields to update
   allFields.add('updatedAt')
+  allFields.add('updatedBy')
 
   for (const row of validUpdates) {
     for (const key in row) {
@@ -55,13 +61,19 @@ const domainUpdatesToDrizzleQuery = (tableName: string, updates: UpdateByGid[], 
     }
   }
 
-  // Build parameterized CASE WHEN clauses
+  // Build parameterized CASE WHEN clauses for multiple updates
   const setClauses = Array.from(allFields)
     .sort()
     .map((field) => {
       if (field === 'updatedAt') {
         // For updatedAt, use the now parameter for all records
-        const cases = validUpdates.map((u) => sql`WHEN ${u.gid} THEN ${formatValue(now)}`)
+        const cases = validUpdates.map((u) => sql`WHEN ${u.gid} THEN ${formatValue(updatedAt)}`)
+
+        return sql`"${sql.raw(field)}" = CASE "gid" ${sql.join(cases, sql` `)} ELSE "${sql.raw(field)}" END`
+      }
+
+      if (field === 'updatedBy') {
+        const cases = validUpdates.map((u) => sql`WHEN ${u.gid} THEN ${formatValue(updatedBy)}`)
 
         return sql`"${sql.raw(field)}" = CASE "gid" ${sql.join(cases, sql` `)} ELSE "${sql.raw(field)}" END`
       }

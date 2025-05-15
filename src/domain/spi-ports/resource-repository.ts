@@ -1,3 +1,4 @@
+import type { AuditRecord } from '../../models/audit-record.ts'
 import type { UpdateByGid } from '../../spi/repositories/utils/domain-updates-to-drizzle-query.ts'
 import type { DomainGetManyRequest } from '../models/request.ts'
 import { type Resource } from '../models/resource.ts'
@@ -10,7 +11,7 @@ type SpiUpdateManyRequest = NonEmptyArray<UpdateByGid>
 type SpiResourceRepository = {
   createOne: (request: SpiCreateOneRequest) => Promise<Resource>
   getMany: (query: SpiGetManyRequest) => Promise<SpiPaginatedResponse<Resource>>
-  updateMany: (updates: SpiUpdateManyRequest) => Promise<void>
+  updateMany: (updates: SpiUpdateManyRequest, updatedBy: AuditRecord, updatedAt: Date) => Promise<void>
 }
 
 export type { SpiGetManyRequest, SpiResourceRepository, SpiUpdateManyRequest }
