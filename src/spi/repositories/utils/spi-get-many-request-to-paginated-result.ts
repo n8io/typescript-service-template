@@ -7,16 +7,16 @@ import { validation } from '../../../utils/validation.ts'
 import type { initDatabase } from '../database/init.ts'
 import { domainGetManyRequestToDrizzleQuery } from './domain-get-many-request-to-drizzle-query.ts'
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: ???
 type Params<T extends ZodObject<any>> = {
   db: ReturnType<typeof initDatabase>
   request: SpiGetManyRequest
   schema: T
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: ???
   table: PgTableWithColumns<any>
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: ???
 const spiGetManyRequestToPaginatedResult = async <T extends ZodObject<any>>({
   db,
   request,

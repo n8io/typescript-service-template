@@ -1,25 +1,10 @@
-import {
-  SQL,
-  and,
-  asc,
-  desc,
-  eq,
-  gt,
-  gte,
-  ilike,
-  inArray,
-  isNotNull,
-  isNull,
-  lt,
-  lte,
-  ne,
-  notInArray,
-} from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
+import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, lte, ne, notInArray } from 'drizzle-orm'
 import type { DomainGetManyRequest } from '../../../domain/models/request.ts'
 import type { Operator } from '../../../models/filter.ts'
 import type { resourcesTable } from '../../../spi/repositories/database/schema.ts'
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: We need to pass a PgTableWithColumns to the function
 type ColumnConditionFn = (column: any, value: unknown) => SQL<unknown>
 
 const operatorMap: Record<Operator, ColumnConditionFn> = {

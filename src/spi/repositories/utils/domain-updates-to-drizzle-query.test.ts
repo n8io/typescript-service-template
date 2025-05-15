@@ -1,4 +1,4 @@
-import { type SQL } from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
 import { PgDialect } from 'drizzle-orm/pg-core'
 import { exampleAuditRecord } from '../../../models/audit-record.ts'
 import { domainUpdatesToDrizzleQuery } from './domain-updates-to-drizzle-query.ts'

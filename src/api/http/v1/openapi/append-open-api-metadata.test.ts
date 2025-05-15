@@ -1,12 +1,12 @@
 import { z } from 'zod'
 import { OPEN_API_DEFAULT_HEADERS, OPEN_API_DEFAULT_PAGINATION_PARAMS } from '../../models/openapi.ts'
-import { RouteType, appendOpenApiMetadata } from './append-open-api-metadata.ts'
+import { appendOpenApiMetadata, RouteType } from './append-open-api-metadata.ts'
 
 // Mocks
 vi.mock('hono-openapi', async () => {
   return {
     describeRoute: vi.fn((options) => options),
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: ???
     resolver: (schema: any) => ({
       builder: () => ({ mock: `schema for ${schema.description || 'unknown'}` }),
     }),
@@ -42,7 +42,7 @@ describe('appendOpenApiMetadata', () => {
       requestSchema,
       responseSchema: baseResponseSchema,
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.summary).toBe('Create One')
@@ -55,7 +55,7 @@ describe('appendOpenApiMetadata', () => {
       type: RouteType.DELETE_ONE,
       operationId: 'EntityDeleteOne',
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.summary).toBe('Delete One')
@@ -78,7 +78,7 @@ describe('appendOpenApiMetadata', () => {
       operationId: 'EntityGetOne',
       responseSchema: baseResponseSchema,
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.summary).toBe('Get One')
@@ -103,7 +103,7 @@ describe('appendOpenApiMetadata', () => {
       requestSchema,
       responseSchema: baseResponseSchema,
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.summary).toBe('Get Many')
@@ -127,7 +127,7 @@ describe('appendOpenApiMetadata', () => {
       requestSchema,
       responseSchema: baseResponseSchema,
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.summary).toBe('Update One')
@@ -143,7 +143,7 @@ describe('appendOpenApiMetadata', () => {
       description: customDescription,
       responseSchema: baseResponseSchema,
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.description).toBe(customDescription)
@@ -154,7 +154,7 @@ describe('appendOpenApiMetadata', () => {
       type: RouteType.DELETE_ONE,
       operationId: 'EntityDeleteOne',
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.responses).toEqual({
@@ -170,7 +170,7 @@ describe('appendOpenApiMetadata', () => {
       operationId: 'EntityGetOne',
       responseSchema: baseResponseSchema,
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.responses).toEqual({
@@ -191,7 +191,7 @@ describe('appendOpenApiMetadata', () => {
   it('should throw error for unknown route type', () => {
     expect(() =>
       appendOpenApiMetadata({
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        // biome-ignore lint/suspicious/noExplicitAny: ???
         type: 'unknown' as any,
         operationId: 'EntityGetOne',
         responseSchema: baseResponseSchema,
@@ -212,7 +212,7 @@ describe('appendOpenApiMetadata', () => {
       requestSchema,
       responseSchema: baseResponseSchema,
       tags: baseTags,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
     }) as any
 
     expect(result.parameters).toEqual(

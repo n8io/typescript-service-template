@@ -1,4 +1,5 @@
-import { AppStateManager, type Closable, type Monitorable } from './app-state-manager.ts'
+import type { Closable, Monitorable } from './app-state-manager.ts'
+import { AppStateManager } from './app-state-manager.ts'
 import * as Logger from './logger.ts'
 
 vi.mock('./logger.ts')

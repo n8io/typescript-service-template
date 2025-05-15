@@ -1,4 +1,5 @@
-import { ZodObject, ZodSchema, type ZodTypeAny, z } from 'zod'
+import type { ZodObject, ZodSchema, ZodTypeAny } from 'zod'
+import { z } from 'zod'
 import {
   ApiUnsupportedFieldError,
   ApiUnsupportedFieldOperatorError,
@@ -43,9 +44,9 @@ const unwrapAll = (schema: ZodSchema): ZodSchema => {
       continue
     }
 
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    // biome-ignore lint/suspicious/noExplicitAny: ???
     if (typeof (current as any).unwrap === 'function') {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
       current = (current as any).unwrap()
       continue
     }
@@ -61,7 +62,7 @@ const getBaseType = (schema: ZodSchema): string => unwrapAll(schema)._def?.typeN
 
 const getBaseSchema = unwrapAll
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: ???
 const safeSort = (values: any[], zodType: string) => {
   if (zodType === 'ZodNumber') {
     return values.sort((a, b) => a - b)
@@ -187,7 +188,7 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
     const [fieldRaw = '', operatorRaw = 'eq'] = rawKey.split(':')
     const operator = operatorRaw as Operator
 
-    if (!Object.prototype.hasOwnProperty.call(Operator, operator)) {
+    if (!Object.hasOwn(Operator, operator)) {
       throw new ApiUnsupportedOperatorError(operator)
     }
 
@@ -217,11 +218,7 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
 
     const deduped = [...new Set(parsedValues)]
 
-    const applyEquivalenceOperation = ({
-      isNegated = false,
-    }: {
-      isNegated?: boolean
-    }) => {
+    const applyEquivalenceOperation = ({ isNegated = false }: { isNegated?: boolean }) => {
       const eqOp = isNegated ? 'neq' : 'eq'
       const inOp = isNegated ? 'nin' : 'in'
       const previousEq = structuredClone(filters[field][eqOp])

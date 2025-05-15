@@ -1,4 +1,5 @@
-import { type DescribeRouteOptions, describeRoute } from 'hono-openapi'
+import type { DescribeRouteOptions } from 'hono-openapi'
+import { describeRoute } from 'hono-openapi'
 import { resolver } from 'hono-openapi/zod'
 import type { ZodObject } from 'zod'
 import { validation } from '../../../../utils/validation.ts'
@@ -15,7 +16,7 @@ const RouteType = {
 
 type RouteType = (typeof RouteType)[keyof typeof RouteType]
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: ???
 type AnyZodObject = ZodObject<any>
 
 const routeTypeToSummary: Record<RouteType, string> = {
@@ -95,8 +96,8 @@ const appendOpenApiMetadata = (config: RouteConfig) => {
   const { description, operationId, responseSchema, tags, type } = config
 
   let actualDescription: DescribeRouteOptions['description'] = description
-  let actualParameters: DescribeRouteOptions['parameters'] = undefined
-  let requestBody: DescribeRouteOptions['requestBody'] = undefined
+  let actualParameters: DescribeRouteOptions['parameters']
+  let requestBody: DescribeRouteOptions['requestBody']
   let actualResponses: DescribeRouteOptions['responses'] = toResponse(responseSchema)
 
   switch (type) {

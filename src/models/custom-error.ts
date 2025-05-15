@@ -1,5 +1,5 @@
 import type { ZodError } from 'zod'
-import { ErrorCode } from './error-code.ts'
+import type { ErrorCode } from './error-code.ts'
 import { HttpStatus } from './http-status.ts'
 
 class CustomError extends Error {

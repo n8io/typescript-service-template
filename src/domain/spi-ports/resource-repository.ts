@@ -1,7 +1,7 @@
 import type { AuditRecord } from '../../models/audit-record.ts'
 import type { UpdateByGid } from '../../spi/repositories/utils/domain-updates-to-drizzle-query.ts'
 import type { DomainGetManyRequest } from '../models/request.ts'
-import { type Resource } from '../models/resource.ts'
+import type { Resource } from '../models/resource.ts'
 import type { SpiPaginatedResponse } from './paginated.ts'
 
 type SpiGetManyRequest = DomainGetManyRequest

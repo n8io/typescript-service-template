@@ -1,4 +1,5 @@
-import { SQL, sql } from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
+import { sql } from 'drizzle-orm'
 import type { AuditRecord } from '../../../models/audit-record.ts'
 
 type JsonValue = Date | string | number | boolean | null | undefined | JsonObject | JsonArray

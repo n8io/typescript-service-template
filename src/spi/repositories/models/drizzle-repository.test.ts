@@ -10,8 +10,8 @@ import { DrizzleRepository } from './drizzle-repository.ts'
 vi.mock('../utils/domain-updates-to-drizzle-query.ts')
 vi.mock('drizzle-orm')
 
-import * as Operations from 'drizzle-orm'
 import type { SQL } from 'drizzle-orm'
+import * as Operations from 'drizzle-orm'
 
 // Test schema and table setup
 const testSchema = z.object({

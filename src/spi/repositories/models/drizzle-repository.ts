@@ -1,5 +1,5 @@
 import { getTableName, inArray } from 'drizzle-orm'
-import { type PgTable } from 'drizzle-orm/pg-core'
+import type { PgTable } from 'drizzle-orm/pg-core'
 import type { z } from 'zod'
 import type { SpiPaginatedResponse } from '../../../domain/spi-ports/paginated.ts'
 import type { SpiGetManyRequest } from '../../../domain/spi-ports/resource-repository.ts'
@@ -51,7 +51,7 @@ abstract class DrizzleRepository<
       db: this.dependencies.db,
       request,
       schema: this.schema,
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      // biome-ignore lint/suspicious/noExplicitAny: ???
       table: this.table as any,
     }) as Promise<SpiPaginatedResponse<Entity>>
   }
