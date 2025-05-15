@@ -4,6 +4,7 @@ import { DomainNotFoundError } from '../../../models/custom-error.ts'
 import { gid } from '../../../utils/generators/gid.ts'
 import { schemaDomainGetManyRequest } from '../../models/request.ts'
 import type { SpiPaginatedResponse } from '../../spi-ports/paginated.ts'
+import type { SpiUpdateManyRequest } from '../../spi-ports/resource-repository.ts'
 import { domainGetOneRequestToGetManyRequest } from '../utils/domain-get-one-request-to-get-many-request.ts'
 import { spiRepositoryGetManyResponseToDomainPaginatedResponse } from '../utils/spi-get-many-response-to-domain-paginated-response.ts'
 
@@ -11,13 +12,7 @@ type BaseDependencies<T> = {
   repository: {
     createOne: (request: T) => Promise<T>
     getMany: (request: z.infer<typeof schemaDomainGetManyRequest>) => Promise<SpiPaginatedResponse<T>>
-    updateOne: (
-      gid: string,
-      data: Partial<T> & {
-        updatedAt: Date
-        updatedBy: AuditRecord
-      },
-    ) => Promise<T>
+    updateMany: (updates: SpiUpdateManyRequest, updatedBy: AuditRecord, updatedAt: Date) => Promise<void>
   }
 }
 
@@ -33,7 +28,7 @@ abstract class BaseService<T extends { gid: string }> {
       /**
        * @description The schema for the request to create one entity.
        */
-      createOne: z.ZodType<Partial<T> & { createdBy: AuditRecord }>
+      createOne: z.ZodType<Partial<Omit<T, 'createdBy'>> & { createdBy: AuditRecord }>
       /**
        * @description The schema for the request to get many entities.
        */
@@ -45,7 +40,7 @@ abstract class BaseService<T extends { gid: string }> {
       /**
        * @description The schema for the request to update one entity.
        */
-      updateOne: z.ZodType<Partial<T> & { updatedBy: AuditRecord }>
+      updateOne: z.ZodType<Partial<Omit<T, 'updatedBy'>> & { updatedBy: AuditRecord }>
     }
     response: {
       /**
@@ -115,17 +110,18 @@ abstract class BaseService<T extends { gid: string }> {
     updates: z.infer<typeof this.schemas.request.updateOne>,
   ): Promise<z.infer<typeof this.schemas.response.getOne>> {
     const validGid = this.schemas.request.getOne.parse(gid)
-    const spiRequest = this.schemas.request.updateOne.parse(updates)
+    const { updatedBy, ...spiRequest } = this.schemas.request.updateOne.parse(updates)
 
-    const updated = await this.dependencies.repository.updateOne(validGid, {
-      ...spiRequest,
-      updatedAt: new Date(),
-    } as Partial<T> & {
-      updatedAt: Date
-      updatedBy: AuditRecord
-    })
+    const updatesByGid: SpiUpdateManyRequest = [
+      {
+        ...spiRequest,
+        gid: validGid,
+      },
+    ]
 
-    return this.getOne(updated.gid)
+    await this.dependencies.repository.updateMany(updatesByGid, updatedBy, new Date())
+
+    return this.getOne(validGid)
   }
 }
 

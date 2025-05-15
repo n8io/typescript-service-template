@@ -1,13 +1,17 @@
+import * as DrizzleOrm from 'drizzle-orm'
 import type { PgTable } from 'drizzle-orm/pg-core'
 import { z } from 'zod'
 import { exampleAuditRecord } from '../../../models/audit-record.ts'
 import type { initDatabase } from '../database/init.ts'
+import * as DomainUpdatesToDrizzleQuery from '../utils/domain-updates-to-drizzle-query.ts'
 import * as Utils from '../utils/spi-get-many-request-to-paginated-result.ts'
 import { DrizzleRepository } from './drizzle-repository.ts'
 
+vi.mock('../utils/domain-updates-to-drizzle-query.ts')
 vi.mock('drizzle-orm')
 
 import * as Operations from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
 
 // Test schema and table setup
 const testSchema = z.object({
@@ -37,6 +41,7 @@ describe('DrizzleRepository', () => {
   const mockDb = (overrides = {}) =>
     ({
       delete: vi.fn().mockName('db.delete').mockReturnThis(),
+      execute: vi.fn().mockName('db.execute').mockReturnThis(),
       from: vi.fn().mockName('db.from').mockReturnThis(),
       insert: vi.fn().mockName('db.insert').mockReturnThis(),
       limit: vi.fn().mockName('db.limit').mockReturnThis(),
@@ -162,28 +167,68 @@ describe('DrizzleRepository', () => {
     })
   })
 
-  describe('updateOne', () => {
-    it('should call update with the expected parameters', async () => {
-      const db = mockDb()
-      const repository = new TestDrizzleRepository({ db })
-      const { gid } = exampleEntity()
-      const updateRequest = { name: 'UPDATED_NAME', updatedAt: new Date(), updatedBy: exampleAuditRecord() }
+  describe('updateMany', () => {
+    describe('when no updates are provided', () => {
+      beforeEach(() => {
+        vi.spyOn(DomainUpdatesToDrizzleQuery, 'domainUpdatesToDrizzleQuery').mockReturnValue(undefined)
+      })
 
-      // @ts-expect-error We don't need to mock the whole module
-      const eqSpy = vi.spyOn(Operations, 'eq').mockReturnValue(undefined)
+      it('should NOT execute a query', async () => {
+        const db = mockDb()
+        const repository = new TestDrizzleRepository({ db })
+        const { gid } = exampleEntity()
 
-      await repository.updateOne(gid, updateRequest)
+        const updateRequests: Parameters<typeof repository.updateMany>[0] = [
+          {
+            gid,
+            name: 'UPDATED_NAME',
+            updatedAt: new Date(),
+            updatedBy: exampleAuditRecord(),
+          },
+        ]
 
-      expect(db.update).toHaveBeenCalledWith(mockTable)
+        await repository.updateMany(updateRequests)
 
-      // @ts-expect-error ???
-      expect(db.set).toHaveBeenCalledWith(updateRequest)
+        expect(db.execute).not.toHaveBeenCalled()
+      })
+    })
 
-      // @ts-expect-error ???
-      expect(db.where).toHaveBeenCalledWith(eqSpy(mockTable.gid, gid))
+    describe('when updates are provided', () => {
+      const mockTableName = 'mock_table'
 
-      // @ts-expect-error ???
-      expect(db.returning).toHaveBeenCalled()
+      const mockQuery = {
+        params: {},
+        sql: 'SELECT * FROM mock_table',
+      } as unknown as SQL
+
+      beforeEach(() => {
+        vi.spyOn(DrizzleOrm, 'getTableName').mockReturnValue(mockTableName)
+        vi.spyOn(DomainUpdatesToDrizzleQuery, 'domainUpdatesToDrizzleQuery').mockReturnValue(mockQuery)
+      })
+
+      it('should execute a query', async () => {
+        const db = mockDb()
+        const repository = new TestDrizzleRepository({ db })
+        const { gid } = exampleEntity()
+
+        const updateRequests: Parameters<typeof repository.updateMany>[0] = [
+          {
+            gid,
+            name: 'UPDATED_NAME',
+            updatedAt: new Date(),
+            updatedBy: exampleAuditRecord(),
+          },
+        ]
+
+        await repository.updateMany(updateRequests)
+
+        expect(DomainUpdatesToDrizzleQuery.domainUpdatesToDrizzleQuery).toHaveBeenCalledWith(
+          mockTableName,
+          updateRequests,
+        )
+
+        expect(db.execute).toHaveBeenCalledWith(mockQuery)
+      })
     })
   })
 })
