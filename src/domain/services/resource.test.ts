@@ -32,6 +32,7 @@ describe('ResourceService', () => {
       const mockRepository = {
         createOne: vi.fn().mockResolvedValue(mockResource),
         getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
+        updateMany: vi.fn().mockResolvedValue(undefined),
       } as unknown as SpiResourceRepository
 
       const resourceService = new ResourceService({
@@ -201,7 +202,7 @@ describe('ResourceService', () => {
 
       const mockRepository = {
         getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
-        updateOne: vi.fn().mockResolvedValue({ ...mockResource, name: 'UPDATED_NAME' }),
+        updateMany: vi.fn().mockResolvedValue(undefined),
       } as unknown as SpiResourceRepository
 
       const resourceService = new ResourceService({
@@ -212,10 +213,17 @@ describe('ResourceService', () => {
 
       const result = await resourceService.updateOne(mockResource.gid, update)
 
-      expect(mockRepository.updateOne).toHaveBeenCalledWith(mockResource.gid, {
-        ...update,
-        updatedAt: expect.any(Date),
-      })
+      expect(mockRepository.updateMany).toHaveBeenCalledWith(
+        [
+          {
+            name: update.name,
+            gid: mockResource.gid,
+          },
+        ],
+        update.updatedBy,
+        expect.any(Date),
+      )
+
       expect(result).toEqual(mockResource)
     })
 
@@ -227,14 +235,17 @@ describe('ResourceService', () => {
 
       const mockRepository = {
         getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
-        updateOne: vi.fn().mockRejectedValue(error),
+        updateMany: vi.fn().mockRejectedValue(error),
       } as unknown as SpiResourceRepository
 
       const resourceService = new ResourceService({
         repository: mockRepository,
       })
 
-      const update = { name: 'UPDATED_NAME', updatedBy: exampleAuditRecord() }
+      const update = {
+        name: 'UPDATED_NAME',
+        updatedBy: exampleAuditRecord(),
+      }
 
       await expect(() => resourceService.updateOne(mockResource.gid, update)).rejects.toThrowError(error)
     })

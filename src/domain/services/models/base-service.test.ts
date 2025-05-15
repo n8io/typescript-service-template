@@ -1,20 +1,31 @@
 import { z } from 'zod'
-import { exampleAuditRecord, schemaAuditRecord } from '../../../models/audit-record.ts'
+import { exampleAuditRecord } from '../../../models/audit-record.ts'
 import { DomainNotFoundError } from '../../../models/custom-error.ts'
+import { schemaEntity } from '../../../models/entity.ts'
+import { gid } from '../../../utils/generators/gid.ts'
 import { validation } from '../../../utils/validation.ts'
+import { toPaginatedResponseSchema } from '../../models/pagination.ts'
 import { schemaDomainGetManyRequest } from '../../models/request.ts'
 import { BaseService } from './base-service.ts'
 
-type TestEntity = {
-  gid: string
-  name: string
-  updatedBy?: {
-    type: 'SYSTEM' | 'USER'
-    system?: string
-    gid?: string
-    email?: string
-  }
-}
+const mockGid = gid()
+
+const schemaTestEntity = schemaEntity.extend({
+  name: z.string(),
+})
+
+const exampleTestEntity = (overrides?: Partial<z.infer<typeof schemaTestEntity>>) =>
+  ({
+    createdAt: new Date(),
+    createdBy: exampleAuditRecord({ type: 'USER' }),
+    gid: mockGid,
+    name: 'Test Entity',
+    updatedAt: new Date(),
+    updatedBy: exampleAuditRecord({ type: 'USER' }),
+    ...overrides,
+  }) as z.infer<typeof schemaTestEntity>
+
+type TestEntity = z.infer<typeof schemaTestEntity>
 
 // Mock implementation of BaseService for testing
 class TestService extends BaseService<TestEntity> {
@@ -26,61 +37,40 @@ class TestService extends BaseService<TestEntity> {
   }
 
   public readonly schemas = {
-    core: z.object({
-      gid: z.string(),
-      name: z.string(),
-      updatedBy: schemaAuditRecord.optional(),
-    }),
+    core: schemaTestEntity,
     request: {
-      createOne: z.object({
-        createdBy: schemaAuditRecord,
-        name: z.string(),
+      createOne: schemaTestEntity.pick({
+        name: true,
+        createdBy: true,
       }),
-      getMany: z.object({
-        gid: validation.gid,
-        name: z.string(),
-      }),
-      getOne: z.string(),
-      updateOne: z.object({
-        name: z.string(),
-        updatedBy: schemaAuditRecord,
+      getMany: schemaTestEntity,
+      getOne: validation.gid,
+      updateOne: schemaTestEntity.pick({
+        name: true,
+        updatedBy: true,
       }),
     },
     response: {
-      getMany: z.object({
-        items: z.array(z.object({ gid: z.string(), name: z.string() })),
-        itemsTotal: z.number(),
-        page: z.number(),
-        pageSize: z.number(),
-        pagesTotal: z.number(),
-        hasMore: z.boolean(),
-      }),
-      getOne: z.object({
-        gid: z.string(),
-        name: z.string(),
-        updatedBy: z
-          .object({
-            type: z.enum(['SYSTEM', 'USER']),
-            system: z.string().optional(),
-            gid: z.string().optional(),
-            email: z.string().optional(),
-          })
-          .optional(),
-      }),
+      getMany: toPaginatedResponseSchema(schemaTestEntity, exampleTestEntity()),
+      getOne: schemaTestEntity,
     },
   }
 }
 
 describe('BaseService', () => {
   const mockEntity: TestEntity = {
-    gid: 'test-gid',
+    createdAt: new Date(),
+    createdBy: exampleAuditRecord({ type: 'USER' }),
+    gid: mockGid,
     name: 'Test Entity',
+    updatedAt: new Date(),
+    updatedBy: exampleAuditRecord({ type: 'USER' }),
   }
 
   const mockRepository = {
     createOne: vi.fn(),
     getMany: vi.fn(),
-    updateOne: vi.fn(),
+    updateMany: vi.fn(),
   }
 
   let service: TestService
@@ -168,12 +158,12 @@ describe('BaseService', () => {
     it('should return an entity by gid', async () => {
       mockRepository.getMany.mockResolvedValue({ items: [mockEntity], itemsTotal: 1 })
 
-      const result = await service.getOne('test-gid')
+      const result = await service.getOne(mockGid)
 
       expect(mockRepository.getMany).toHaveBeenCalledWith({
         filters: {
           gid: {
-            eq: 'test-gid',
+            eq: mockGid,
           },
         },
         pagination: {
@@ -188,7 +178,7 @@ describe('BaseService', () => {
     it('should throw DomainNotFoundError if entity is not found', async () => {
       mockRepository.getMany.mockResolvedValue({ items: [], itemsTotal: 0 })
 
-      await expect(service.getOne('non-existent-gid')).rejects.toThrow(DomainNotFoundError)
+      await expect(service.getOne(mockGid)).rejects.toThrow(DomainNotFoundError)
     })
   })
 
@@ -205,15 +195,21 @@ describe('BaseService', () => {
         updatedBy: updateRequest.updatedBy,
       }
 
-      mockRepository.updateOne.mockResolvedValue(updatedEntity)
+      mockRepository.updateMany.mockResolvedValue(undefined)
       mockRepository.getMany.mockResolvedValue({ items: [updatedEntity], itemsTotal: 1 })
 
-      const result = await service.updateOne('test-gid', updateRequest)
+      const result = await service.updateOne(mockGid, updateRequest)
 
-      expect(mockRepository.updateOne).toHaveBeenCalledWith('test-gid', {
-        ...updateRequest,
-        updatedAt: expect.any(Date),
-      })
+      expect(mockRepository.updateMany).toHaveBeenCalledWith(
+        [
+          {
+            name: updateRequest.name,
+            gid: mockGid,
+          },
+        ],
+        updateRequest.updatedBy,
+        expect.any(Date),
+      )
 
       expect(result).toEqual(updatedEntity)
     })
@@ -226,7 +222,7 @@ describe('BaseService', () => {
 
       await expect(
         service.updateOne(
-          'test-gid',
+          mockGid,
           // @ts-expect-error - Invalid request
           invalidUpdate,
         ),

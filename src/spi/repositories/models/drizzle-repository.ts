@@ -1,11 +1,12 @@
-import { eq, inArray } from 'drizzle-orm'
-import type { PgTable } from 'drizzle-orm/pg-core'
+import { SQL, getTableName, inArray } from 'drizzle-orm'
+import { PgDialect, type PgTable } from 'drizzle-orm/pg-core'
 import type { z } from 'zod'
 import type { SpiPaginatedResponse } from '../../../domain/spi-ports/paginated.ts'
 import type { SpiGetManyRequest } from '../../../domain/spi-ports/resource-repository.ts'
-import type { AuditRecord } from '../../../models/audit-record.ts'
 import type { initDatabase } from '../database/init.ts'
 import { schemaDbRecord } from '../models/db-record.ts'
+import type { UpdateByGid } from '../utils/domain-updates-to-drizzle-query.ts'
+import { domainUpdatesToDrizzleQuery } from '../utils/domain-updates-to-drizzle-query.ts'
 import { spiGetManyRequestToPaginatedResult } from '../utils/spi-get-many-request-to-paginated-result.ts'
 
 type Dependencies = {
@@ -17,10 +18,6 @@ abstract class DrizzleRepository<
   Table extends PgTable,
   Entity = z.infer<Schema>,
   CreateRequest = Entity,
-  UpdateRequest = Partial<Entity> & {
-    updatedAt: Date
-    updatedBy: AuditRecord
-  },
 > {
   protected readonly dependencies: Dependencies
   protected readonly schema: Schema
@@ -58,16 +55,18 @@ abstract class DrizzleRepository<
     }) as Promise<SpiPaginatedResponse<Entity>>
   }
 
-  async updateOne(gid: string, request: UpdateRequest): Promise<Entity> {
-    // @ts-expect-error - TODO: fix this
-    const [updated] = await this.dependencies.db
-      .update(this.table)
-      .set(request)
-      // @ts-expect-error - TODO: fix this
-      .where(eq(this.table.gid, gid))
-      .returning()
+  async updateMany(updates: NonEmptyArray<UpdateByGid>): Promise<void> {
+    const query = await domainUpdatesToDrizzleQuery(getTableName(this.table), updates)
 
-    return this.schema.parse(updated) as Entity
+    if (!query) {
+      return
+    }
+
+    const dialect = new PgDialect()
+    const queryToSql = (query: SQL) => dialect.sqlToQuery(query)
+    console.log(queryToSql(query))
+
+    await this.dependencies.db.execute(query)
   }
 }
 
