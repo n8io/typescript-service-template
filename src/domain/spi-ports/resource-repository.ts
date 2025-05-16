@@ -10,6 +10,7 @@ type SpiUpdateManyRequest = NonEmptyArray<UpdateByGid>
 
 type SpiResourceRepository = {
   createOne: (request: SpiCreateOneRequest) => Promise<Resource>
+  deleteMany: (gids: string[]) => Promise<void>
   getMany: (query: SpiGetManyRequest) => Promise<SpiPaginatedResponse<Resource>>
   updateMany: (updates: SpiUpdateManyRequest, updatedBy: AuditRecord, updatedAt: Date) => Promise<void>
 }

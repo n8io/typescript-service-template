@@ -25,6 +25,7 @@ describe('ResourceService', () => {
 
   const makeMockRepository = (overrides: Partial<SpiResourceRepository> = {}): SpiResourceRepository => ({
     createOne: vi.fn().mockResolvedValue(mockResource),
+    deleteMany: vi.fn().mockResolvedValue(undefined),
     getMany: vi.fn().mockResolvedValue({
       items: [mockResource],
       itemsTotal: 1,

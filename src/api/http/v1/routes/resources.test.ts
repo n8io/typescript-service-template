@@ -1,4 +1,6 @@
 import { exampleResource } from '../../../../domain/models/resource.ts'
+import { DomainNotFoundError } from '../../../../models/custom-error.ts'
+import { errorHandler } from '../../middleware/error-handler.ts'
 import { makeApp } from '../app.ts'
 import { resources } from './resources.ts'
 
@@ -23,6 +25,8 @@ describe('resources', () => {
       }
 
       const app = makeApp()
+
+      app.onError(errorHandler())
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -57,6 +61,8 @@ describe('resources', () => {
       }
 
       const app = makeApp()
+
+      app.onError(errorHandler())
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -96,6 +102,8 @@ describe('resources', () => {
 
       const app = makeApp()
 
+      app.onError(errorHandler())
+
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
         // @ts-expect-error ???
@@ -127,6 +135,8 @@ describe('resources', () => {
 
       const app = makeApp()
 
+      app.onError(errorHandler())
+
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
         // @ts-expect-error ???
@@ -147,6 +157,102 @@ describe('resources', () => {
       expect(res.status).toBe(200)
       expect(data).toEqual(JSON.parse(JSON.stringify(mockResource)))
       expect(mockServices.resource.updateOne).toHaveBeenCalledWith(gid, { name: 'UPDATED_NAME' })
+    })
+  })
+
+  describe('DELETE /:gid', () => {
+    it('should delete a resource by id', async () => {
+      const gid = 'GID'
+
+      const mockServices = {
+        resource: {
+          deleteOne: vi.fn().mockResolvedValue(undefined),
+        },
+      }
+
+      const app = makeApp()
+
+      app.onError(errorHandler())
+
+      // Attach mock services middleware
+      app.use('*', async (ctx, next) => {
+        // @ts-expect-error ???
+        ctx.set('services', mockServices)
+        await next()
+      })
+
+      // Mount the resources route
+      app.route('/', resources)
+
+      const res = await app.request(`/${gid}`, {
+        method: 'DELETE',
+      })
+
+      expect(res.status).toBe(204)
+      expect(mockServices.resource.deleteOne).toHaveBeenCalledWith(gid)
+    })
+
+    it('should throw an error if the resource cannot be found', async () => {
+      const gid = 'GID'
+
+      const mockServices = {
+        resource: {
+          deleteOne: vi.fn().mockRejectedValue(new DomainNotFoundError(`Entity with gid ${gid} not found`)),
+        },
+      }
+
+      const app = makeApp()
+
+      app.onError(errorHandler())
+
+      // Attach mock services middleware
+      app.use('*', async (ctx, next) => {
+        // @ts-expect-error ???
+        ctx.set('services', mockServices)
+        await next()
+      })
+
+      // Mount the resources route
+      app.route('/', resources)
+
+      const res = await app.request(`/${gid}`, {
+        method: 'DELETE',
+      })
+
+      expect(res.status).toBe(404)
+      expect(mockServices.resource.deleteOne).toHaveBeenCalledWith(gid)
+    })
+
+    it('should throw an error if the delete operation fails', async () => {
+      const gid = 'GID'
+      const error = new Error('💥')
+
+      const mockServices = {
+        resource: {
+          deleteOne: vi.fn().mockRejectedValue(error),
+        },
+      }
+
+      const app = makeApp()
+
+      app.onError(errorHandler())
+
+      // Attach mock services middleware
+      app.use('*', async (ctx, next) => {
+        // @ts-expect-error ???
+        ctx.set('services', mockServices)
+        await next()
+      })
+
+      // Mount the resources route
+      app.route('/', resources)
+
+      const res = await app.request(`/${gid}`, {
+        method: 'DELETE',
+      })
+
+      expect(res.status).toBe(500)
+      expect(mockServices.resource.deleteOne).toHaveBeenCalledWith(gid)
     })
   })
 })

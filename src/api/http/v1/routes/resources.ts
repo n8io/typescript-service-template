@@ -27,6 +27,23 @@ resources.post(
   },
 )
 
+resources.delete(
+  '/:gid',
+  appendOpenApiMetadata({
+    operationId: 'resourcesDeleteOne',
+    tags: [OpenApiTag.RESOURCES],
+    type: RouteType.DELETE_ONE,
+  }),
+  async (ctx) => {
+    const gid = ctx.req.param('gid')
+    const services = ctx.get('services')
+
+    await services.resource.deleteOne(gid)
+
+    return new Response(null, { status: 204 })
+  },
+)
+
 resources.get(
   '/',
   appendOpenApiMetadata({
