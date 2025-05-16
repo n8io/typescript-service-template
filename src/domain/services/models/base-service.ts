@@ -12,6 +12,7 @@ import { spiRepositoryGetManyResponseToDomainPaginatedResponse } from '../utils/
 type BaseDependencies<T> = {
   repository: {
     createOne: (request: T) => Promise<T>
+    deleteMany: (gid: string[]) => Promise<void>
     getMany: (request: z.infer<typeof schemaDomainGetManyRequest>) => Promise<SpiPaginatedResponse<T>>
     updateMany: (updates: SpiUpdateManyRequest, updatedBy: AuditRecord, updatedAt: Date) => Promise<void>
   }
@@ -76,6 +77,10 @@ abstract class BaseService<T extends { gid: string }> {
     } as unknown as T)
 
     return this.getOne(created.gid)
+  }
+
+  async deleteOne(gid: string): Promise<void> {
+    await this.dependencies.repository.deleteMany([gid])
   }
 
   async getMany(

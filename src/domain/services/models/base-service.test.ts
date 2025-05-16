@@ -72,6 +72,7 @@ describe('BaseService', () => {
 
   const mockRepository = {
     createOne: vi.fn(),
+    deleteMany: vi.fn(),
     getMany: vi.fn(),
     updateMany: vi.fn(),
   }

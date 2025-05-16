@@ -94,6 +94,16 @@ describe('initHttp', () => {
         },
         {
           "handler": [Function],
+          "method": "DELETE",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "DELETE",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
           "method": "GET",
           "path": "/api/v1/resources",
         },
@@ -191,6 +201,16 @@ describe('initHttp', () => {
           "handler": [Function],
           "method": "POST",
           "path": "/api/v1/resources",
+        },
+        {
+          "handler": [Function],
+          "method": "DELETE",
+          "path": "/api/v1/resources/:gid",
+        },
+        {
+          "handler": [Function],
+          "method": "DELETE",
+          "path": "/api/v1/resources/:gid",
         },
         {
           "handler": [Function],
