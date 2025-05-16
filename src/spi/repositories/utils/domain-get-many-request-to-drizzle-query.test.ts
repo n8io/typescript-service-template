@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
 import type { DomainGetManyRequest } from '../../../domain/models/request.ts'
-import { resourcesTable } from '../../../spi/repositories/database/schema.ts'
+import { tableResources } from '../../../spi/repositories/database/schema.ts'
 import { domainGetManyRequestToDrizzleQuery } from './domain-get-many-request-to-drizzle-query.ts'
 
 describe('domainGetManyRequestToDrizzleQuery', () => {
@@ -46,12 +46,12 @@ describe('domainGetManyRequestToDrizzleQuery', () => {
       ],
     }
 
-    const { limit, offset, orderBy, where } = domainGetManyRequestToDrizzleQuery(request, resourcesTable)
+    const { limit, offset, orderBy, where } = domainGetManyRequestToDrizzleQuery(request, tableResources)
     const db = drizzle('')
 
     const query = db
       .select()
-      .from(resourcesTable)
+      .from(tableResources)
       .where(where)
       .orderBy(...orderBy)
       .toSQL()
