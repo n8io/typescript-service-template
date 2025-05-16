@@ -4,6 +4,7 @@ import { DomainNotFoundError } from '../../../models/custom-error.ts'
 import { schemaEntity } from '../../../models/entity.ts'
 import { gid } from '../../../utils/generators/gid.ts'
 import { validation } from '../../../utils/validation.ts'
+import type { PaginatedResponse } from '../../models/pagination.ts'
 import { toPaginatedResponseSchema } from '../../models/pagination.ts'
 import { schemaDomainGetManyRequest } from '../../models/request.ts'
 import { BaseService } from './base-service.ts'
@@ -51,7 +52,9 @@ class TestService extends BaseService<TestEntity> {
       }),
     },
     response: {
-      getMany: toPaginatedResponseSchema(schemaTestEntity, exampleTestEntity()),
+      getMany: toPaginatedResponseSchema(schemaTestEntity, exampleTestEntity()) as z.ZodType<
+        PaginatedResponse<TestEntity>
+      >,
       getOne: schemaTestEntity,
     },
   }

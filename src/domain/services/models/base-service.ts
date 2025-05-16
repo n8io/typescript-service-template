@@ -2,6 +2,7 @@ import type { z } from 'zod'
 import type { AuditRecord } from '../../../models/audit-record.ts'
 import { DomainNotFoundError } from '../../../models/custom-error.ts'
 import { gid } from '../../../utils/generators/gid.ts'
+import type { PaginatedResponse } from '../../models/pagination.ts'
 import { schemaDomainGetManyRequest } from '../../models/request.ts'
 import type { SpiPaginatedResponse } from '../../spi-ports/paginated.ts'
 import type { SpiUpdateManyRequest } from '../../spi-ports/resource-repository.ts'
@@ -46,7 +47,7 @@ abstract class BaseService<T extends { gid: string }> {
       /**
        * @description The schema for the response to get many entities.
        */
-      getMany: z.ZodType<SpiPaginatedResponse<T>>
+      getMany: z.ZodType<PaginatedResponse<T>>
       /**
        * @description The schema for the response to get one entity.
        */
@@ -62,7 +63,7 @@ abstract class BaseService<T extends { gid: string }> {
 
   async createOne(
     request: z.infer<typeof this.schemas.request.createOne>,
-  ): Promise<z.infer<typeof this.schemas.response.getOne>> {
+  ): Promise<Prettify<z.infer<typeof this.schemas.response.getOne>>> {
     const spiRequest = this.schemas.request.createOne.parse(request)
     const now = new Date()
 
@@ -79,7 +80,7 @@ abstract class BaseService<T extends { gid: string }> {
 
   async getMany(
     query: z.infer<typeof schemaDomainGetManyRequest>,
-  ): Promise<z.infer<typeof this.schemas.response.getMany>> {
+  ): Promise<Prettify<z.infer<typeof this.schemas.response.getMany>>> {
     const spiRequest = schemaDomainGetManyRequest.parse(query)
     const { items, itemsTotal } = await this.dependencies.repository.getMany(spiRequest)
 
@@ -91,7 +92,7 @@ abstract class BaseService<T extends { gid: string }> {
     })
   }
 
-  async getOne(gid: string): Promise<z.infer<typeof this.schemas.response.getOne>> {
+  async getOne(gid: string): Promise<Prettify<z.infer<typeof this.schemas.response.getOne>>> {
     const validGid = this.schemas.request.getOne.parse(gid)
 
     const {
@@ -108,7 +109,7 @@ abstract class BaseService<T extends { gid: string }> {
   async updateOne(
     gid: string,
     updates: z.infer<typeof this.schemas.request.updateOne>,
-  ): Promise<z.infer<typeof this.schemas.response.getOne>> {
+  ): Promise<Prettify<z.infer<typeof this.schemas.response.getOne>>> {
     const validGid = this.schemas.request.getOne.parse(gid)
     const { updatedBy, ...spiRequest } = this.schemas.request.updateOne.parse(updates)
 

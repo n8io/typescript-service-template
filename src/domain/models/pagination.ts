@@ -11,15 +11,28 @@ const schemaBasePagination = z.object({
 })
 
 const toPaginatedResponseSchema = (itemSchema: ZodSchema, exampleItem?: Record<string, unknown>) =>
-  schemaBasePagination.extend({ items: itemSchema.array() }).openapi({
-    example: {
-      hasMore: false,
-      itemsTotal: exampleItem ? 1 : 0,
-      page: 1,
-      pageSize: 10,
-      pagesTotal: exampleItem ? 1 : 0,
-      items: exampleItem ? [exampleItem] : [],
-    },
-  })
+  schemaBasePagination
+    .extend({ items: itemSchema.array() })
+    .strict()
+    .openapi({
+      example: {
+        hasMore: false,
+        itemsTotal: exampleItem ? 1 : 0,
+        page: 1,
+        pageSize: 10,
+        pagesTotal: exampleItem ? 1 : 0,
+        items: exampleItem ? [exampleItem] : [],
+      },
+    })
 
+type PaginatedResponse<T> = {
+  hasMore: boolean
+  itemsTotal: number
+  page: number
+  pageSize: number
+  pagesTotal: number
+  items: T[]
+}
+
+export type { PaginatedResponse }
 export { toPaginatedResponseSchema }

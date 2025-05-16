@@ -25,7 +25,7 @@ const commitFilePath = join(rootDir, '.git', 'COMMIT_EDITMSG')
 const commitMessage = (readFileSync(commitFilePath, 'utf8') ?? '').trim()
 
 const regExp =
-  /^(?<type>feat|chore|fix|test|refactor)\((?<ticket>[a-zA-Z]+-\d+)\)[:][ ](?<emoji>:\p{Emoji_Presentation}|\p{Extended_Pictographic})\p{Emoji_Modifier}?\uFE0F?[ ][A-Z]\s*[^\n]+(\n\n[\s\S]*)?$/u
+  /^(?<type>feat|chore|fix|test|refactor)\((?<ticket>[A-Z]+-\d+)\)[:][ ](?<emoji>:\p{Emoji_Presentation}|\p{Extended_Pictographic})\p{Emoji_Modifier}?\uFE0F?[ ][A-Z]\s*[^\n]+(\n\n[\s\S]*)?$/u
 
 const valid = regExp.test(commitMessage)
 

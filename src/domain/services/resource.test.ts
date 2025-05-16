@@ -23,21 +23,24 @@ vi.mock('../../utils/validation.ts', async (importOriginal) => {
 describe('ResourceService', () => {
   const mockResource = exampleResource()
 
+  const makeMockRepository = (overrides: Partial<SpiResourceRepository> = {}): SpiResourceRepository => ({
+    createOne: vi.fn().mockResolvedValue(mockResource),
+    getMany: vi.fn().mockResolvedValue({
+      items: [mockResource],
+      itemsTotal: 1,
+    }),
+    updateMany: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
+  })
+
   beforeEach(() => {
     vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue('GID')
   })
 
   describe('createOne', () => {
     it('should create a resource and return it', async () => {
-      const mockRepository = {
-        createOne: vi.fn().mockResolvedValue(mockResource),
-        getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
-        updateMany: vi.fn().mockResolvedValue(undefined),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
+      const mockRepository = makeMockRepository()
+      const resourceService = new ResourceService({ repository: mockRepository })
 
       const createRequest = {
         name: mockResource.name,
@@ -57,14 +60,8 @@ describe('ResourceService', () => {
     })
 
     it('should throw an error if the resource is invalid', async () => {
-      const mockRepository = {
-        createOne: vi.fn(),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
-
+      const mockRepository = makeMockRepository()
+      const resourceService = new ResourceService({ repository: mockRepository })
       const invalidRequest = {} as Parameters<typeof resourceService.createOne>[0]
 
       await expect(() => resourceService.createOne(invalidRequest)).rejects.toThrow()
@@ -73,14 +70,8 @@ describe('ResourceService', () => {
     it('should throw an error if the resource cannot be created', async () => {
       const error = new Error('💥')
 
-      const mockRepository = {
-        createOne: vi.fn().mockRejectedValue(error),
-        getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
+      const mockRepository = makeMockRepository({ createOne: vi.fn().mockRejectedValue(error) })
+      const resourceService = new ResourceService({ repository: mockRepository })
 
       const createRequest = {
         name: mockResource.name,
@@ -94,13 +85,8 @@ describe('ResourceService', () => {
 
   describe('getMany', () => {
     it('should return a paginated response of resources', async () => {
-      const mockRepository = {
-        getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
+      const mockRepository = makeMockRepository()
+      const resourceService = new ResourceService({ repository: mockRepository })
 
       const response = await resourceService.getMany({
         pagination: {
@@ -129,13 +115,8 @@ describe('ResourceService', () => {
     it('should throw an error if the resources cannot be retrieved', async () => {
       const error = new Error('💥')
 
-      const mockRepository = {
-        getMany: vi.fn().mockRejectedValue(error),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
+      const mockRepository = makeMockRepository({ getMany: vi.fn().mockRejectedValue(error) })
+      const resourceService = new ResourceService({ repository: mockRepository })
 
       await expect(() => resourceService.getMany({ pagination: { page: 1, pageSize: 1 } })).rejects.toThrowError(error)
     })
@@ -143,14 +124,8 @@ describe('ResourceService', () => {
 
   describe('getOne', () => {
     it('should return a resource by gid', async () => {
-      const mockRepository = {
-        getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
-
+      const mockRepository = makeMockRepository()
+      const resourceService = new ResourceService({ repository: mockRepository })
       const response = await resourceService.getOne('GID')
 
       expect(mockRepository.getMany).toHaveBeenCalledWith({
@@ -183,13 +158,8 @@ describe('ResourceService', () => {
     })
 
     it('should throw an error if the resource cannot be found', async () => {
-      const mockRepository = {
-        getMany: vi.fn().mockResolvedValue({ items: [], itemsTotal: 0 }),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
+      const mockRepository = makeMockRepository({ getMany: vi.fn().mockResolvedValue({ items: [], itemsTotal: 0 }) })
+      const resourceService = new ResourceService({ repository: mockRepository })
 
       await expect(() => resourceService.getOne('GID')).rejects.toThrowError(DomainNotFoundError)
     })
@@ -197,20 +167,11 @@ describe('ResourceService', () => {
 
   describe('updateOne', () => {
     it('should update the resource and return the updated resource', async () => {
-      const mockResource = exampleResource()
       vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue(mockResource.gid)
 
-      const mockRepository = {
-        getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
-        updateMany: vi.fn().mockResolvedValue(undefined),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
-
+      const mockRepository = makeMockRepository()
+      const resourceService = new ResourceService({ repository: mockRepository })
       const update = { name: 'UPDATED_NAME', updatedBy: exampleAuditRecord() }
-
       const result = await resourceService.updateOne(mockResource.gid, update)
 
       expect(mockRepository.updateMany).toHaveBeenCalledWith(
@@ -233,10 +194,7 @@ describe('ResourceService', () => {
 
       vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue(mockResource.gid)
 
-      const mockRepository = {
-        getMany: vi.fn().mockResolvedValue({ items: [mockResource], itemsTotal: 1 }),
-        updateMany: vi.fn().mockRejectedValue(error),
-      } as unknown as SpiResourceRepository
+      const mockRepository = makeMockRepository({ updateMany: vi.fn().mockRejectedValue(error) })
 
       const resourceService = new ResourceService({
         repository: mockRepository,
@@ -254,11 +212,9 @@ describe('ResourceService', () => {
   it('should instantiate with the correct repository and schemas', () => {
     const mockRepository = {} as SpiResourceRepository
     const service = new ResourceService({ repository: mockRepository })
+
     expect(service).toBeInstanceOf(ResourceService)
-    // Optionally check that schemas are wired up
     expect(ResourceService.schemas).toBeDefined()
     expect(ResourceService.propsMeta).toBeDefined()
   })
-
-  // Add any domain-specific or integration tests here if needed
 })
