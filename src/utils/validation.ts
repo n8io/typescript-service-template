@@ -37,7 +37,7 @@ const bool = z
   .openapi({
     example: true,
     format: OpenApiFormat.BINARY,
-  })
+  }) as z.ZodEffects<z.ZodBoolean, boolean, boolean>
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
 
