@@ -1,9 +1,10 @@
 import { z } from 'zod'
 
 const Env = {
-  TEST: 'test',
-  PRODUCTION: 'production',
   DEVELOPMENT: 'development',
+  PRODUCTION: 'production',
+  STAGING: 'staging',
+  TEST: 'test',
 } as const
 
 const schemaConfig = z.object({

@@ -20,6 +20,14 @@ class CustomError extends Error {
     this.httpStatusCode = httpStatusCode
     this.name = name
     this.cause = cause
+
+    // Capture the stack trace, excluding the constructor call
+    Error.captureStackTrace(this, this.constructor)
+
+    // If there's a cause, append its stack to this error's stack
+    if (cause?.stack) {
+      this.stack = `${this.stack}\nCaused by: ${cause.stack}`
+    }
   }
 
   override toString() {
