@@ -1,4 +1,4 @@
-import type { date } from 'drizzle-orm/pg-core'
+import type { date, PgColumn, PgTable, PgTableExtraConfig, TableConfig } from 'drizzle-orm/pg-core'
 import {
   boolean,
   index,
@@ -16,7 +16,10 @@ import {
 import type { ZodObject, ZodRawShape, ZodTypeAny } from 'zod'
 import { ZodFirstPartyTypeKind, z } from 'zod'
 
-type DrizzleColumn = ReturnType<
+type ColumnBuilder = (
+  name: string,
+  zodType: ZodTypeAny,
+) => ReturnType<
   | typeof uuid
   | typeof varchar
   | typeof integer
@@ -27,8 +30,6 @@ type DrizzleColumn = ReturnType<
   | typeof text
   | typeof jsonb
 >
-
-type ColumnBuilder = (name: string, zodType: ZodTypeAny) => DrizzleColumn
 
 const unwrapZodType = (zodType: ZodTypeAny) => {
   let current = zodType
@@ -127,81 +128,74 @@ const schemaToDrizzleTable = <T extends ZodRawShape>(
   tableName: string,
   schema: ZodObject<T>,
   config: IndexConfig<T> = {},
-) => {
-  const shape = { ...schema.shape }
+): PgTable => {
+  const shape: Record<string, ZodTypeAny> = { ...schema.shape }
 
   if (!('id' in shape)) {
-    // @ts-expect-error ???
-    // biome-ignore lint/complexity/useLiteralKeys: ???
-    shape['id'] = z.string()
+    shape.id = z.string()
   }
 
-  const columns: Record<string, DrizzleColumn> = {}
+  return pgTable(
+    tableName,
+    (_columnTypes) => {
+      const columns: Record<string, ReturnType<ColumnBuilder>> = {}
+      for (const [key, zodTypeOriginal] of Object.entries(shape)) {
+        const { baseType, defaultValue, isNullable, isOptional } = unwrapZodType(zodTypeOriginal)
+        const isNullish = isNullable || isOptional
+        const baseTypeName = baseType._def.typeName
+        const mapFn = mapZodToDrizzle[baseTypeName]
 
-  for (const [key, zodTypeOriginal] of Object.entries(shape)) {
-    const { baseType, defaultValue, isNullable, isOptional } = unwrapZodType(zodTypeOriginal)
-    const isNullish = isNullable || isOptional
-    const baseTypeName = baseType._def.typeName
-    const mapFn = mapZodToDrizzle[baseTypeName]
+        if (!mapFn) {
+          throw new Error(`Unsupported Zod type: ${baseTypeName} for field "${key}"`)
+        }
 
-    if (!mapFn) {
-      throw new Error(`Unsupported Zod type: ${baseTypeName} for field "${key}"`)
-    }
+        let column = mapFn(key, zodTypeOriginal)
 
-    let column = mapFn(key, zodTypeOriginal)
+        if (!isNullish && 'notNull' in column) {
+          column = column.notNull()
+        }
 
-    if (!isNullish && 'notNull' in column) {
-      column = column.notNull()
-    }
+        if (defaultValue !== undefined && !isNullish && 'default' in column) {
+          // biome-ignore lint/suspicious/noExplicitAny: ???
+          column = (column as any).default(defaultValue)
+        }
 
-    // Apply default value only for non-nullish columns
-    if (defaultValue !== undefined && !isNullish && 'default' in column) {
-      // biome-ignore lint/suspicious/noExplicitAny: defaultValue comes from Zod default
-      column = (column as any).default(defaultValue)
-    }
+        columns[key] = column
+      }
+      return columns
+    },
+    (t) => {
+      const constraints: PgTableExtraConfig = {
+        primaryKey: primaryKey({ columns: [t.id as unknown as PgColumn] }),
+      }
 
-    columns[key] = column
-  }
+      for (const field of config.indexes ?? []) {
+        const name = toPostgresObjectName(`idx_${tableName}_${String(field)}`)
+        constraints[name] = index(name).on(t[field as string] as unknown as PgColumn)
+      }
 
-  const tableConfig = (t: typeof columns) => {
-    const constraints: Record<string, unknown> = {
-      // @ts-expect-error ???
-      primaryKey: primaryKey(t.id),
-    }
+      for (const field of config.uniqueIndexes ?? []) {
+        const name = toPostgresObjectName(`udx_${tableName}_${String(field)}`)
+        constraints[name] = uniqueIndex(name).on(t[field as string] as unknown as PgColumn)
+      }
 
-    for (const field of config.indexes ?? []) {
-      const name = toPostgresObjectName(`idx_${tableName}_${String(field)}`)
+      for (const fields of config.compositeIndexes ?? []) {
+        const name = toPostgresObjectName(`idx_${tableName}_${fields.join('_')}`)
+        constraints[name] = index(name).on(
+          ...(fields.map((f) => t[f as string] as unknown as PgColumn) as [PgColumn, ...PgColumn[]]),
+        )
+      }
 
-      // @ts-expect-error ???
-      constraints[name] = index(name).on(t[field as string])
-    }
+      for (const fields of config.compositeUniqueIndexes ?? []) {
+        const name = toPostgresObjectName(`udx_${tableName}_${fields.join('_')}`)
+        constraints[name] = uniqueIndex(name).on(
+          ...(fields.map((f) => t[f as string] as unknown as PgColumn) as [PgColumn, ...PgColumn[]]),
+        )
+      }
 
-    for (const field of config.uniqueIndexes ?? []) {
-      const name = toPostgresObjectName(`udx_${tableName}_${String(field)}`)
-
-      // @ts-expect-error ???
-      constraints[name] = uniqueIndex(name).on(t[field as string])
-    }
-
-    for (const fields of config.compositeIndexes ?? []) {
-      const name = toPostgresObjectName(`idx_${tableName}_${fields.join('_')}`)
-
-      // @ts-expect-error ???
-      constraints[name] = index(name).on(...fields.map((f) => t[f as string]))
-    }
-
-    for (const fields of config.compositeUniqueIndexes ?? []) {
-      const name = toPostgresObjectName(`udx_${tableName}_${fields.join('_')}`)
-
-      // @ts-expect-error ???
-      constraints[name] = uniqueIndex(name).on(...fields.map((f) => t[f as string]))
-    }
-
-    return constraints
-  }
-
-  // @ts-expect-error ???
-  return pgTable(tableName, columns, tableConfig)
+      return constraints
+    },
+  ) as PgTable<TableConfig>
 }
 
 export { schemaToDrizzleTable }
