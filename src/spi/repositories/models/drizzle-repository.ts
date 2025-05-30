@@ -1,7 +1,6 @@
 import { getTableName, inArray } from 'drizzle-orm'
 import type { PgTable } from 'drizzle-orm/pg-core'
 import type { z } from 'zod'
-import type { SpiPaginatedResponse } from '../../../domain/spi-ports/paginated.ts'
 import type { SpiGetManyRequest } from '../../../domain/spi-ports/resource-repository.ts'
 import type { AuditRecord } from '../../../models/audit-record.ts'
 import type { initDatabase } from '../database/init.ts'
@@ -46,14 +45,13 @@ abstract class DrizzleRepository<
     await this.dependencies.db.delete(this.table).where(inArray(this.table.gid, gids))
   }
 
-  async getMany(request: SpiGetManyRequest): Promise<SpiPaginatedResponse<Entity>> {
+  async getMany(request: SpiGetManyRequest) {
     return spiGetManyRequestToPaginatedResult({
       db: this.dependencies.db,
       request,
       schema: this.schema,
-      // biome-ignore lint/suspicious/noExplicitAny: ???
-      table: this.table as any,
-    }) as Promise<SpiPaginatedResponse<Entity>>
+      table: this.table,
+    })
   }
 
   async updateMany(updates: NonEmptyArray<UpdateByGid>, updatedBy: AuditRecord, updatedAt: Date): Promise<void> {

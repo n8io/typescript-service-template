@@ -1,11 +1,14 @@
 import type { SQL } from 'drizzle-orm'
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, lte, ne, notInArray } from 'drizzle-orm'
+import type { PgColumn } from 'drizzle-orm/pg-core'
 import type { DomainGetManyRequest } from '../../../domain/models/request.ts'
 import type { Operator } from '../../../models/filter.ts'
 import type { tableResources } from '../../../spi/repositories/database/schema.ts'
 
-// biome-ignore lint/suspicious/noExplicitAny: We need to pass a PgTableWithColumns to the function
-type ColumnConditionFn = (column: any, value: unknown) => SQL<unknown>
+type ColumnConditionFn = (
+  column: PgColumn,
+  value: unknown | unknown[],
+) => SQL<unknown | ReturnType<typeof inArray> | ReturnType<typeof notInArray>>
 
 const operatorMap: Record<Operator, ColumnConditionFn> = {
   eq: (column, value) => (value === null ? isNull(column) : eq(column, value)),
@@ -14,10 +17,8 @@ const operatorMap: Record<Operator, ColumnConditionFn> = {
   gte: (column, value) => gte(column, value),
   lt: (column, value) => lt(column, value),
   lte: (column, value) => lte(column, value),
-  // @ts-expect-error Need to fix this
-  in: (column, value) => inArray(column, value),
-  // @ts-expect-error Need to fix this
-  nin: (column, value) => notInArray(column, value),
+  in: (column, value) => inArray(column, value as unknown[]),
+  nin: (column, value) => notInArray(column, value as unknown[]),
   search: (column, value) => ilike(column, `%${value}%`),
 }
 
@@ -33,7 +34,7 @@ const domainGetManyRequestToDrizzleQuery = (request: DomainGetManyRequest, table
       return []
     }
 
-    const col = table[field]
+    const col = (table as unknown as Record<string, PgColumn>)[field]
 
     if (!col) {
       return [] // ignore unknown fields
@@ -50,7 +51,7 @@ const domainGetManyRequestToDrizzleQuery = (request: DomainGetManyRequest, table
 
   const orderByClauses = sorting
     .map(({ field, direction }) => {
-      const col = table[field]
+      const col = (table as unknown as Record<string, PgColumn>)[field]
 
       if (!col) {
         return undefined
@@ -60,8 +61,9 @@ const domainGetManyRequestToDrizzleQuery = (request: DomainGetManyRequest, table
     })
     .filter(Boolean) as SQL<unknown>[]
 
+  const offset = Math.max((page - 1) * pageSize, 0)
+
   /* v8 ignore start */
-  const offset = page ? (page - 1) * pageSize : 0
   const where = whereClauses.length ? and(...whereClauses) : undefined
   /* v8 ignore end */
 
