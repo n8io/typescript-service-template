@@ -1,6 +1,6 @@
 import type { Spi } from '../../spi/init.ts'
 import { initServices } from './init.ts'
-import { ResourceService } from './resource.ts'
+import { ResourceService } from './resource-service.ts'
 
 describe('initServices', () => {
   it('should initialize the resource service with the repository', async () => {

@@ -3,17 +3,17 @@ import { pick } from '../../utils/fp.ts'
 import { validation } from '../../utils/validation.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
 import { exampleResource, schemaResource } from '../models/resource.ts'
-import type { ResultSpiResourceRepository } from '../spi-ports/result-resource-repository.ts'
-import type { ResultBaseDependencies } from './models/result-base-service.ts'
-import { ResultBaseService } from './models/result-base-service.ts'
+import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
+import type { BaseDependencies } from './models/base-service.ts'
+import { BaseService } from './models/base-service.ts'
 
 type Resource = z.infer<typeof schemaResource>
 
-type ResultResourceServiceDependencies = {
-  repository: ResultSpiResourceRepository
+type ResourceServiceDependencies = {
+  repository: SpiResourceRepository
 }
 
-class ResultResourceService extends ResultBaseService<Resource> {
+class ResourceService extends BaseService<Resource> {
   /**
    * @description The properties that are used to create, filter, sort and update a resource.
    */
@@ -38,9 +38,7 @@ class ResultResourceService extends ResultBaseService<Resource> {
         })
         .strict()
         .openapi({
-          example: pick(exampleResource(), ResultResourceService.propsMeta.create) as ReturnType<
-            typeof exampleResource
-          >,
+          example: pick(exampleResource(), ResourceService.propsMeta.create) as ReturnType<typeof exampleResource>,
         }),
       getMany: schemaResource,
       getOne: validation.gid,
@@ -56,9 +54,7 @@ class ResultResourceService extends ResultBaseService<Resource> {
         })
         .strict()
         .openapi({
-          example: pick(exampleResource(), ResultResourceService.propsMeta.update) as ReturnType<
-            typeof exampleResource
-          >,
+          example: pick(exampleResource(), ResourceService.propsMeta.update) as ReturnType<typeof exampleResource>,
         }),
     },
     response: {
@@ -67,15 +63,15 @@ class ResultResourceService extends ResultBaseService<Resource> {
     },
   } as const
 
-  protected override readonly propsMeta = ResultResourceService.propsMeta
-  protected override readonly schemas = ResultResourceService.schemas
+  protected override readonly propsMeta = ResourceService.propsMeta
+  protected override readonly schemas = ResourceService.schemas
 
-  constructor(dependencies: ResultResourceServiceDependencies) {
+  constructor(dependencies: ResourceServiceDependencies) {
     super({
       repository: dependencies.repository,
-    } as ResultBaseDependencies<Resource>)
+    } as BaseDependencies<Resource>)
   }
 }
 
-export type { ResultResourceServiceDependencies }
-export { ResultResourceService }
+export type { ResourceServiceDependencies }
+export { ResourceService }

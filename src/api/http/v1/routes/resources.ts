@@ -1,5 +1,5 @@
 import type { DomainGetManyRequest } from '../../../../domain/models/request.ts'
-import { ResourceService } from '../../../../domain/services/resource.ts'
+import { ResourceService } from '../../../../domain/services/resource-service.ts'
 import { urlSearchParamsToFilters } from '../../../../utils/url-search-params/filters.ts'
 import { urlSearchParamsToPagination } from '../../../../utils/url-search-params/pagination.ts'
 import { urlSearchParamsToSort } from '../../../../utils/url-search-params/sorting.ts'

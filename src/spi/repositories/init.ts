@@ -2,7 +2,7 @@ import type { AppStateManager } from '../../utils/app-state-manager.ts'
 import type { Config } from '../../utils/config.ts'
 import { initDatabase } from './database/init.ts'
 import { runMigrations } from './database/run-migrations.ts'
-import { ResourceRepository } from './resource.ts'
+import { ResourceRepository } from './resource-repository.ts'
 
 type RepositoryDependencies = {
   appStateManager: AppStateManager

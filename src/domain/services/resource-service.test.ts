@@ -2,34 +2,45 @@ import { err, ok } from 'neverthrow'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { exampleAuditRecord } from '../../models/audit-record.ts'
 import { SpiDatabaseError } from '../../spi/models/spi-error.ts'
-import { exampleGid, gid } from '../../utils/generators/gid.ts'
+import { gid, isGid } from '../../utils/factories/gid.ts'
 import { DomainNotFoundError, DomainValidationError } from '../models/domain-error.ts'
 import { exampleResource } from '../models/resource.ts'
-import type { ResultSpiResourceRepository } from '../spi-ports/result-resource-repository.ts'
-import { ResultResourceService } from './result-resource-service.ts'
+import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
+import { ResourceService } from './resource-service.ts'
 
 vi.mock('../../utils/generators/gid.ts')
 
-const createMockRepository = (): ResultSpiResourceRepository => ({
+const createMockRepository = (): SpiResourceRepository => ({
   createOne: vi.fn(),
   deleteMany: vi.fn(),
   getMany: vi.fn(),
   updateMany: vi.fn(),
 })
 
-describe('ResultResourceService', () => {
-  let mockRepository: ResultSpiResourceRepository
-  let service: ResultResourceService
+describe('ResourceService', () => {
+  let mockRepository: SpiResourceRepository
+  let service: ResourceService
   let mockGid: ReturnType<typeof vi.mocked<typeof gid>>
-
-  const validGid = exampleGid()
+  let mockIsGid: ReturnType<typeof vi.mocked<typeof isGid>>
+  let validGid: string
 
   beforeEach(() => {
     vi.clearAllMocks()
     mockRepository = createMockRepository()
-    service = new ResultResourceService({ repository: mockRepository })
+    service = new ResourceService({ repository: mockRepository })
     mockGid = vi.mocked(gid)
+    mockIsGid = vi.mocked(isGid)
+
+    // Set up a valid GID for tests
+    validGid = '999.00000000-0000-0000-0000-000000000000'
     mockGid.mockReturnValue(validGid)
+    // Mock isGid to return true for our valid GID and false for invalid ones
+    mockIsGid.mockImplementation((value: string) => {
+      return (
+        value === validGid ||
+        value.match(/^999\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/) !== null
+      )
+    })
   })
 
   describe('createOne', () => {
@@ -45,6 +56,7 @@ describe('ResultResourceService', () => {
         gid: validGid,
         name: 'Test Resource',
         timeZone: 'UTC',
+        createdBy: { ...exampleAuditRecord(), gid: validGid },
       }
 
       vi.mocked(mockRepository.createOne).mockResolvedValue(ok(expectedResource))
@@ -93,7 +105,11 @@ describe('ResultResourceService', () => {
     })
 
     it('should call repository with correct parameters', async () => {
-      const expectedResource = exampleResource()
+      const expectedResource = {
+        ...exampleResource(),
+        gid: validGid,
+        createdBy: { ...exampleAuditRecord(), gid: validGid },
+      }
       vi.mocked(mockRepository.createOne).mockResolvedValue(ok(expectedResource))
       vi.mocked(mockRepository.getMany).mockResolvedValue(
         ok({
@@ -118,7 +134,11 @@ describe('ResultResourceService', () => {
 
   describe('getOne', () => {
     it('should return Ok result for existing resource', async () => {
-      const expectedResource = exampleResource()
+      const expectedResource = {
+        ...exampleResource(),
+        gid: validGid,
+        createdBy: { ...exampleAuditRecord(), gid: validGid },
+      }
       vi.mocked(mockRepository.getMany).mockResolvedValue(
         ok({
           items: [expectedResource],
@@ -130,7 +150,7 @@ describe('ResultResourceService', () => {
 
       expect(result.isOk()).toBe(true)
       if (result.isOk()) {
-        expect(result.value.gid).toBe(expectedResource.gid)
+        expect(result.value.gid).toBe(validGid)
       }
     })
 
@@ -182,7 +202,18 @@ describe('ResultResourceService', () => {
     }
 
     it('should return Ok result for successful query', async () => {
-      const expectedResources = [exampleResource(), exampleResource()]
+      const expectedResources = [
+        {
+          ...exampleResource(),
+          gid: validGid,
+          createdBy: { ...exampleAuditRecord(), gid: validGid },
+        },
+        {
+          ...exampleResource(),
+          gid: '999.11111111-1111-1111-1111-111111111111',
+          createdBy: { ...exampleAuditRecord(), gid: '999.11111111-1111-1111-1111-111111111111' },
+        },
+      ]
       vi.mocked(mockRepository.getMany).mockResolvedValue(
         ok({
           items: expectedResources,
@@ -222,8 +253,10 @@ describe('ResultResourceService', () => {
     it('should return Ok result for successful update', async () => {
       const updatedResource = {
         ...exampleResource(),
+        gid: validGid,
         name: 'Updated Resource',
         timeZone: 'America/New_York',
+        createdBy: { ...exampleAuditRecord(), gid: validGid },
       }
 
       vi.mocked(mockRepository.updateMany).mockResolvedValue(ok(undefined))
@@ -271,10 +304,15 @@ describe('ResultResourceService', () => {
     })
 
     it('should call repository updateMany with correct parameters', async () => {
+      const updatedResource = {
+        ...exampleResource(),
+        gid: validGid,
+        createdBy: { ...exampleAuditRecord(), gid: validGid },
+      }
       vi.mocked(mockRepository.updateMany).mockResolvedValue(ok(undefined))
       vi.mocked(mockRepository.getMany).mockResolvedValue(
         ok({
-          items: [exampleResource()],
+          items: [updatedResource],
           itemsTotal: 1,
         }),
       )

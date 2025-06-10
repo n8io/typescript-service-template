@@ -64,7 +64,7 @@
 
 - All object properties should be alphabetized
 - All destructured properties should be alphabetized
--. When working with classes, the props should be grouped and ordered accordingly:
+- When working with classes, the props should be grouped and ordered accordingly:
   1. All props should be grouped together by their accessibility (`private`, `constructor`, `protected`, and `public`) then alphabetized
   2. The group order is: `private`, `constructor`, `protected`, then lastly `public`
   3. There should be a newline after each group (except for the last one)
@@ -95,7 +95,7 @@
   }
   ```
 
-- Add empty lines around multiline statements for better readability
+- Add empty lines before and after multiline statements for better readability
 - There should always be a newline before `return`, `break`, and `continue` statements
 - There should always be a newline before multiline statements unless the statement is directly after a closing brace
 - There should always be a newline after multiline statements unless the statement is directly followed by a closing brace
@@ -107,6 +107,10 @@
     prop2: 3
   }
   const date = new Date()
+  if (date > new Date()) {
+    doThing()
+    return
+  }
   const otherThing = findThing({
     enabled: true,
   })
@@ -123,6 +127,12 @@
   }
 
   const date = new Date()
+
+  if (date > new Date()) {
+    doThing()
+
+    return
+  }
 
   const otherThing = findThing({
     enabled: true,

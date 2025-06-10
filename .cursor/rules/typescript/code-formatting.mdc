@@ -42,12 +42,61 @@ alwaysApply: false
   }
   ```
 
-4. Add empty lines around multiline statements
-5. There should always be a newline before `return`, `break`, and `continue` statements
-6. There should always be a newline before multiline statements unless the statement is directly after a closing brace
-7. There should always be a newline after multiline statements unless the statement is directly followed by a closing brace
-8. Avoid promise chaining
-9. Group variable definitions closely together and add empty lines before and after each variable definition group
+4. Ensure better readability by adding empty lines around **multiline statements**
+  1. There should always be a newline before `return`, `break`, and `continue` statements
+  2. There should always be a newline before multiline statements unless the statement is directly after a closing brace
+  3. There should always be a newline after multiline statements unless the statement is directly followed by a closing brace
+
+    ```ts
+    // ❌ Don't do this
+    const thing = {
+      prop1: true,
+      prop2: 3
+    }
+    const doThing = () => {}
+    const date = new Date()
+    if (date > new Date()) {
+      doThing()
+      return
+    }
+    const otherThing = findThing({
+      enabled: true,
+    })
+    logger.info(
+      `I did a thing`,
+      thing,
+    )
+    return otherThing
+
+    // ✅ Do this instead
+    const thing = {
+      prop1: true,
+      prop2: 3
+    }
+
+    const doThing = () => {}
+    const date = new Date()
+
+    if (date > new Date()) {
+      doThing()
+
+      return
+    }
+
+    const otherThing = findThing({
+      enabled: true,
+    })
+
+    logger.info(
+      `I did a thing`,
+      thing,
+    )
+
+    return otherThing
+    ```
+
+5. Avoid promise chaining
+6. Group variable definitions closely together and add empty lines before and after each variable definition group
 
 ## Examples
 
