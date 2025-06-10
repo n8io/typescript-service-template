@@ -33,7 +33,7 @@ const usr = { name: "John" };
 
 ✅ Good:
 ```typescript
-const daysUntilExpiration = 5;
+const expirationInDays = 5;
 const doubleValue = (value: number) => value * 2;
 const user = { name: "John" };
 ```

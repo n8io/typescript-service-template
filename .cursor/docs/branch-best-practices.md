@@ -33,6 +33,7 @@ The type must be one of the following:
 - `hotfix`: Urgent production fix
 - `chore`: Maintenance tasks
 - `test`: Test-related changes
+- `refactor`: Refactor code for reasons
 
 ## Ticket
 

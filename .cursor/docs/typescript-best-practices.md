@@ -17,9 +17,9 @@
 
 ## Code Organization
 
-- If possible, keep type definitions at the top of the file
+- If possible, keep type definitions at the top of the file (and alphabetized)
 - Export types and implementations separately
-- All exports must be located at the bottom of the file
+- All exports must be located at the bottom of the file (and alphabetized)
   - One export for type only exports. For example `export type { MyType }`
   - One export for implementation exports. For example `export { myFunction }`
   - For things that are both a type and a value type, combine the exports
@@ -36,7 +36,7 @@
     export { Foo }
     ```
 
-- Import types using the `import type` or `import { type foo }` syntaxes
+- Always use `import type` instead of `import { type foo }` syntax for type imports to avoid bugs
 - Do not use barrel files, avoid them at all costs per [biome.jsonc](mdc:biome.jsonc)
 
 ## Functions
@@ -64,9 +64,41 @@
 
 - All object properties should be alphabetized
 - All destructured properties should be alphabetized
-- All class public props/methods should be alphabetized
-- All class private props/methods should be alphabetized
+-. When working with classes, the props should be grouped and ordered accordingly:
+  1. All props should be grouped together by their accessibility (`private`, `constructor`, `protected`, and `public`) then alphabetized
+  2. The group order is: `private`, `constructor`, `protected`, then lastly `public`
+  3. There should be a newline after each group (except for the last one)
+
+  ```typescript
+  // ❌ Bad
+  class Thing {
+    async doStuff() { /* ... */ }
+    protected increment() { /* ... */ }
+    private count: number
+    constructor() {}
+    public findMean() { /* ... */ }
+    protected internalWork() { /* ... */ }
+  }
+
+  // ✅ Good
+  class Thing {
+    private count: number
+
+    constructor() {}
+
+    protected increment() { /* ... */ }
+    protected internalWork() { /* ... */ }
+    
+    public findMean() { /* ... */ }
+    
+    async doStuff() { /* ... */ }
+  }
+  ```
+
 - Add empty lines around multiline statements for better readability
+- There should always be a newline before `return`, `break`, and `continue` statements
+- There should always be a newline before multiline statements unless the statement is directly after a closing brace
+- There should always be a newline after multiline statements unless the statement is directly followed by a closing brace
 
   ```ts
   // ❌ Don't do this

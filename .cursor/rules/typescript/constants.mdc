@@ -57,15 +57,13 @@ const RETRY_CONFIG = {
   BACKOFF_FACTOR: 1.5
 } as const;
 
-function calculateDiscount(price: number) {
-  return price * DISCOUNT_RATE;
-}
+const calculateDiscount =(price: number) => price * DISCOUNT_RATE
 
 if (status === ORDER_STATUS.PENDING) {
   // ...
 }
 
-function retryOperation() {
+const retryOperation = () => {
   for (let attempt = 1; attempt <= RETRY_CONFIG.MAX_ATTEMPTS; attempt++) {
     // ... retry logic
   }
