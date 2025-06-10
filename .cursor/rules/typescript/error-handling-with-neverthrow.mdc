@@ -1,0 +1,168 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# `neverthrow` Error Handling Guide
+
+## Critical Rules
+
+- ALWAYS use `Result<T, E>` types for predictable business and operational errors (validation, not found, database failures, external API calls)
+- NEVER use `Result` types for programming errors (missing config, logic bugs, type assertion failures) - use exceptions instead
+- ALWAYS define layer-specific error types: `SpiError` for infrastructure, `DomainError` for business logic, HTTP responses for API layer
+- ALWAYS use `Result.combine()` for multiple validations, and `.map()`, `.mapErr()`, `.andThen()` for chaining operations
+- ALWAYS test both success and error paths when writing tests for Result-based functions
+- ALWAYS preserve error context when transforming between layers - don't lose the original error information
+- ALWAYS use `resultToResponse()` helper for converting Results to HTTP responses in API routes
+- NEVER mix exceptions and Results in the same function - choose one paradigm consistently
+
+## When to Use Results vs Exceptions
+
+### Use Results For:
+- Domain operations (business logic validation, entity creation)
+- SPI operations (database queries, external API calls, file operations)
+- Resource access (get/create/update operations that can fail predictably)
+- Multi-step workflows where any step can fail
+
+### Use Exceptions For:
+- Programming errors (invalid arguments, assertion failures)
+- Configuration errors (missing environment variables)
+- System errors (out of memory, network unavailable)
+- Third-party library integration that throws exceptions
+
+## Layer-Specific Implementation
+
+### SPI Layer
+```typescript
+// Return Result<T, SpiError> from repositories
+async getOne(gid: string): Promise<Result<Resource, SpiError>> {
+  try {
+    // database operation
+    if (record.length === 0) {
+      return err(new SpiNotFoundError('Resource', gid))
+    }
+    return ok(this.mapToEntity(record[0]))
+  } catch (error) {
+    return err(new SpiDatabaseError(`Failed to get resource: ${error.message}`))
+  }
+}
+```
+
+### Domain Layer
+```typescript
+// Return Result<T, DomainError> from services
+async createOne(request: DomainCreateRequest): Promise<Result<Resource, DomainServiceError>> {
+  const validation = this.validateRequest(request)
+  if (validation.isErr()) {
+    return err(validation.error)
+  }
+  
+  const result = await this.repository.createOne(request)
+  return result.mapErr(error => new DomainServiceError('Failed to create resource', error))
+}
+```
+
+### API Layer
+```typescript
+// Convert Results to HTTP responses
+resultResources.get('/:gid', async (ctx) => {
+  const result = await services.resultResource.getOne(gid)
+  return resultToResponse(ctx, result) // Handles error-to-HTTP mapping
+})
+```
+
+## Migration Strategy
+
+When migrating existing exception-based code:
+
+1. Create Result-based interfaces alongside existing ones
+2. Implement Result-based repositories and services
+3. Use `resultOrThrow()` for gradual migration bridges
+4. Replace exception-based routes with Result-based ones
+5. Remove exception-based implementations when migration complete
+
+## Testing Requirements
+
+ALWAYS test both success and error scenarios:
+
+```typescript
+describe('createResource', () => {
+  it('should return success result with valid input', async () => {
+    const result = await service.createOne(validRequest)
+    expect(result.isOk()).toBe(true)
+  })
+  
+  it('should return validation error with invalid input', async () => {
+    const result = await service.createOne(invalidRequest)
+    expect(result.isErr()).toBe(true)
+    expect(result.error).toBeInstanceOf(DomainValidationError)
+  })
+})
+```
+
+## Examples
+
+<example>
+  ```typescript
+  // ✅ Good - Result-based repository method
+  async getUser(id: string): Promise<Result<User, SpiError>> {
+    try {
+      const user = await this.db.users.findById(id)
+      if (!user) {
+        return err(new SpiNotFoundError('User', id))
+      }
+      return ok(user)
+    } catch (error) {
+      return err(new SpiDatabaseError(`Database query failed: ${error.message}`))
+    }
+  }
+
+  // ✅ Good - Result-based service method with validation
+  async createUser(data: CreateUserRequest): Promise<Result<User, DomainServiceError>> {
+    const validation = this.validateUserData(data)
+    if (validation.isErr()) {
+      return err(validation.error)
+    }
+    
+    const result = await this.repository.createUser(data)
+    return result.mapErr(error => new DomainServiceError('Failed to create user', error))
+  }
+
+  // ✅ Good - Result-based API route
+  app.get('/users/:id', async (ctx) => {
+    const id = ctx.req.param('id')
+    const result = await services.resultUser.getOne(id)
+    return resultToResponse(ctx, result)
+  })
+  ```
+</example>
+
+<example type="invalid">
+  ```typescript
+  // ❌ Bad - Mixing exceptions and Results
+  async getUser(id: string): Promise<Result<User, Error>> {
+    if (!id) {
+      throw new Error('ID required') // Should return err() instead
+    }
+    return this.repository.getUser(id)
+  }
+
+  // ❌ Bad - Using Results for programming errors
+  function divide(a: unknown, b: unknown): Result<number, Error> {
+    if (typeof a !== 'number') {
+      return err(new Error('a must be number')) // This is a programming error
+    }
+    // ... business logic
+  }
+
+  // ❌ Bad - Losing error context
+  const result = await service.createUser(data)
+  if (result.isErr()) {
+    return err(new Error('Creation failed')) // Lost original error details
+  }
+  ```
+</example>
+
+## Reference Documentation
+
+For comprehensive guidelines, see: `.cursor/docs/neverthrow-error-handling-best-practices.md`
