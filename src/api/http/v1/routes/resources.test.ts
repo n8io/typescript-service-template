@@ -1,5 +1,7 @@
 import { exampleResource } from '../../../../domain/models/resource.ts'
 import { DomainNotFoundError } from '../../../../models/custom-error.ts'
+import { exampleGid } from '../../../../utils/factories/gid.ts'
+import { errorHandler } from '../../middleware/error-handler.ts'
 import { makeApp } from '../app.ts'
 import { resources } from './resources.ts'
 
@@ -29,7 +31,6 @@ vi.mock('../../middleware/error-handler.ts', () => ({
 }))
 
 // Import the mocked errorHandler
-import { errorHandler } from '../../middleware/error-handler.ts'
 
 describe('resources', () => {
   const mockResource = exampleResource()
@@ -224,7 +225,7 @@ describe('resources', () => {
     })
 
     it('should throw an error if the resource cannot be found', async () => {
-      const gid = 'GID'
+      const gid = exampleGid()
 
       const mockServices = {
         resource: {

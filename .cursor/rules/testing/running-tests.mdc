@@ -10,9 +10,9 @@ tags: test, tests, vitest, fix test
 - Always run in non-interactive mode by passing the `run` option
 - Always run with broad coverage and do not focus on the tests files being ran
 - Always use the following command pattern:
-
-  ```sh
-  npm test run --coverage.enabled=true
+  
+  ```shell
+  nvm install && CI=true NODE_ENV=test npm run test --coverage.enabled=true
   ```
 
 ## When running tests for a specific test file...
@@ -22,5 +22,5 @@ tags: test, tests, vitest, fix test
 - Always use the following command pattern:
 
   ```sh
-  npm test run path/to/test/file.test.ts --coverage.enabled=true --coverage.include path/to/implemenation/file.ts
+  nvm install && CI=true NODE_ENV=test npm run path/to/test/file.test.ts --coverage.enabled=true --coverage.include path/to/implemenation/file.ts
   ```
