@@ -15,6 +15,7 @@ All feature and bugfix branches must start with one of the following type prefix
 - `hotfix/`: For urgent production fixes
 - `chore/`: For maintenance tasks
 - `test/`: For test-related changes
+- `refactor`: Refactor code for reasons
 
 ## Examples
 ✅ Valid:

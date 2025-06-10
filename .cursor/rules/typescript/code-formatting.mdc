@@ -9,41 +9,47 @@ alwaysApply: false
 
 1. Alphabetize object properties
 2. Alphabetize destructured properties
-3. Alphabetize class public props/methods
-4. Alphabetize class private props/methods
-5. Add empty lines around multiline statements
-6. Avoid promise chaining
-7. Group variable definitions closely together and add empty lines before and after each variable definition group
+3. When working with classes, the props should be grouped and ordered accordingly:
+  1. All props should be grouped together by their accessibility (`private`, `constructor`, `protected`, and `public`) then alphabetized
+  2. The group order is: `private`, `constructor`, `protected`, then lastly `public`
+  3. There should be a newline after each group (except for the last one)
+
+  ```typescript
+  // ❌ Bad
+  class Thing {
+    async doStuff() { /* ... */ }
+    protected increment() { /* ... */ }
+    private count: number
+    constructor() {}
+    public findMean() { /* ... */ }
+    protected internalWork() { /* ... */ }
+  }
+
+  // ✅ Good
+  class Thing {
+    private count: number
+
+    constructor() {}
+
+    protected increment() { /* ... */ }
+    protected internalWork() { /* ... */ }
+    
+    public findMean() { /* ... */ }
+    
+    async doStuff() { /* ... */ }
+  }
+  ```
+
+4. Add empty lines around multiline statements
+5. There should always be a newline before `return`, `break`, and `continue` statements
+6. There should always be a newline before multiline statements unless the statement is directly after a closing brace
+7. There should always be a newline after multiline statements unless the statement is directly followed by a closing brace
+8. Avoid promise chaining
+9. Group variable definitions closely together and add empty lines before and after each variable definition group
 
 ## Examples
 
 ```typescript
-// ✅ Good
-const config = {
-  apiKey: "123",
-  endpoint: "https://api.example.com",
-  timeout: 5000,
-  version: "1.0"
-};
-
-class UserService {
-  private readonly apiClient: ApiClient;
-  private readonly logger: Logger;
-
-  constructor(apiClient: ApiClient, logger: Logger) {
-    this.apiClient = apiClient;
-    this.logger = logger;
-  }
-
-  async getUser(id: string): Promise<User> {
-    const response = await this.apiClient.get(`/users/${id}`);
-
-    this.logger.info("User fetched", { id });
-
-    return response.data;
-  }
-}
-
 // ❌ Bad
 const config = {
   timeout: 5000,
@@ -67,6 +73,32 @@ class UserService {
         this.logger.info("User fetched", { id });
         return response.data;
       });
+  }
+}
+
+// ✅ Good
+const config = {
+  apiKey: "123",
+  endpoint: "https://api.example.com",
+  timeout: 5000,
+  version: "1.0"
+};
+
+class UserService {
+  private readonly apiClient: ApiClient;
+  private readonly logger: Logger;
+
+  constructor(apiClient: ApiClient, logger: Logger) {
+    this.apiClient = apiClient;
+    this.logger = logger;
+  }
+
+  async getUser(id: string): Promise<User> {
+    const response = await this.apiClient.get(`/users/${id}`);
+
+    this.logger.info("User fetched", { id });
+
+    return response.data;
   }
 }
 ```

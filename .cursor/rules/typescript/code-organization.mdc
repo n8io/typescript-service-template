@@ -7,10 +7,10 @@ alwaysApply: false
 
 ## Rules
 
-1. Keep type definitions at the top of the file
+1. Keep type definitions at the top of the file (and alphabetized)
 2. Export types and implementations separately
-3. All exports must be located at the bottom of the file
-4. Use `import type` or `import { type foo }` syntax for type imports
+3. All exports must be located at the bottom of the file (and alphabetized)
+4. Always use `import type` instead of `import { type foo }` syntax for type imports to avoid bugs
 5. Avoid barrel files
 
 ## Examples
@@ -24,9 +24,7 @@ type User = {
 };
 
 // Implementation
-function getUser(id: string): User {
-  return { id, name: "John" };
-}
+const getUser = (id: string): User => ({ id, name: "John" })
 
 // Exports at the bottom
 export type { User };
