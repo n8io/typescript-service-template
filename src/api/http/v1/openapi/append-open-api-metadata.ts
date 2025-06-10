@@ -27,7 +27,7 @@ const routeTypeToSummary: Record<RouteType, string> = {
   updateOne: 'Update One',
 }
 
-const toResponse = (schemaResponse: AnyZodObject | undefined) => {
+const toResponse = (schemaResponse: AnyZodObject | undefined): DescribeRouteOptions['responses'] => {
   if (!schemaResponse) {
     return {
       204: {
