@@ -349,5 +349,5 @@ abstract class BaseService<T extends { gid: string }> {
   }
 }
 
-export type { DomainServiceError, BaseDependencies }
+export type { BaseDependencies }
 export { BaseService }

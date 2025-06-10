@@ -21,4 +21,4 @@ type SpiResourceRepository = {
   ) => Promise<Result<void, SpiDatabaseError | SpiValidationError>>
 }
 
-export type { SpiCreateOneRequest, SpiGetManyRequest, SpiResourceRepository, SpiUpdateManyRequest }
+export type { SpiGetManyRequest, SpiResourceRepository, SpiUpdateManyRequest }

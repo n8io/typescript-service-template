@@ -73,5 +73,4 @@ class ResourceService extends BaseService<Resource> {
   }
 }
 
-export type { ResourceServiceDependencies }
 export { ResourceService }

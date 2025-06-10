@@ -13,12 +13,11 @@ class DomainError extends CustomError {
     super(name, message, code, httpStatusCode, cause)
   }
 }
-
-class DomainBusinessRuleError extends DomainError {
-  constructor(message: string, cause?: Error) {
-    super('DomainBusinessRuleError', message, 'UNHANDLED_EXCEPTION', HttpStatus.BAD_REQUEST, cause)
-  }
-}
+// class DomainBusinessRuleError extends DomainError {
+//   constructor(message: string, cause?: Error) {
+//     super('DomainBusinessRuleError', message, 'UNHANDLED_EXCEPTION', HttpStatus.BAD_REQUEST, cause)
+//   }
+// }
 
 class DomainNotFoundError extends DomainError {
   constructor(message: string, cause?: Error) {
@@ -32,4 +31,4 @@ class DomainValidationError extends DomainError {
   }
 }
 
-export { DomainBusinessRuleError, DomainError, DomainNotFoundError, DomainValidationError }
+export { DomainNotFoundError, DomainValidationError }

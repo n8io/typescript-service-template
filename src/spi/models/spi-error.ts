@@ -19,12 +19,11 @@ class SpiDatabaseError extends SpiError {
     super('SpiDatabaseError', message, 'SPI_DATABASE_ERROR', HttpStatus.INTERNAL_SERVER_ERROR, cause)
   }
 }
-
-class SpiExternalServiceError extends SpiError {
-  constructor(message: string, cause?: Error) {
-    super('SpiExternalServiceError', message, 'UNHANDLED_EXCEPTION', HttpStatus.INTERNAL_SERVER_ERROR, cause)
-  }
-}
+// class SpiExternalServiceError extends SpiError {
+//   constructor(message: string, cause?: Error) {
+//     super('SpiExternalServiceError', message, 'UNHANDLED_EXCEPTION', HttpStatus.INTERNAL_SERVER_ERROR, cause)
+//   }
+// }
 
 class SpiValidationError extends SpiError {
   constructor(message: string, cause?: Error) {
@@ -32,4 +31,4 @@ class SpiValidationError extends SpiError {
   }
 }
 
-export { SpiDatabaseError, SpiError, SpiExternalServiceError, SpiValidationError }
+export { SpiDatabaseError, SpiValidationError }
