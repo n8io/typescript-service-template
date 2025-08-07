@@ -1,17 +1,26 @@
 ---
-description: The rule defines how tests should be ran by an Agent
-globs: *.test.ts
-alwaysApply: true
+description: Whenever tests, fixing tests, or running tests are mentioned, we should adhere to this rule's content #test #tests #testing #vitest
+alwaysApply: false
+tags: test, tests, vitest, fix test
 ---
-# How to run tests
+# Testing
 
-## Description
-The rule defines how tests should be ran by an Agent
+## When running tests across many files...
 
-## Examples
-```shell
-nvm install && CI=true npm test
-```
+- Always run in non-interactive mode by passing the `run` option
+- Always run with broad coverage and do not focus on the tests files being ran
+- Always use the following command pattern:
 
-## Tags
-#testing #vitest #test-organization
+  ```sh
+  npm test run --coverage.enabled=true
+  ```
+
+## When running tests for a specific test file...
+
+- Always run in non-interactive mode by passing the `run` option
+- Always run with coverage, when possible focus coverage on the test files being ran
+- Always use the following command pattern:
+
+  ```sh
+  npm test run path/to/test/file.test.ts --coverage.enabled=true --coverage.include path/to/implemenation/file.ts
+  ```

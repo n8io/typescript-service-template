@@ -9,7 +9,7 @@ import 'zod-openapi/extend'
 const schemaResourceTemp = schemaEntity.extend({
   gid: validation.string.openapi({
     example: exampleGid(false),
-    description: 'The unique identifier for the resource',
+    description: 'The globally unique identifier for the resource',
   }),
   name: validation.string.openapi({ description: 'The name of the resource', example: 'Jane Doe' }),
   timeZone: validation.timeZone.nullable().openapi({
