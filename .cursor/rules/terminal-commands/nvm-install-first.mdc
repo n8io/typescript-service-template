@@ -1,7 +1,6 @@
 ---
-description: This rule ensures that `nvm install` is run before executing any npm commands to maintain consistent Node.js version usage across the project.
-globs: 
-alwaysApply: always
+description: Use this rule when running any terminal commands, especially npm commands
+alwaysApply: false
 ---
 # NVM Install First
 

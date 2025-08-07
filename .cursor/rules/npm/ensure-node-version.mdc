@@ -1,6 +1,5 @@
 ---
-description: This rule ensures that the correct Node.js version is used before executing any npm commands by automatically running `nvm install` first.
-globs:
+description: Use this rule whenever you run npm commands in the terminal
 alwaysApply: false
 ---
 # Ensure Correct Node.js Version for NPM Commands

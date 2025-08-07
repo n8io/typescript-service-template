@@ -182,6 +182,7 @@
                     "pagesTotal",
                     "items"
                   ],
+                  "additionalProperties": false,
                   "example": {
                     "hasMore": false,
                     "itemsTotal": 1,
@@ -254,7 +255,7 @@
               "type": "string",
               "minLength": 1,
               "example": "999.00000000-0000-0000-0000-000000000000",
-              "description": "The unique identifier for the resource"
+              "description": "The globally unique identifier for the resource"
             }
           },
           {
@@ -321,6 +322,52 @@
       }
     },
     "/api/v1/resources/{gid}": {
+      "delete": {
+        "responses": {
+          "204": {
+            "description": "No content"
+          }
+        },
+        "operationId": "resourcesDeleteOne",
+        "tags": [
+          "Resources"
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-Client-Id",
+            "in": "header",
+            "description": "A unique client identifier for tracking usage",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "example": "<unique-client-id>"
+            }
+          },
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "description": "A unique request identifier for tracing",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "example": "<unique-request-id>"
+            }
+          },
+          {
+            "name": "gid",
+            "in": "path",
+            "description": "The globally unique identifier",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "example": "999.00000000-0000-0000-0000-000000000000"
+            }
+          }
+        ],
+        "summary": "Delete One"
+      },
       "get": {
         "responses": {
           "200": {
@@ -509,7 +556,7 @@
             "type": "string",
             "minLength": 1,
             "example": "999.00000000-0000-0000-0000-000000000000",
-            "description": "The unique identifier for the resource"
+            "description": "The globally unique identifier for the resource"
           },
           "updatedAt": {
             "type": "string",
