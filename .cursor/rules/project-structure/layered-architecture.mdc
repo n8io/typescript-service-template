@@ -14,7 +14,7 @@ src/
 ├── api/          # API Layer (How clients access the domain)
 ├── domain/       # Domain Layer (Business logic)
 ├── spi/          # SPI Layer (External services)
-└── utils/        # Utility functions and helpers
+└── utils/        # Utility functions (global helpers)
 ```
 
 ## Layer Responsibilities

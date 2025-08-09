@@ -10,11 +10,11 @@ This rule enforces the required type prefix for feature and bugfix branches.
 
 ## Rule
 All feature and bugfix branches must start with one of the following type prefixes:
-- `feat/`: For new features
-- `fix/`: For bug fixes
-- `hotfix/`: For urgent production fixes
-- `chore/`: For maintenance tasks
-- `test/`: For test-related changes
+- `feat`: For new features
+- `fix`: For bug fixes
+- `hotfix`: For urgent production fixes
+- `chore`: For maintenance tasks
+- `test`: For test-related changes
 - `refactor`: Refactor code for reasons
 
 ## Examples

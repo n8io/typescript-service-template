@@ -6,7 +6,9 @@ alwaysApply: false
 # Commit Message Emoji Usage
 
 ## Description
-Defines the required emoji usage in commit messages based on the commit type.
+Defines the required emoji usage in commit messages based on the commit type. 
+
+Documentation to help decide which emoji can be found here: https://gitmoji.dev/
 
 ## Rule
 Each commit type has an associated emoji that must be used:
