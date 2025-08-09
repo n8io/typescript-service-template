@@ -29,8 +29,8 @@ describe('urlSearchParamsToSort', () => {
     const result = urlSearchParamsToSort(params, { sortableFields })
 
     expect(result).toEqual([
-      { field: 'name', direction: 'asc' },
-      { field: 'age', direction: 'desc' },
+      { field: 'name', direction: 'ASC' },
+      { field: 'age', direction: 'DESC' },
     ])
   })
 
@@ -45,8 +45,8 @@ describe('urlSearchParamsToSort', () => {
     const result = urlSearchParamsToSort(params, { sortableFields })
 
     expect(result).toEqual([
-      { field: 'age', direction: 'desc' },
-      { field: 'name', direction: 'asc' },
+      { field: 'age', direction: 'DESC' },
+      { field: 'name', direction: 'ASC' },
     ])
   })
 
