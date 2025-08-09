@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { schemaSortDirection } from '../../utils/url-search-params/sorting.ts'
 import { validation } from '../../utils/validation.ts'
 
 const DEFAULT_PAGE = 1
@@ -20,24 +21,19 @@ const schemaFilter = z.object({
 const schemaFilters = z.record(validation.string, schemaFilter.strict().optional())
 
 const schemaDomainPagination = z.object({
-  page: validation.number.int().positive().max(MAX_PAGE_SIZE).default(DEFAULT_PAGE),
-  pageSize: validation.number.int().nonnegative().max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
+  page: validation.number.int().positive().max(MAX_PAGE_SIZE).default(DEFAULT_PAGE).optional(),
+  pageSize: validation.number.int().nonnegative().max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE).optional(),
 })
-
-const schemaDomainSortDirection = validation.string.toUpperCase().pipe(z.enum(['ASC', 'DESC']))
 
 const schemaDomainSorting = z.object({
   field: validation.string,
-  direction: schemaDomainSortDirection,
+  direction: schemaSortDirection,
 })
 
 const schemaDomainGetManyRequest = z
   .object({
     filters: schemaFilters.optional(),
-    pagination: schemaDomainPagination.optional().default({
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    }),
+    pagination: schemaDomainPagination.optional(),
     sorting: schemaDomainSorting.array().optional(),
   })
   .strict()
@@ -45,4 +41,4 @@ const schemaDomainGetManyRequest = z
 type DomainGetManyRequest = Prettify<z.infer<typeof schemaDomainGetManyRequest>>
 
 export type { DomainGetManyRequest }
-export { schemaDomainGetManyRequest }
+export { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, schemaDomainGetManyRequest }

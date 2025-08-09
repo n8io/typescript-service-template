@@ -3,7 +3,7 @@ import type { AuditRecord } from '../../../models/audit-record.ts'
 import { DomainNotFoundError } from '../../../models/custom-error.ts'
 import { gid } from '../../../utils/generators/gid.ts'
 import type { PaginatedResponse } from '../../models/pagination.ts'
-import { schemaDomainGetManyRequest } from '../../models/request.ts'
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, schemaDomainGetManyRequest } from '../../models/request.ts'
 import type { SpiPaginatedResponse } from '../../spi-ports/paginated.ts'
 import type { SpiUpdateManyRequest } from '../../spi-ports/resource-repository.ts'
 import { domainGetOneRequestToGetManyRequest } from '../utils/domain-get-one-request-to-get-many-request.ts'
@@ -90,7 +90,8 @@ abstract class BaseService<T extends { gid: string }> {
     const { items, itemsTotal } = await this.dependencies.repository.getMany(spiRequest)
 
     return spiRepositoryGetManyResponseToDomainPaginatedResponse({
-      ...spiRequest.pagination,
+      page: spiRequest.pagination?.page ?? DEFAULT_PAGE,
+      pageSize: spiRequest.pagination?.pageSize ?? DEFAULT_PAGE_SIZE,
       items,
       itemsTotal,
       schema: this.schemas.core,

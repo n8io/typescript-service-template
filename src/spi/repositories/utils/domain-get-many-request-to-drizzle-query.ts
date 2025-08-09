@@ -2,6 +2,7 @@ import type { SQL } from 'drizzle-orm'
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, lte, ne, notInArray } from 'drizzle-orm'
 import type { PgColumn } from 'drizzle-orm/pg-core'
 import type { DomainGetManyRequest } from '../../../domain/models/request.ts'
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../../../domain/models/request.ts'
 import type { Operator } from '../../../models/filter.ts'
 import type { tableResources } from '../../../spi/repositories/database/schema.ts'
 
@@ -23,14 +24,10 @@ const operatorMap: Record<Operator, ColumnConditionFn> = {
 }
 
 const domainGetManyRequestToDrizzleQuery = (request: DomainGetManyRequest, table: typeof tableResources) => {
-  const {
-    filters = {},
-    pagination: { page, pageSize },
-    sorting = [],
-  } = request
+  const { filters = {}, pagination: { page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE } = {}, sorting = [] } = request
 
-  const whereClauses = Object.entries(filters).flatMap(([field, ops]) => {
-    if (!ops) {
+  const whereClauses = Object.entries(filters).flatMap(([field, filterObj]) => {
+    if (!filterObj) {
       return []
     }
 
@@ -40,9 +37,9 @@ const domainGetManyRequestToDrizzleQuery = (request: DomainGetManyRequest, table
       return [] // ignore unknown fields
     }
 
-    return Object.entries(ops)
-      .map(([op, value]) => {
-        const fn = operatorMap[op as keyof typeof operatorMap]
+    return Object.entries(filterObj)
+      .map(([operator, value]) => {
+        const fn = operatorMap[operator as keyof typeof operatorMap]
 
         return fn?.(col, value)
       })
@@ -57,25 +54,24 @@ const domainGetManyRequestToDrizzleQuery = (request: DomainGetManyRequest, table
         return undefined
       }
 
-      return direction === 'ASC' ? asc(col) : desc(col)
+      return direction === 'DESC' ? desc(col) : asc(col)
     })
     .filter(Boolean) as SQL<unknown>[]
-
-  const offset = Math.max((page - 1) * pageSize, 0)
 
   /* v8 ignore start */
   const where = whereClauses.length ? and(...whereClauses) : undefined
   /* v8 ignore end */
 
   const orderBy = orderByClauses
+  const offset = Math.max((page - 1) * pageSize, 0)
+  const limit = pageSize
 
   return {
-    limit: pageSize,
+    limit,
     offset,
     orderBy,
     where,
   }
 }
-/* v8 ignore end */
 
 export { domainGetManyRequestToDrizzleQuery }

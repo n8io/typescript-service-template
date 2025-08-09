@@ -1,11 +1,42 @@
 import { exampleResource } from '../../../../domain/models/resource.ts'
 import { DomainNotFoundError } from '../../../../models/custom-error.ts'
-import { errorHandler } from '../../middleware/error-handler.ts'
 import { makeApp } from '../app.ts'
 import { resources } from './resources.ts'
 
+// Mock the errorHandler
+const mockErrorHandler = vi.fn((error: Error, ctx: { json: (data: unknown, status?: number) => Response }) => {
+  if (error instanceof DomainNotFoundError) {
+    return ctx.json(
+      {
+        code: error.code,
+        message: error.message,
+      },
+      404,
+    )
+  }
+
+  return ctx.json(
+    {
+      code: 'UNHANDLED_EXCEPTION',
+      message: 'An unhandled exception occurred',
+    },
+    500,
+  )
+})
+
+vi.mock('../../middleware/error-handler.ts', () => ({
+  errorHandler: () => mockErrorHandler,
+}))
+
+// Import the mocked errorHandler
+import { errorHandler } from '../../middleware/error-handler.ts'
+
 describe('resources', () => {
   const mockResource = exampleResource()
+
+  beforeEach(() => {
+    mockErrorHandler.mockClear()
+  })
 
   describe('GET /', () => {
     it('should return a list of resources', async () => {

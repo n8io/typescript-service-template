@@ -60,11 +60,11 @@ resources.get(
     const services = ctx.get('services')
     const params = new URL(ctx.req.url).searchParams
 
-    const request = {
+    const request: DomainGetManyRequest = {
       filters: urlSearchParamsToFilters(params, { baseSchema: ResourceService.schemas.core }),
       pagination: urlSearchParamsToPagination(params),
       sorting: urlSearchParamsToSort(params, { sortableFields: ResourceService.propsMeta.sort }),
-    } as DomainGetManyRequest
+    }
 
     const paginated = await services.resource.getMany(request)
 
