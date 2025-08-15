@@ -9,8 +9,10 @@ alwaysApply: false
 
 1. Alphabetize object properties
 2. Alphabetize destructured properties
-3. When working with classes, the props should be grouped and ordered accordingly:
-  1. All props should be grouped together by their accessibility (`private`, `constructor`, `protected`, and `public`) then alphabetized
+3. Multiline code blocks, functions, methods, classes, variable declarations, log statements, and any statements, in general, that are more than one line long should be preceded and followed by empty lines for better readability.
+4. Favor a single input parameter object over multiple ordinal parameters, especially if there are more than two input parameters.
+5. When working with classes, the props should be grouped and ordered accordingly:
+  1. All props should be grouped together by their accessibility (`private`, `constructor`, `protected`, and `public`) then each group is alphabetized
   2. The group order is: `private`, `constructor`, `protected`, then lastly `public`
   3. There should be a newline after each group (except for the last one)
 
@@ -109,3 +111,4 @@ class UserService {
 - Empty lines improve readability by separating logical blocks
 - Avoiding promise chaining makes code more readable and easier to debug
 - Consistent formatting makes code reviews easier and reduces merge conflicts
+- Always favor readability & testability over complexity
