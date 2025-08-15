@@ -12,6 +12,8 @@ alwaysApply: false
 3. Enable strict TypeScript configuration
 4. Leverage TypeScript's built-in utility types
 5. Use generics for reusable type patterns
+6. Never create a `types` directory. Types, interfaces, models, and schemas should all live under an appropriately scoped `models` directory. See existing project patterns for examples.
+7. Use abstract base classes that can be extended for special cases where maintaining internal state on an instance is necessary.
 
 ## Examples
 
