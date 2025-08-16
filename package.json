@@ -80,6 +80,7 @@
     "hono-openapi": "^0",
     "hono-pino": "^0",
     "lru-cache": "^11",
+    "neverthrow": "^8.2.0",
     "pg": "^8",
     "pg-error-enum": "^1",
     "pino": "^9",
