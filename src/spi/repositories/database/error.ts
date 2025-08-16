@@ -1,7 +1,10 @@
 import pg from 'pg'
 import { PostgresError } from 'pg-error-enum'
+import type { SpiDatabaseError } from '../../../models/spi-errors.ts'
+import { createSpiDatabaseError } from '../../../models/spi-errors.ts'
 
-const isDatabaseError = (error: unknown) => error instanceof pg.DatabaseError
+const isDatabaseError = (error: unknown): error is pg.DatabaseError => error instanceof pg.DatabaseError
+
 const isSpiDatabaseError = (error: unknown): boolean => isDatabaseError(error)
 
 const databaseErrorMessages = new Map<string, string>([
@@ -12,4 +15,12 @@ const databaseErrorMessages = new Map<string, string>([
   [PostgresError.UNIQUE_VIOLATION, 'Unique constraint violation'],
 ])
 
-export { databaseErrorMessages, isSpiDatabaseError }
+// Convert database errors to SPI errors
+const convertDatabaseError = (error: pg.DatabaseError): SpiDatabaseError => {
+  const message = databaseErrorMessages.get(error.code ?? '') ?? 'Database operation failed'
+  const detail = error.detail ?? 'Unknown database error'
+
+  return createSpiDatabaseError(message, error.code, detail, error)
+}
+
+export { databaseErrorMessages, isSpiDatabaseError, convertDatabaseError }

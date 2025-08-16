@@ -1,10 +1,9 @@
 import type { SQL } from 'drizzle-orm'
 import { and, asc, desc, eq, gt, gte, ilike, inArray, isNotNull, isNull, lt, lte, ne, notInArray } from 'drizzle-orm'
-import type { PgColumn } from 'drizzle-orm/pg-core'
+import type { PgColumn, PgTable } from 'drizzle-orm/pg-core'
 import type { DomainGetManyRequest } from '../../../domain/models/request.ts'
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../../../domain/models/request.ts'
 import type { Operator } from '../../../models/filter.ts'
-import type { tableResources } from '../../../spi/repositories/database/schema.ts'
 
 type ColumnConditionFn = (
   column: PgColumn,
@@ -23,7 +22,7 @@ const operatorMap: Record<Operator, ColumnConditionFn> = {
   search: (column, value) => ilike(column, `%${value}%`),
 }
 
-const domainGetManyRequestToDrizzleQuery = (request: DomainGetManyRequest, table: typeof tableResources) => {
+const domainGetManyRequestToDrizzleQuery = (request: DomainGetManyRequest, table: PgTable) => {
   const { filters = {}, pagination: { page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE } = {}, sorting = [] } = request
 
   const whereClauses = Object.entries(filters).flatMap(([field, filterObj]) => {

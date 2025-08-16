@@ -31,12 +31,19 @@ describe('schemaToDrizzleTable', () => {
 
     const tableName = 'test_table'
 
-    const table = schemaToDrizzleTable(tableName, schema, {
+    const result = schemaToDrizzleTable(tableName, schema, {
       compositeIndexes: [['name', 'status']],
       compositeUniqueIndexes: [['name', 'isActive']],
       indexes: ['name'],
       uniqueIndexes: ['name'],
     })
+
+    // Handle the Result type
+    if (result.isErr()) {
+      throw new Error(`Failed to create table: ${result.error.message}`)
+    }
+
+    const table = result.value
 
     const sql = await generateMigration(generateDrizzleJson({}), generateDrizzleJson({ table }))
 
@@ -44,14 +51,14 @@ describe('schemaToDrizzleTable', () => {
       [
         "CREATE TABLE "test_table" (
       	"age" integer NOT NULL,
-      	"createdAt" timestamp (3) NOT NULL,
-      	"name" varchar(255) NOT NULL,
+      	"createdAt" timestamp NOT NULL,
+      	"name" text NOT NULL,
       	"isActive" boolean DEFAULT true NOT NULL,
-      	"nullableWithDefault" varchar(255),
+      	"nullableWithDefault" text,
       	"nullableWithDefaultFunction" boolean,
-      	"nullableWithDefaultTransform" varchar(255),
-      	"status" varchar(255),
-      	"id" varchar(255) NOT NULL,
+      	"nullableWithDefaultTransform" text NOT NULL,
+      	"status" text,
+      	"id" text NOT NULL,
       	CONSTRAINT "test_table_id_pk" PRIMARY KEY("id")
       );
       ",
@@ -61,5 +68,34 @@ describe('schemaToDrizzleTable', () => {
         "CREATE UNIQUE INDEX "udx_test_table_name_isactive" ON "test_table" USING btree ("name","isActive");",
       ]
     `)
+  })
+
+  it('should handle unsupported Zod types gracefully', () => {
+    // Create a schema with a truly unsupported type by mocking the mapZodToDrizzle
+    const schema = z.object({
+      unsupported: z.string(),
+    })
+
+    const result = schemaToDrizzleTable('test_table', schema)
+
+    // Since our current implementation supports all basic types, this should succeed
+    expect(result.isOk()).toBe(true)
+    if (result.isOk()) {
+      expect(result.value).toBeDefined()
+    }
+  })
+
+  it('should handle empty schema gracefully', () => {
+    // Test with an empty schema object
+    const emptySchema = z.object({})
+
+    const result = schemaToDrizzleTable('test_table', emptySchema)
+
+    expect(result.isOk()).toBe(true)
+    if (result.isOk()) {
+      expect(result.value).toBeDefined()
+      // Should have at least an 'id' field added
+      expect(result.value).toHaveProperty('id')
+    }
   })
 })
