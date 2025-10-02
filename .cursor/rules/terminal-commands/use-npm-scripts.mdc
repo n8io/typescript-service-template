@@ -24,7 +24,7 @@ npm run test
 npm run start
 
 # Incorrect way
-tsc  # Instead of npm run build
+tsgo  # Instead of npm run build
 jest  # Instead of npm run test
 node dist/index.js  # Instead of npm run start
 ```
