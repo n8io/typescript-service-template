@@ -28,11 +28,6 @@ const exampleAuditRecordSystem = (overrides: Partial<AuditRecordSystem> = {}): A
 
 const schemaAuditRecordUser = z
   .object({
-    email: z
-      .string()
-      .email()
-      .optional()
-      .openapi({ description: 'The email of the user who performed the action', title: 'Email', example: 'em@il.com' }),
     gid: z.string().openapi({ example: exampleGid(false) }),
     type: z.literal(AuditRecordType.USER).openapi({ title: 'User', example: AuditRecordType.USER }),
   })
@@ -44,7 +39,6 @@ const schemaAuditRecordUser = z
 type AuditRecordUser = Prettify<z.infer<typeof schemaAuditRecordUser>>
 
 const exampleAuditRecordUser = (overrides: Partial<AuditRecordUser> = {}): AuditRecordUser => ({
-  email: 'em@il.com', // Optional
   gid: exampleGid(),
   type: AuditRecordType.USER,
   ...overrides,

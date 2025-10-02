@@ -119,7 +119,6 @@
                   "name": "Jane Doe",
                   "timeZone": "America/New_York",
                   "createdBy": {
-                    "email": "em@il.com",
                     "gid": "999.00000000-0000-0000-0000-000000000000",
                     "type": "USER"
                   }
@@ -196,7 +195,6 @@
                         "timeZone": "America/New_York",
                         "createdAt": "1900-01-01T00:00:00.000Z",
                         "createdBy": {
-                          "email": "em@il.com",
                           "gid": "999.00000000-0000-0000-0000-000000000000",
                           "type": "USER"
                         },
@@ -608,7 +606,6 @@
           "timeZone": "America/New_York",
           "createdAt": "1900-01-01T00:00:00.000Z",
           "createdBy": {
-            "email": "em@il.com",
             "gid": "999.00000000-0000-0000-0000-000000000000",
             "type": "USER"
           },
@@ -643,13 +640,6 @@
       "AuditRecordUser": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "description": "The email of the user who performed the action",
-            "title": "Email",
-            "example": "em@il.com"
-          },
           "gid": {
             "type": "string",
             "example": "999.00000000-0000-0000-0000-000000000000"

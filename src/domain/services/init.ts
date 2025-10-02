@@ -2,9 +2,7 @@ import type { Spi } from '../../spi/init.ts'
 import { ResourceService } from './resource.ts'
 
 const initServices = async (spi: Spi) => {
-  const resource = new ResourceService({
-    repository: spi.repositories.resource,
-  })
+  const resource = new ResourceService(spi)
 
   return { resource }
 }

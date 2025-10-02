@@ -41,4 +41,4 @@ const schemaDomainGetManyRequest = z
 type DomainGetManyRequest = Prettify<z.infer<typeof schemaDomainGetManyRequest>>
 
 export type { DomainGetManyRequest }
-export { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, schemaDomainGetManyRequest }
+export { DEFAULT_PAGE, DEFAULT_PAGE_SIZE }

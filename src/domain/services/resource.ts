@@ -1,4 +1,5 @@
 import type { z } from 'zod'
+import type { Spi } from '../../spi/init.ts'
 import { pick } from '../../utils/fp.ts'
 import { validation } from '../../utils/validation.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
@@ -7,7 +8,15 @@ import { BaseService } from './models/base-service.ts'
 
 type Resource = z.infer<typeof schemaResource>
 
-class ResourceService extends BaseService<Resource> {
+type CreateRequest = z.infer<typeof ResourceService.schemas.request.createOne>
+type UpdateRequest = z.infer<typeof ResourceService.schemas.request.updateOne>
+
+class ResourceService extends BaseService<
+  typeof schemaResource,
+  CreateRequest,
+  UpdateRequest,
+  Spi['repositories']['resource']
+> {
   /**
    * @description The properties that are used to create, filter, sort and update a resource.
    */
@@ -57,8 +66,15 @@ class ResourceService extends BaseService<Resource> {
     },
   } as const
 
-  protected override readonly propsMeta = ResourceService.propsMeta
-  protected override readonly schemas = ResourceService.schemas
+  constructor(spi: Spi) {
+    super({
+      repository: spi.repositories.resource,
+      schemas: ResourceService.schemas,
+    })
+  }
+
+  public readonly propsMeta = ResourceService.propsMeta
+  public readonly schemas = ResourceService.schemas
 }
 
 export { ResourceService }

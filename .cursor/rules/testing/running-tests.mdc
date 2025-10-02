@@ -17,7 +17,9 @@ tags: test, tests, vitest, fix test
 
 ## When running tests for a specific test file...
 
-- Always run in non-interactive mode by passing the `run` option
+- Always run in non-interactive mode by via `npm test run`
+- Always run in non-interactive mode by via `npm test run`
+- Always run in non-interactive mode by via `npm test run`
 - Always run with coverage, when possible focus coverage on the test files being ran
 - Always use the following command pattern:
 

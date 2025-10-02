@@ -1,7 +1,7 @@
 import pg from 'pg'
 import { PostgresError } from 'pg-error-enum'
-import type { SpiDatabaseError } from '../../../models/spi-errors.ts'
-import { createSpiDatabaseError } from '../../../models/spi-errors.ts'
+import type { SpiDatabaseError } from '../../../domain/spi-ports/errors.ts'
+import { createSpiDatabaseError } from '../../../domain/spi-ports/errors.ts'
 
 const isDatabaseError = (error: unknown): error is pg.DatabaseError => error instanceof pg.DatabaseError
 

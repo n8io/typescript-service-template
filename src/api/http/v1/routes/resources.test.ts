@@ -1,42 +1,12 @@
 import { exampleResource } from '../../../../domain/models/resource.ts'
-import { DomainNotFoundError } from '../../../../models/custom-error.ts'
+import { createDomainNotFoundError } from '../../../../models/domain-errors.ts'
+import { err, ok } from '../../../../models/result.ts'
+import { errorHandler } from '../../middleware/error-handler.ts'
 import { makeApp } from '../app.ts'
 import { resources } from './resources.ts'
 
-// Mock the errorHandler
-const mockErrorHandler = vi.fn((error: Error, ctx: { json: (data: unknown, status?: number) => Response }) => {
-  if (error instanceof DomainNotFoundError) {
-    return ctx.json(
-      {
-        code: error.code,
-        message: error.message,
-      },
-      404,
-    )
-  }
-
-  return ctx.json(
-    {
-      code: 'UNHANDLED_EXCEPTION',
-      message: 'An unhandled exception occurred',
-    },
-    500,
-  )
-})
-
-vi.mock('../../middleware/error-handler.ts', () => ({
-  errorHandler: () => mockErrorHandler,
-}))
-
-// Import the mocked errorHandler
-import { errorHandler } from '../../middleware/error-handler.ts'
-
 describe('resources', () => {
   const mockResource = exampleResource()
-
-  beforeEach(() => {
-    mockErrorHandler.mockClear()
-  })
 
   describe('GET /', () => {
     it('should return a list of resources', async () => {
@@ -51,13 +21,11 @@ describe('resources', () => {
 
       const mockServices = {
         resource: {
-          getMany: vi.fn().mockResolvedValue(mockResponse),
+          getMany: vi.fn().mockResolvedValue(ok(mockResponse)),
         },
       }
 
       const app = makeApp()
-
-      app.onError(errorHandler())
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -65,6 +33,9 @@ describe('resources', () => {
         ctx.set('services', mockServices)
         await next()
       })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
 
       // Mount the resources route
       app.route('/', resources)
@@ -79,6 +50,37 @@ describe('resources', () => {
         filters: {},
       })
     })
+
+    it('should handle domain errors when getting resources', async () => {
+      const domainError = createDomainNotFoundError('Failed to retrieve entities', 'entities', 'retrieval_failed')
+      const mockServices = {
+        resource: {
+          getMany: vi.fn().mockResolvedValue(err(domainError)),
+        },
+      }
+
+      const app = makeApp()
+
+      // Attach mock services middleware
+      app.use('*', async (ctx, next) => {
+        // @ts-expect-error ???
+        ctx.set('services', mockServices)
+        await next()
+      })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
+
+      // Mount the resources route
+      app.route('/', resources)
+
+      const res = await app.request('/')
+
+      expect(res.status).toBe(404)
+      expect(mockServices.resource.getMany).toHaveBeenCalledWith({
+        filters: {},
+      })
+    })
   })
 
   describe('POST /', () => {
@@ -87,13 +89,11 @@ describe('resources', () => {
 
       const mockServices = {
         resource: {
-          createOne: vi.fn().mockResolvedValue(mockResource),
+          createOne: vi.fn().mockResolvedValue(ok(mockResource)),
         },
       }
 
       const app = makeApp()
-
-      app.onError(errorHandler())
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -101,6 +101,9 @@ describe('resources', () => {
         ctx.set('services', mockServices)
         await next()
       })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
 
       // Mount the resources route
       app.route('/', resources)
@@ -119,6 +122,42 @@ describe('resources', () => {
       expect(data).toEqual(JSON.parse(JSON.stringify(mockResource)))
       expect(mockServices.resource.createOne).toHaveBeenCalledWith(request)
     })
+
+    it('should handle domain errors when creating resource', async () => {
+      const request = {}
+      const domainError = createDomainNotFoundError('Failed to create entity', 'entity', 'creation_failed')
+      const mockServices = {
+        resource: {
+          createOne: vi.fn().mockResolvedValue(err(domainError)),
+        },
+      }
+
+      const app = makeApp()
+
+      // Attach mock services middleware
+      app.use('*', async (ctx, next) => {
+        // @ts-expect-error ???
+        ctx.set('services', mockServices)
+        await next()
+      })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
+
+      // Mount the resources route
+      app.route('/', resources)
+
+      const res = await app.request('/', {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      expect(res.status).toBe(404)
+      expect(mockServices.resource.createOne).toHaveBeenCalledWith(request)
+    })
   })
 
   describe('GET /:gid', () => {
@@ -127,13 +166,11 @@ describe('resources', () => {
 
       const mockServices = {
         resource: {
-          getOne: vi.fn().mockResolvedValue(mockResource),
+          getOne: vi.fn().mockResolvedValue(ok(mockResource)),
         },
       }
 
       const app = makeApp()
-
-      app.onError(errorHandler())
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -141,6 +178,9 @@ describe('resources', () => {
         ctx.set('services', mockServices)
         await next()
       })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
 
       // Mount the resources route
       app.route('/', resources)
@@ -152,6 +192,36 @@ describe('resources', () => {
       expect(data).toEqual(JSON.parse(JSON.stringify(mockResource)))
       expect(mockServices.resource.getOne).toHaveBeenCalledWith(gid)
     })
+
+    it('should handle domain errors when getting resource by id', async () => {
+      const gid = 'GID'
+      const domainError = createDomainNotFoundError(`Entity with gid ${gid} not found`, 'entity', gid)
+      const mockServices = {
+        resource: {
+          getOne: vi.fn().mockResolvedValue(err(domainError)),
+        },
+      }
+
+      const app = makeApp()
+
+      // Attach mock services middleware
+      app.use('*', async (ctx, next) => {
+        // @ts-expect-error ???
+        ctx.set('services', mockServices)
+        await next()
+      })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
+
+      // Mount the resources route
+      app.route('/', resources)
+
+      const res = await app.request(`/${gid}`)
+
+      expect(res.status).toBe(404)
+      expect(mockServices.resource.getOne).toHaveBeenCalledWith(gid)
+    })
   })
 
   describe('PATCH /:gid', () => {
@@ -160,13 +230,11 @@ describe('resources', () => {
 
       const mockServices = {
         resource: {
-          updateOne: vi.fn().mockResolvedValue(mockResource),
+          updateOne: vi.fn().mockResolvedValue(ok(mockResource)),
         },
       }
 
       const app = makeApp()
-
-      app.onError(errorHandler())
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -174,6 +242,9 @@ describe('resources', () => {
         ctx.set('services', mockServices)
         await next()
       })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
 
       // Mount the resources route
       app.route('/', resources)
@@ -189,6 +260,39 @@ describe('resources', () => {
       expect(data).toEqual(JSON.parse(JSON.stringify(mockResource)))
       expect(mockServices.resource.updateOne).toHaveBeenCalledWith(gid, { name: 'UPDATED_NAME' })
     })
+
+    it('should handle domain errors when updating resource', async () => {
+      const gid = 'GID'
+      const domainError = createDomainNotFoundError('Failed to update entity', 'entity', 'update_failed')
+      const mockServices = {
+        resource: {
+          updateOne: vi.fn().mockResolvedValue(err(domainError)),
+        },
+      }
+
+      const app = makeApp()
+
+      // Attach mock services middleware
+      app.use('*', async (ctx, next) => {
+        // @ts-expect-error ???
+        ctx.set('services', mockServices)
+        await next()
+      })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
+
+      // Mount the resources route
+      app.route('/', resources)
+
+      const res = await app.request(`/${gid}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ name: 'UPDATED_NAME' }),
+      })
+
+      expect(res.status).toBe(404)
+      expect(mockServices.resource.updateOne).toHaveBeenCalledWith(gid, { name: 'UPDATED_NAME' })
+    })
   })
 
   describe('DELETE /:gid', () => {
@@ -197,13 +301,11 @@ describe('resources', () => {
 
       const mockServices = {
         resource: {
-          deleteOne: vi.fn().mockResolvedValue(undefined),
+          deleteOne: vi.fn().mockResolvedValue(ok(undefined)),
         },
       }
 
       const app = makeApp()
-
-      app.onError(errorHandler())
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -211,6 +313,9 @@ describe('resources', () => {
         ctx.set('services', mockServices)
         await next()
       })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
 
       // Mount the resources route
       app.route('/', resources)
@@ -223,18 +328,16 @@ describe('resources', () => {
       expect(mockServices.resource.deleteOne).toHaveBeenCalledWith(gid)
     })
 
-    it('should throw an error if the resource cannot be found', async () => {
+    it('should handle domain errors when deleting resource', async () => {
       const gid = 'GID'
-
+      const domainError = createDomainNotFoundError('Failed to delete entity', 'entity', 'deletion_failed')
       const mockServices = {
         resource: {
-          deleteOne: vi.fn().mockRejectedValue(new DomainNotFoundError(`Entity with gid ${gid} not found`)),
+          deleteOne: vi.fn().mockResolvedValue(err(domainError)),
         },
       }
 
       const app = makeApp()
-
-      app.onError(errorHandler())
 
       // Attach mock services middleware
       app.use('*', async (ctx, next) => {
@@ -242,6 +345,9 @@ describe('resources', () => {
         ctx.set('services', mockServices)
         await next()
       })
+
+      // Apply error handler BEFORE mounting routes
+      app.onError(errorHandler())
 
       // Mount the resources route
       app.route('/', resources)
@@ -251,38 +357,6 @@ describe('resources', () => {
       })
 
       expect(res.status).toBe(404)
-      expect(mockServices.resource.deleteOne).toHaveBeenCalledWith(gid)
-    })
-
-    it('should throw an error if the delete operation fails', async () => {
-      const gid = 'GID'
-      const error = new Error('💥')
-
-      const mockServices = {
-        resource: {
-          deleteOne: vi.fn().mockRejectedValue(error),
-        },
-      }
-
-      const app = makeApp()
-
-      app.onError(errorHandler())
-
-      // Attach mock services middleware
-      app.use('*', async (ctx, next) => {
-        // @ts-expect-error ???
-        ctx.set('services', mockServices)
-        await next()
-      })
-
-      // Mount the resources route
-      app.route('/', resources)
-
-      const res = await app.request(`/${gid}`, {
-        method: 'DELETE',
-      })
-
-      expect(res.status).toBe(500)
       expect(mockServices.resource.deleteOne).toHaveBeenCalledWith(gid)
     })
   })

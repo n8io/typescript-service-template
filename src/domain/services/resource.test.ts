@@ -1,6 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
-import { exampleAuditRecord } from '../../models/audit-record.ts'
-import { DomainNotFoundError } from '../../models/custom-error.ts'
+import type { Result } from 'neverthrow'
+import { err, ok } from 'neverthrow'
+import type { DatabaseError } from 'pg'
+import type { Spi } from '../../spi/init.ts'
 import * as Validation from '../../utils/validation.ts'
 import { exampleResource } from '../models/resource.ts'
 import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
@@ -23,25 +24,59 @@ vi.mock('../../utils/validation.ts', async (importOriginal) => {
 describe('ResourceService', () => {
   const mockResource = exampleResource()
 
-  const makeMockRepository = (overrides: Partial<SpiResourceRepository> = {}): SpiResourceRepository => ({
-    createOne: vi.fn().mockResolvedValue(mockResource),
-    deleteMany: vi.fn().mockResolvedValue(undefined),
-    getMany: vi.fn().mockResolvedValue({
-      items: [mockResource],
-      itemsTotal: 1,
-    }),
-    updateMany: vi.fn().mockResolvedValue(undefined),
+  const makeMockRepository = (
+    overrides: Partial<{
+      createOne: (request: unknown) => Promise<Result<typeof mockResource, DatabaseError>>
+      deleteMany: (gids: string[]) => Promise<Result<void, DatabaseError>>
+      getMany: (
+        request: unknown,
+      ) => Promise<Result<{ items: (typeof mockResource)[]; itemsTotal: number }, DatabaseError>>
+      updateMany: (
+        updates: unknown,
+        updatedBy: unknown,
+        updatedAt: Date,
+      ) => Promise<Result<(typeof mockResource)[], DatabaseError>>
+    }> = {},
+  ): SpiResourceRepository => ({
+    createOne: vi.fn().mockResolvedValue(ok(mockResource)),
+    deleteMany: vi.fn().mockResolvedValue(ok(undefined)),
+    getMany: vi.fn().mockResolvedValue(
+      ok({
+        items: [mockResource],
+        itemsTotal: 1,
+      }),
+    ),
+    updateMany: vi.fn().mockResolvedValue(ok([mockResource])),
     ...overrides,
   })
 
+  const makeMockSpi = (
+    overrides: Partial<{
+      createOne: (request: unknown) => Promise<Result<typeof mockResource, DatabaseError>>
+      deleteMany: (gids: string[]) => Promise<Result<void, DatabaseError>>
+      getMany: (
+        request: unknown,
+      ) => Promise<Result<{ items: (typeof mockResource)[]; itemsTotal: number }, DatabaseError>>
+      updateMany: (
+        updates: unknown,
+        updatedBy: unknown,
+        updatedAt: Date,
+      ) => Promise<Result<(typeof mockResource)[], DatabaseError>>
+    }> = {},
+  ): Spi => ({
+    repositories: {
+      resource: makeMockRepository(overrides) as Spi['repositories']['resource'],
+    },
+  })
+
   beforeEach(() => {
-    vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue('GID')
+    vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue(mockResource.gid)
   })
 
   describe('createOne', () => {
     it('should create a resource and return it', async () => {
-      const mockRepository = makeMockRepository()
-      const resourceService = new ResourceService({ repository: mockRepository })
+      const mockSpi = makeMockSpi()
+      const resourceService = new ResourceService(mockSpi)
 
       const createRequest = {
         name: mockResource.name,
@@ -49,9 +84,14 @@ describe('ResourceService', () => {
         createdBy: mockResource.createdBy,
       }
 
-      await resourceService.createOne(createRequest)
+      const result = await resourceService.createOne(createRequest)
 
-      expect(mockRepository.createOne).toHaveBeenCalledWith({
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(mockResource)
+      }
+
+      expect(mockSpi.repositories.resource.createOne).toHaveBeenCalledWith({
         ...createRequest,
         createdAt: expect.any(Date),
         gid: expect.any(String),
@@ -60,19 +100,26 @@ describe('ResourceService', () => {
       })
     })
 
-    it('should throw an error if the resource is invalid', async () => {
-      const mockRepository = makeMockRepository()
-      const resourceService = new ResourceService({ repository: mockRepository })
+    it('should return error if the resource is invalid', async () => {
+      const mockSpi = makeMockSpi()
+      const resourceService = new ResourceService(mockSpi)
       const invalidRequest = {} as Parameters<typeof resourceService.createOne>[0]
 
-      await expect(() => resourceService.createOne(invalidRequest)).rejects.toThrow()
+      const result = await resourceService.createOne(invalidRequest)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.code).toBe('DOMAIN_VALIDATION_ERROR')
+        expect(result.error.message).toContain('Required')
+      }
     })
 
-    it('should throw an error if the resource cannot be created', async () => {
-      const error = new Error('💥')
+    it('should return error if the resource cannot be created', async () => {
+      const dbError = new Error('Database constraint violation') as DatabaseError
+      dbError.code = '23505' // Unique violation
 
-      const mockRepository = makeMockRepository({ createOne: vi.fn().mockRejectedValue(error) })
-      const resourceService = new ResourceService({ repository: mockRepository })
+      const mockSpi = makeMockSpi({ createOne: vi.fn().mockResolvedValue(err(dbError)) })
+      const resourceService = new ResourceService(mockSpi)
 
       const createRequest = {
         name: mockResource.name,
@@ -80,14 +127,20 @@ describe('ResourceService', () => {
         createdBy: mockResource.createdBy,
       }
 
-      await expect(() => resourceService.createOne(createRequest)).rejects.toThrowError(error)
+      const result = await resourceService.createOne(createRequest)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.code).toBe('DOMAIN_CONSTRAINT_VIOLATION')
+        expect(result.error.message).toContain('already exists')
+      }
     })
   })
 
   describe('getMany', () => {
     it('should return a paginated response of resources', async () => {
-      const mockRepository = makeMockRepository()
-      const resourceService = new ResourceService({ repository: mockRepository })
+      const mockSpi = makeMockSpi()
+      const resourceService = new ResourceService(mockSpi)
 
       const response = await resourceService.getMany({
         pagination: {
@@ -96,126 +149,203 @@ describe('ResourceService', () => {
         },
       })
 
-      expect(mockRepository.getMany).toHaveBeenCalledWith({
+      expect(mockSpi.repositories.resource.getMany).toHaveBeenCalledWith({
         pagination: {
           page: 1,
           pageSize: 1,
         },
       })
 
-      expect(response).toEqual({
-        hasMore: false,
-        items: [mockResource],
-        itemsTotal: 1,
-        page: 1,
-        pageSize: 1,
-        pagesTotal: 1,
-      })
+      expect(response.isOk()).toBe(true)
+      if (response.isOk()) {
+        expect(response.value).toEqual({
+          hasMore: false,
+          items: [mockResource],
+          itemsTotal: 1,
+          page: 1,
+          pageSize: 1,
+          pagesTotal: 1,
+        })
+      }
     })
 
-    it('should throw an error if the resources cannot be retrieved', async () => {
-      const error = new Error('💥')
+    it('should return error if the resources cannot be retrieved', async () => {
+      const dbError = new Error('Database error') as DatabaseError
+      dbError.code = 'UNKNOWN_ERROR'
 
-      const mockRepository = makeMockRepository({ getMany: vi.fn().mockRejectedValue(error) })
-      const resourceService = new ResourceService({ repository: mockRepository })
+      const mockSpi = makeMockSpi({ getMany: vi.fn().mockResolvedValue(err(dbError)) })
+      const resourceService = new ResourceService(mockSpi)
 
-      await expect(() => resourceService.getMany({ pagination: { page: 1, pageSize: 1 } })).rejects.toThrowError(error)
+      const response = await resourceService.getMany({
+        pagination: {
+          page: 1,
+          pageSize: 1,
+        },
+      })
+
+      expect(response.isErr()).toBe(true)
+      if (response.isErr()) {
+        expect(response.error.code).toBe('DOMAIN_NOT_FOUND')
+        expect(response.error.message).toBe('Failed to retrieve entities')
+      }
     })
   })
 
   describe('getOne', () => {
-    it('should return a resource by gid', async () => {
-      const mockRepository = makeMockRepository()
-      const resourceService = new ResourceService({ repository: mockRepository })
-      const response = await resourceService.getOne('GID')
+    it('should return a resource when found', async () => {
+      const mockSpi = makeMockSpi()
+      const resourceService = new ResourceService(mockSpi)
 
-      expect(mockRepository.getMany).toHaveBeenCalledWith({
-        filters: {
-          gid: {
-            eq: 'GID',
-          },
-        },
-        pagination: {
-          page: 1,
-          pageSize: 1,
-        },
-      })
+      const response = await resourceService.getOne(mockResource.gid)
 
-      expect(response).toEqual(mockResource)
+      expect(response.isOk()).toBe(true)
+      if (response.isOk()) {
+        expect(response.value).toEqual(mockResource)
+      }
     })
 
-    it('should throw an error if the request fails', async () => {
-      const error = new Error('💥')
-
-      const mockRepository = {
-        getMany: vi.fn().mockRejectedValue(error),
-      } as unknown as SpiResourceRepository
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
+    it('should return error if the resource is not found', async () => {
+      const mockSpi = makeMockSpi({
+        getMany: vi.fn().mockResolvedValue(
+          ok({
+            items: [],
+            itemsTotal: 0,
+          }),
+        ),
       })
+      const resourceService = new ResourceService(mockSpi)
 
-      await expect(() => resourceService.getOne('GID')).rejects.toThrowError(error)
+      const response = await resourceService.getOne('non-existent-gid')
+
+      expect(response.isErr()).toBe(true)
+      if (response.isErr()) {
+        expect(response.error.code).toBe('DOMAIN_NOT_FOUND')
+        expect(response.error.message).toBe('Entity with gid non-existent-gid not found')
+      }
     })
 
-    it('should throw an error if the resource cannot be found', async () => {
-      const mockRepository = makeMockRepository({ getMany: vi.fn().mockResolvedValue({ items: [], itemsTotal: 0 }) })
-      const resourceService = new ResourceService({ repository: mockRepository })
+    it('should return error if the resource cannot be retrieved', async () => {
+      const dbError = new Error('Database error') as DatabaseError
+      dbError.code = 'UNKNOWN_ERROR'
 
-      await expect(() => resourceService.getOne('GID')).rejects.toThrowError(DomainNotFoundError)
+      const mockSpi = makeMockSpi({ getMany: vi.fn().mockResolvedValue(err(dbError)) })
+      const resourceService = new ResourceService(mockSpi)
+
+      const response = await resourceService.getOne(mockResource.gid)
+
+      expect(response.isErr()).toBe(true)
+      if (response.isErr()) {
+        expect(response.error.code).toBe('DOMAIN_NOT_FOUND')
+        expect(response.error.message).toBe('Failed to retrieve entities')
+      }
     })
   })
 
   describe('updateOne', () => {
-    it('should update the resource and return the updated resource', async () => {
-      vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue(mockResource.gid)
+    it('should update a resource and return it', async () => {
+      const mockSpi = makeMockSpi()
+      const resourceService = new ResourceService(mockSpi)
 
-      const mockRepository = makeMockRepository()
-      const resourceService = new ResourceService({ repository: mockRepository })
-      const update = { name: 'UPDATED_NAME', updatedBy: exampleAuditRecord() }
-      const result = await resourceService.updateOne(mockResource.gid, update)
-
-      expect(mockRepository.updateMany).toHaveBeenCalledWith(
-        [
-          {
-            name: update.name,
-            gid: mockResource.gid,
-          },
-        ],
-        update.updatedBy,
-        expect.any(Date),
-      )
-
-      expect(result).toEqual(mockResource)
-    })
-
-    it('should throw an error if the update fails', async () => {
-      const mockResource = exampleResource()
-      const error = new Error('💥')
-
-      vi.spyOn(Validation.validation.gid, 'parse').mockReturnValue(mockResource.gid)
-
-      const mockRepository = makeMockRepository({ updateMany: vi.fn().mockRejectedValue(error) })
-
-      const resourceService = new ResourceService({
-        repository: mockRepository,
-      })
-
-      const update = {
-        name: 'UPDATED_NAME',
-        updatedBy: exampleAuditRecord(),
+      const updateRequest = {
+        name: 'Updated Resource',
+        timeZone: 'UTC',
+        updatedBy: mockResource.createdBy,
       }
 
-      await expect(() => resourceService.updateOne(mockResource.gid, update)).rejects.toThrowError(error)
+      const result = await resourceService.updateOne(mockResource.gid, updateRequest)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(mockResource)
+      }
+
+      expect(mockSpi.repositories.resource.updateMany).toHaveBeenCalledWith(
+        [
+          {
+            gid: mockResource.gid,
+            name: updateRequest.name,
+            timeZone: updateRequest.timeZone,
+          },
+        ],
+        updateRequest.updatedBy,
+        expect.any(Date),
+      )
+    })
+
+    it('should return error if the resource cannot be updated', async () => {
+      const dbError = new Error('Database error') as DatabaseError
+      dbError.code = 'UNKNOWN_ERROR'
+
+      const mockSpi = makeMockSpi({ updateMany: vi.fn().mockResolvedValue(err(dbError)) })
+      const resourceService = new ResourceService(mockSpi)
+
+      const updateRequest = {
+        name: 'Updated Resource',
+        timeZone: 'UTC',
+        updatedBy: mockResource.createdBy,
+      }
+
+      const result = await resourceService.updateOne(mockResource.gid, updateRequest)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.code).toBe('DOMAIN_NOT_FOUND')
+        expect(result.error.message).toBe('Failed to update entity')
+      }
     })
   })
 
-  it('should instantiate with the correct repository and schemas', () => {
-    const mockRepository = {} as SpiResourceRepository
-    const service = new ResourceService({ repository: mockRepository })
+  describe('deleteOne', () => {
+    it('should delete a resource', async () => {
+      const mockSpi = makeMockSpi()
+      const resourceService = new ResourceService(mockSpi)
 
-    expect(service).toBeInstanceOf(ResourceService)
-    expect(ResourceService.schemas).toBeDefined()
-    expect(ResourceService.propsMeta).toBeDefined()
+      const result = await resourceService.deleteOne(mockResource.gid)
+
+      expect(result.isOk()).toBe(true)
+      expect(mockSpi.repositories.resource.deleteMany).toHaveBeenCalledWith([mockResource.gid])
+    })
+
+    it('should return error if the resource cannot be deleted', async () => {
+      const dbError = new Error('Database error') as DatabaseError
+      dbError.code = 'UNKNOWN_ERROR'
+
+      const mockSpi = makeMockSpi({ deleteMany: vi.fn().mockResolvedValue(err(dbError)) })
+      const resourceService = new ResourceService(mockSpi)
+
+      const result = await resourceService.deleteOne(mockResource.gid)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.code).toBe('DOMAIN_NOT_FOUND')
+        expect(result.error.message).toBe('Failed to delete entity')
+      }
+    })
+  })
+
+  describe('propsMeta', () => {
+    it('should have the correct properties for each operation', () => {
+      const mockSpi = makeMockSpi()
+      const service = new ResourceService(mockSpi)
+
+      expect(service.propsMeta.create).toEqual(['name', 'timeZone', 'createdBy'])
+      expect(service.propsMeta.filter).toEqual(['createdAt', 'gid', 'name', 'timeZone', 'updatedAt'])
+      expect(service.propsMeta.sort).toEqual(['createdAt', 'gid', 'name', 'timeZone', 'updatedAt'])
+      expect(service.propsMeta.update).toEqual(['name', 'timeZone', 'updatedBy'])
+    })
+  })
+
+  describe('schemas', () => {
+    it('should have the correct schemas', () => {
+      const mockSpi = makeMockSpi()
+      const service = new ResourceService(mockSpi)
+
+      expect(service.schemas.core).toBe(ResourceService.schemas.core)
+      expect(service.schemas.request.createOne).toBe(ResourceService.schemas.request.createOne)
+      expect(service.schemas.request.getOne).toBe(ResourceService.schemas.request.getOne)
+      expect(service.schemas.request.updateOne).toBe(ResourceService.schemas.request.updateOne)
+      expect(service.schemas.response.getMany).toBe(ResourceService.schemas.response.getMany)
+      expect(service.schemas.response.getOne).toBe(ResourceService.schemas.response.getOne)
+    })
   })
 })

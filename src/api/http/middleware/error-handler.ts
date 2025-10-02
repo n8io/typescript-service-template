@@ -1,12 +1,14 @@
 import type { ErrorHandler } from 'hono'
 import type { ContentfulStatusCode } from 'hono/utils/http-status'
 import type { DatabaseError } from 'pg'
+import { pick } from 'remeda'
 import type { ZodError } from 'zod'
 import type { CustomError } from '../../../models/custom-error.ts'
 import { ErrorCode } from '../../../models/error-code.ts'
 import { HttpStatus } from '../../../models/http-status.ts'
+import type { AppError } from '../../../models/result.ts'
 import { isSpiDatabaseError } from '../../../spi/repositories/database/error.ts'
-import { isCustomError, isValidationError } from '../../../utils/errors.ts'
+import { isAppError, isCustomError, isValidationError } from '../../../utils/errors.ts'
 import { logger } from '../../../utils/logger.ts'
 
 const errorHandler = (): ErrorHandler => (error, ctx) => {
@@ -32,9 +34,26 @@ const errorHandler = (): ErrorHandler => (error, ctx) => {
     return ctx.json(
       {
         code: ErrorCode.SPI_DATABASE_ERROR,
+        ...pick(spiDatabaseError, ['constraint']),
         message,
       },
       HttpStatus.BAD_REQUEST,
+    )
+  }
+
+  if (isAppError(error)) {
+    const appError = error as AppError
+
+    logger.error(appError)
+
+    return ctx.json(
+      {
+        code: appError.code,
+        // @ts-expect-error - Add constraint when present
+        ...pick(appError, ['constraint']),
+        message: appError.message,
+      },
+      (appError.httpStatusCode as ContentfulStatusCode) ?? HttpStatus.INTERNAL_SERVER_ERROR,
     )
   }
 
@@ -57,7 +76,7 @@ const errorHandler = (): ErrorHandler => (error, ctx) => {
   return ctx.json(
     {
       code: ErrorCode.UNHANDLED_EXCEPTION,
-      message: 'An unhandled exception occurred, see logs for more details.',
+      message: 'An unhandled exception occurred, see logs for details.',
     },
     HttpStatus.INTERNAL_SERVER_ERROR,
   )

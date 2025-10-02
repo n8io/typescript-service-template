@@ -31,10 +31,10 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/pg-core'
 import { ZodFirstPartyTypeKind, z } from 'zod'
+import type { SpiError } from '../../../../domain/spi-ports/errors.ts'
+import { createSpiValidationError } from '../../../../domain/spi-ports/errors.ts'
 import type { Result } from '../../../../models/result.ts'
 import { failure, success } from '../../../../models/result.ts'
-import type { SpiError } from '../../../../models/spi-errors.ts'
-import { createSpiValidationError } from '../../../../models/spi-errors.ts'
 
 type ColumnBuilder = (
   name: string,

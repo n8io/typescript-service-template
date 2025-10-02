@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import pg from 'pg'
 import { PostgresError } from 'pg-error-enum'
 import { ZodError } from 'zod'
-import { DomainNotFoundError } from '../../../models/custom-error.ts'
+import { createDomainNotFoundError } from '../../../models/domain-errors.ts'
 import { ErrorCode } from '../../../models/error-code.ts'
 import * as SpiErrorUtils from '../../../spi/repositories/database/error.ts'
 import * as GeneralErrorUtils from '../../../utils/errors.ts'
@@ -20,7 +20,7 @@ describe('errorHandler', () => {
     vi.spyOn(GeneralErrorUtils, 'isValidationError').mockReturnValue(false)
     vi.spyOn(SpiErrorUtils, 'isSpiDatabaseError').mockReturnValue(false)
 
-    const error = new DomainNotFoundError('💥')
+    const error = createDomainNotFoundError('💥', 'test', 'test-id')
     const app = new Hono()
 
     app.get('/test', () => {
@@ -148,7 +148,7 @@ describe('errorHandler', () => {
 
       await expect(res.json()).resolves.toEqual({
         code: ErrorCode.UNHANDLED_EXCEPTION,
-        message: 'An unhandled exception occurred, see logs for more details.',
+        message: 'An unhandled exception occurred, see logs for details.',
       })
     })
   })

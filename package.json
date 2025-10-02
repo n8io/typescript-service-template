@@ -19,7 +19,8 @@
     "dev": "node --watch --env-file-if-exists=.env src/index.ts",
     "preinstall": "node ./.extras/preinstall.mjs",
     "postinstall": "node ./.extras/postinstall.mjs",
-    "test": "vitest --coverage",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage",
     "start": "node --env-file-if-exists=.env src/index.ts"
   },
   "engines": {
@@ -32,6 +33,7 @@
   "type": "module",
   "cspell": {
     "words": [
+      "bigserial",
       "biomejs",
       "commonmark",
       "EDITMSG",
@@ -40,8 +42,11 @@
       "isactive",
       "knip",
       "lefthook",
+      "macaddr",
       "Monitorable",
+      "neverthrow",
       "remeda",
+      "smallserial",
       "subshell",
       "transpiling",
       "unstub"
@@ -80,7 +85,7 @@
     "hono-openapi": "^0",
     "hono-pino": "^0",
     "lru-cache": "^11",
-    "neverthrow": "^8.2.0",
+    "neverthrow": "^8",
     "pg": "^8",
     "pg-error-enum": "^1",
     "pino": "^9",

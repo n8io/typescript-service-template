@@ -1,236 +1,344 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: This is a test file */
+import { err, ok } from 'neverthrow'
 import { z } from 'zod'
 import { exampleAuditRecord } from '../../../models/audit-record.ts'
-import { DomainNotFoundError } from '../../../models/custom-error.ts'
-import { schemaEntity } from '../../../models/entity.ts'
-import { gid } from '../../../utils/generators/gid.ts'
-import { validation } from '../../../utils/validation.ts'
-import type { PaginatedResponse } from '../../models/pagination.ts'
-import { toPaginatedResponseSchema } from '../../models/pagination.ts'
-import { schemaDomainGetManyRequest } from '../../models/request.ts'
 import { BaseService } from './base-service.ts'
 
-const mockGid = gid()
-
-const schemaTestEntity = schemaEntity.extend({
+// Mock schema for testing
+const mockSchema = z.object({
+  id: z.string(),
   name: z.string(),
 })
 
-const exampleTestEntity = (overrides?: Partial<z.infer<typeof schemaTestEntity>>) =>
-  ({
-    createdAt: new Date(),
-    createdBy: exampleAuditRecord({ type: 'USER' }),
-    gid: mockGid,
-    name: 'Test Entity',
-    updatedAt: new Date(),
-    updatedBy: exampleAuditRecord({ type: 'USER' }),
-    ...overrides,
-  }) as z.infer<typeof schemaTestEntity>
+const mockRequestSchema = z.object({
+  name: z.string(),
+  createdBy: z.object({ gid: z.string() }),
+})
 
-type TestEntity = z.infer<typeof schemaTestEntity>
+const mockUpdateSchema = z.object({
+  name: z.string().optional(),
+  updatedBy: z.object({
+    type: z.enum(['USER', 'SYSTEM']),
+    gid: z.string().optional(),
+    system: z.string().optional(),
+  }),
+})
 
-// Mock implementation of BaseService for testing
-class TestService extends BaseService<TestEntity> {
-  protected readonly propsMeta: Record<'create' | 'filter' | 'sort' | 'update', (keyof TestEntity)[]> = {
-    create: ['name'],
-    filter: ['gid', 'name'],
-    sort: ['gid', 'name'],
-    update: ['name', 'updatedBy'],
-  }
+type MockCreateRequest = z.infer<typeof mockRequestSchema>
+type MockUpdateRequest = z.infer<typeof mockUpdateSchema>
 
-  public readonly schemas = {
-    core: schemaTestEntity,
-    request: {
-      createOne: schemaTestEntity.pick({
-        name: true,
-        createdBy: true,
-      }),
-      getMany: schemaTestEntity,
-      getOne: validation.gid,
-      updateOne: schemaTestEntity.pick({
-        name: true,
-        updatedBy: true,
-      }),
-    },
-    response: {
-      getMany: toPaginatedResponseSchema(schemaTestEntity, exampleTestEntity()) as z.ZodType<
-        PaginatedResponse<TestEntity>
-      >,
-      getOne: schemaTestEntity,
-    },
-  }
-}
-
-describe('BaseService', () => {
-  const mockEntity: TestEntity = {
-    createdAt: new Date(),
-    createdBy: exampleAuditRecord({ type: 'USER' }),
-    gid: mockGid,
-    name: 'Test Entity',
-    updatedAt: new Date(),
-    updatedBy: exampleAuditRecord({ type: 'USER' }),
-  }
-
-  const mockRepository = {
+// Mock repository for testing
+const createMockRepository = () => {
+  const mockRepo = {
     createOne: vi.fn(),
     deleteMany: vi.fn(),
     getMany: vi.fn(),
     updateMany: vi.fn(),
   }
 
-  let service: TestService
+  // Set default mock values
+  mockRepo.createOne.mockResolvedValue(ok({ id: 'test-id', name: 'test-name' }))
+  mockRepo.deleteMany.mockResolvedValue(ok(undefined))
+  mockRepo.getMany.mockResolvedValue(ok({ items: [], itemsTotal: 0 }))
+  mockRepo.updateMany.mockResolvedValue(ok(undefined))
+
+  return mockRepo
+}
+
+type MockRepository = ReturnType<typeof createMockRepository>
+
+// Mock schemas for testing
+const createMockSchemas = () => ({
+  core: mockSchema,
+  request: {
+    createOne: mockRequestSchema,
+    getOne: z.string(),
+    updateOne: mockUpdateSchema,
+  },
+})
+
+// Test implementation of BaseService
+class TestBaseService extends BaseService<typeof mockSchema, MockCreateRequest, MockUpdateRequest, MockRepository> {
+  // Override helper methods to provide better context for testing
+  protected override extractFieldNameFromRequest(request: MockCreateRequest): string {
+    if (request && typeof request === 'object' && 'name' in request) {
+      return 'name'
+    }
+    return 'unknown'
+  }
+
+  protected override extractFieldValueFromRequest(request: MockCreateRequest, fieldName: string): unknown {
+    if (request && typeof request === 'object' && fieldName in request) {
+      return (request as any)[fieldName]
+    }
+    return 'unknown'
+  }
+
+  protected override extractFieldNameFromUpdates(updates: MockUpdateRequest): string {
+    if (updates && typeof updates === 'object' && 'name' in updates) {
+      return 'name'
+    }
+    return 'unknown'
+  }
+
+  protected override extractFieldValueFromUpdates(updates: MockUpdateRequest, fieldName: string): unknown {
+    if (updates && typeof updates === 'object' && fieldName in updates) {
+      return (updates as any)[fieldName]
+    }
+    return 'unknown'
+  }
+}
+
+describe('BaseService', () => {
+  let service: TestBaseService
+  let mockRepository: MockRepository
+  let mockSchemas: ReturnType<typeof createMockSchemas>
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    service = new TestService({ repository: mockRepository })
+    mockRepository = createMockRepository()
+    mockSchemas = createMockSchemas()
+    service = new TestBaseService({
+      repository: mockRepository,
+      schemas: mockSchemas,
+    })
   })
 
   describe('createOne', () => {
-    it('should create an entity and return it', async () => {
-      const createRequest = {
-        name: 'New Entity',
-        createdBy: exampleAuditRecord({ type: 'USER' }),
+    it('should return success when creation succeeds', async () => {
+      const request = { name: 'Test Resource', createdBy: { gid: 'user123' } }
+      const createdGid = 'gid123'
+      const createdResource = { id: '1', name: 'Test Resource' }
+
+      mockRepository.createOne.mockResolvedValue(ok({ gid: createdGid }))
+      mockRepository.getMany.mockResolvedValue(
+        ok({
+          items: [createdResource],
+          itemsTotal: 1,
+        }),
+      )
+
+      const result = await service.createOne(request)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual(createdResource)
       }
-
-      mockRepository.createOne.mockResolvedValue(mockEntity)
-      mockRepository.getMany.mockResolvedValue({ items: [mockEntity], itemsTotal: 1 })
-
-      const result = await service.createOne(createRequest)
-
       expect(mockRepository.createOne).toHaveBeenCalledWith({
-        ...createRequest,
-        gid: expect.any(String),
+        name: 'Test Resource',
+        createdBy: { gid: 'user123' },
         createdAt: expect.any(Date),
+        gid: expect.any(String),
         updatedAt: expect.any(Date),
-        updatedBy: createRequest.createdBy,
+        updatedBy: { gid: 'user123' },
       })
-
-      expect(result).toEqual(mockEntity)
     })
 
-    it('should throw an error if the request is invalid', async () => {
-      const invalidRequest = {
-        name: 123, // Invalid type
-        createdBy: exampleAuditRecord({ type: 'USER' }),
-      }
+    it('should return error when database constraint violation occurs', async () => {
+      const request = { name: 'Test Resource', createdBy: { gid: 'user123' } }
+      const dbError = new Error('Database constraint violation')
+      ;(dbError as any).code = '23505' // Unique constraint violation
+      ;(dbError as any).detail = 'already exists'
 
-      await expect(
-        // @ts-expect-error - Invalid request
-        service.createOne(invalidRequest),
-      ).rejects.toThrow()
+      mockRepository.createOne.mockResolvedValue(err(dbError))
+
+      const result = await service.createOne(request)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toContain('already exists')
+      }
+    })
+
+    it('should return generic error when non-database error occurs', async () => {
+      const request = { name: 'Test Resource', createdBy: { gid: 'user123' } }
+      const genericError = new Error('Generic error')
+
+      mockRepository.createOne.mockResolvedValue(err(genericError))
+
+      const result = await service.createOne(request)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toBe('Failed to create entity')
+      }
+    })
+  })
+
+  describe('deleteOne', () => {
+    it('should return success when deletion succeeds', async () => {
+      const gid = 'gid123'
+
+      mockRepository.deleteMany.mockResolvedValue(ok(undefined))
+
+      const result = await service.deleteOne(gid)
+
+      expect(result.isOk()).toBe(true)
+      expect(mockRepository.deleteMany).toHaveBeenCalledWith([gid])
+    })
+
+    it('should return error when database constraint violation occurs', async () => {
+      const gid = 'gid123'
+      const dbError = new Error('Database constraint violation')
+      ;(dbError as any).code = '23503' // Foreign key constraint violation
+      ;(dbError as any).detail = 'Referenced gid does not exist'
+
+      mockRepository.deleteMany.mockResolvedValue(err(dbError))
+
+      const result = await service.deleteOne(gid)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toContain('Referenced gid does not exist')
+      }
     })
   })
 
   describe('getMany', () => {
-    it('should return a paginated response of entities', async () => {
-      const query = {
-        pagination: {
-          page: 1,
-          pageSize: 10,
-        },
+    it('should return paginated response when retrieval succeeds', async () => {
+      const query = { pagination: { page: 1, pageSize: 10 } }
+      const mockResponse = {
+        items: [
+          { id: '1', name: 'Resource 1' },
+          { id: '2', name: 'Resource 2' },
+        ],
+        itemsTotal: 2,
       }
 
-      mockRepository.getMany.mockResolvedValue({ items: [mockEntity], itemsTotal: 1 })
+      mockRepository.getMany.mockResolvedValue(ok(mockResponse))
 
       const result = await service.getMany(query)
 
-      expect(mockRepository.getMany).toHaveBeenCalledWith(schemaDomainGetManyRequest.parse(query))
-      expect(result).toEqual({
-        items: [mockEntity],
-        itemsTotal: 1,
-        page: 1,
-        pageSize: 10,
-        pagesTotal: 1,
-        hasMore: false,
-      })
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value.items).toHaveLength(2)
+        expect(result.value.itemsTotal).toBe(2)
+        expect(result.value.page).toBe(1)
+        expect(result.value.pageSize).toBe(10)
+      }
     })
 
-    it('should throw an error if the query is invalid', async () => {
-      const invalidQuery = {
-        pagination: {
-          page: 'invalid', // Invalid type
-          pageSize: 10,
-        },
+    it('should use default pagination when not provided', async () => {
+      const query = {}
+      const mockResponse = {
+        items: [{ id: '1', name: 'Resource 1' }],
+        itemsTotal: 1,
       }
 
-      await expect(
-        service.getMany(invalidQuery as unknown as z.infer<typeof schemaDomainGetManyRequest>),
-      ).rejects.toThrow()
+      mockRepository.getMany.mockResolvedValue(ok(mockResponse))
+
+      const result = await service.getMany(query)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value.page).toBe(1)
+        expect(result.value.pageSize).toBe(10)
+      }
+    })
+
+    it('should return error when database constraint violation occurs', async () => {
+      const query = { pagination: { page: 1, pageSize: 10 } }
+      const dbError = new Error('Database constraint violation')
+      ;(dbError as any).code = '42P01' // Undefined table
+      ;(dbError as any).detail = 'constraint violation'
+
+      mockRepository.getMany.mockResolvedValue(err(dbError))
+
+      const result = await service.getMany(query)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toContain('constraint violation')
+      }
     })
   })
 
   describe('getOne', () => {
-    it('should return an entity by gid', async () => {
-      mockRepository.getMany.mockResolvedValue({ items: [mockEntity], itemsTotal: 1 })
+    it('should return resource when found', async () => {
+      const gid = 'gid123'
+      const mockResponse = {
+        items: [{ id: '1', name: 'Resource 1' }],
+        itemsTotal: 1,
+      }
 
-      const result = await service.getOne(mockGid)
+      mockRepository.getMany.mockResolvedValue(ok(mockResponse))
 
-      expect(mockRepository.getMany).toHaveBeenCalledWith({
-        filters: {
-          gid: {
-            eq: mockGid,
-          },
-        },
-        pagination: {
-          page: 1,
-          pageSize: 1,
-        },
-      })
+      const result = await service.getOne(gid)
 
-      expect(result).toEqual(mockEntity)
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual({ id: '1', name: 'Resource 1' })
+      }
     })
 
-    it('should throw DomainNotFoundError if entity is not found', async () => {
-      mockRepository.getMany.mockResolvedValue({ items: [], itemsTotal: 0 })
+    it('should return error when resource not found', async () => {
+      const gid = 'gid123'
+      const mockResponse = {
+        items: [],
+        itemsTotal: 0,
+      }
 
-      await expect(service.getOne(mockGid)).rejects.toThrow(DomainNotFoundError)
+      mockRepository.getMany.mockResolvedValue(ok(mockResponse))
+
+      const result = await service.getOne(gid)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toContain(`Entity with gid ${gid} not found`)
+      }
     })
   })
 
   describe('updateOne', () => {
-    it('should update an entity and return the updated entity', async () => {
-      const updateRequest = {
-        name: 'Updated Entity',
-        updatedBy: exampleAuditRecord({ type: 'USER' }),
+    it('should return updated resource when update succeeds', async () => {
+      const gid = 'gid123'
+      const updates = {
+        name: 'Updated Resource',
+        updatedBy: exampleAuditRecord({ type: 'USER', gid: 'user123' }),
+      }
+      const mockResponse = {
+        items: [{ id: '1', name: 'Updated Resource' }],
+        itemsTotal: 1,
       }
 
-      const updatedEntity = {
-        ...mockEntity,
-        name: updateRequest.name,
-        updatedBy: updateRequest.updatedBy,
+      mockRepository.updateMany.mockResolvedValue(ok(undefined))
+      mockRepository.getMany.mockResolvedValue(ok(mockResponse))
+
+      const result = await service.updateOne(gid, updates)
+
+      expect(result.isOk()).toBe(true)
+      if (result.isOk()) {
+        expect(result.value).toEqual({ id: '1', name: 'Updated Resource' })
       }
-
-      mockRepository.updateMany.mockResolvedValue(undefined)
-      mockRepository.getMany.mockResolvedValue({ items: [updatedEntity], itemsTotal: 1 })
-
-      const result = await service.updateOne(mockGid, updateRequest)
-
       expect(mockRepository.updateMany).toHaveBeenCalledWith(
         [
           {
-            name: updateRequest.name,
-            gid: mockGid,
+            name: 'Updated Resource',
+            gid: 'gid123',
           },
         ],
-        updateRequest.updatedBy,
+        exampleAuditRecord({ type: 'USER', gid: 'user123' }),
         expect.any(Date),
       )
-
-      expect(result).toEqual(updatedEntity)
     })
 
-    it('should throw an error if the update request is invalid', async () => {
-      const invalidUpdate = {
-        name: 123, // Invalid type
-        updatedBy: exampleAuditRecord({ type: 'USER' }),
+    it('should return error when database constraint violation occurs', async () => {
+      const gid = 'gid123'
+      const updates = {
+        name: 'Updated Resource',
+        updatedBy: exampleAuditRecord({ type: 'USER', gid: 'user123' }),
       }
+      const dbError = new Error('Database constraint violation')
+      ;(dbError as any).code = '23505' // Unique constraint violation
+      ;(dbError as any).detail = 'UNIQUE_VIOLATION_DETAILS'
 
-      await expect(
-        service.updateOne(
-          mockGid,
-          // @ts-expect-error - Invalid request
-          invalidUpdate,
-        ),
-      ).rejects.toThrow()
+      mockRepository.updateMany.mockResolvedValue(err(dbError))
+
+      const result = await service.updateOne(gid, updates)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error.message).toContain('UNIQUE_VIOLATION_DETAILS')
+      }
     })
   })
 })
