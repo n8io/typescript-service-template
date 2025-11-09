@@ -5,6 +5,7 @@ vi.mock('./utils/app-state-manager.ts', () => {
   }))
 
   return {
+    // biome-ignore lint/style/useNamingConvention: This is a mock
     AppStateManager,
     registerClosableDependency,
   }

@@ -52,7 +52,7 @@ const errorHandler = (): ErrorHandler => (error, ctx) => {
     )
   }
 
-  logger.error('Unhandled exception:', error)
+  logger.error({ err: error }, 'Unhandled exception:')
 
   return ctx.json(
     {
