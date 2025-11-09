@@ -20,7 +20,10 @@
     "preinstall": "node ./.extras/preinstall.mjs",
     "postinstall": "node ./.extras/postinstall.mjs",
     "test": "vitest --coverage",
-    "start": "node --env-file-if-exists=.env src/index.ts"
+    "test:watch": "vitest --watch",
+    "start": "node --env-file-if-exists=.env src/index.ts",
+    "clean": "rm -rf coverage dist node_modules/.cache",
+    "validate": "npm run lint"
   },
   "engines": {
     "node": "^24",

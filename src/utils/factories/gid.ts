@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto'
+
 const GID_PREFIX = '999'
 const GID_DELIMITER = '.'
 
@@ -7,8 +9,8 @@ const GID_REGEX = new RegExp(
 
 const STATIC_UUID = '00000000-0000-0000-0000-000000000000'
 
-const gid = (uuid?: string) => `${GID_PREFIX}${GID_DELIMITER}${uuid ?? crypto.randomUUID()}`
+const gid = (uuid?: string) => `${GID_PREFIX}${GID_DELIMITER}${uuid ?? randomUUID()}`
 const isGid = (value: string) => GID_REGEX.test(value)
-const exampleGid = (isRandom = false) => gid(isRandom ? crypto.randomUUID() : STATIC_UUID)
+const exampleGid = (isRandom = false) => gid(isRandom ? randomUUID() : STATIC_UUID)
 
 export { exampleGid, gid, isGid, GID_DELIMITER, GID_PREFIX }

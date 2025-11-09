@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { exampleAuditRecord } from '../../models/audit-record.ts'
 import { schemaEntity } from '../../models/entity.ts'
-import { exampleGid } from '../../utils/generators/gid.ts'
+import { exampleGid } from '../../utils/factories/gid.ts'
 import { validation } from '../../utils/validation.ts'
 
 import 'zod-openapi/extend'

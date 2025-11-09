@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { exampleGid } from '../utils/generators/gid.ts'
+import { exampleGid } from '../utils/factories/gid.ts'
 
 import 'zod-openapi/extend'
 
