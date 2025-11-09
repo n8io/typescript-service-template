@@ -130,7 +130,7 @@ describe('AppState', () => {
       // @ts-expect-error This will trigger the unhandled rejection handler
       process.emit('unhandledRejection', mockError)
 
-      expect(loggerErrorSpy).toHaveBeenCalledWith('😱 Oh no, there was an unhandled rejection', mockError)
+      expect(loggerErrorSpy).toHaveBeenCalledWith({ err: mockError }, '😱 Oh no, there was an unhandled rejection')
     })
   })
 
@@ -141,7 +141,7 @@ describe('AppState', () => {
       // @ts-expect-error This will trigger the unhandled rejection handler
       process.emit('unhandledRejection', reason)
 
-      expect(loggerErrorSpy).toHaveBeenCalledWith('😱 Oh no, there was an unhandled rejection', { reason })
+      expect(loggerErrorSpy).toHaveBeenCalledWith({ reason }, '😱 Oh no, there was an unhandled rejection')
     })
   })
 })

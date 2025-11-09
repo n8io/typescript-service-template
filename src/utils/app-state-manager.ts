@@ -46,8 +46,8 @@ class AppStateManager {
 
     for (const rejection of rejected) {
       logger.warn(
+        { rejection },
         '💥 Something went wrong. We failed to shutdown something gracefully. See the error for details.',
-        rejection,
       )
     }
 
@@ -62,17 +62,17 @@ class AppStateManager {
   }
 
   private initializeSignalHandlers() {
-    process.on('uncaughtException', (error) => logger.error('💀 Fatal unhandled exception occurred', error))
+    process.on('uncaughtException', (err) => logger.error({ err }, '💀 Fatal unhandled exception occurred'))
 
-    process.on('unhandledRejection', (reason) => {
+    process.on('unhandledRejection', (err) => {
       this.isShuttingDown = true
 
       const message = '😱 Oh no, there was an unhandled rejection'
 
-      if (reason instanceof Error) {
-        logger.error(message, reason)
+      if (err instanceof Error) {
+        logger.error({ err }, message)
       } else {
-        logger.error(message, { reason })
+        logger.error({ reason: err }, message)
       }
     })
 
