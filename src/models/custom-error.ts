@@ -1,4 +1,3 @@
-import type { ZodError } from 'zod'
 import type { ErrorCode } from './error-code.ts'
 import { HttpStatus } from './http-status.ts'
 
@@ -102,13 +101,8 @@ class ApiUnsupportedSortFieldError extends CustomError {
 }
 
 class AppConfigIncompleteError extends CustomError {
-  constructor(error: ZodError) {
-    super(
-      'AppConfigIncompleteError',
-      `The application configuration is incomplete: ${error.issues.map(({ message, path }) => `${path.join('.')} ${message.toLowerCase()}`).join(' / ')}`,
-      'APP_CONFIG_INCOMPLETE',
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    )
+  constructor(message: string) {
+    super('AppConfigIncompleteError', message, 'APP_CONFIG_INCOMPLETE', HttpStatus.INTERNAL_SERVER_ERROR)
   }
 }
 

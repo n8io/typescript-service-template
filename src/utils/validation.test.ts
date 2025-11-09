@@ -1,4 +1,4 @@
-import { exampleGid } from './generators/gid.ts'
+import { exampleGid } from './factories/gid.ts'
 import { paginate, validation } from './validation.ts'
 
 describe('validation', () => {

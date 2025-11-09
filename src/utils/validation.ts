@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { OpenApiFormat } from '../api/http/models/openapi.ts'
-import { exampleGid, isGid } from './generators/gid.ts'
+import { exampleGid, isGid } from './factories/gid.ts'
 
 const string = z.string().trim().min(1)
 
