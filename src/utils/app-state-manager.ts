@@ -20,15 +20,15 @@ type Monitorable = {
 }
 
 class AppStateManager {
-  private closableDependencies: Closable[]
-  private monitorableDependencies: Monitorable[]
+  private closeables: Closable[]
+  private monitorables: Monitorable[]
 
   isShuttingDown: boolean
 
   constructor() {
     this.isShuttingDown = false
-    this.closableDependencies = []
-    this.monitorableDependencies = []
+    this.closeables = []
+    this.monitorables = []
     this.initializeSignalHandlers()
   }
 
@@ -41,7 +41,7 @@ class AppStateManager {
 
     logger.info(`❌ Received ${signal}, starting graceful shutdown...`)
 
-    const results = await Promise.allSettled(this.closableDependencies.map((dependency) => dependency.close()))
+    const results = await Promise.allSettled(this.closeables.map((dependency) => dependency.close()))
     const rejected = results.filter((result) => result.status === 'rejected')
 
     for (const rejection of rejected) {
@@ -83,16 +83,16 @@ class AppStateManager {
   }
 
   registerClosableDependency(dependency: Closable): void {
-    this.closableDependencies.push(dependency)
+    this.closeables.push(dependency)
   }
 
   registerMonitorableDependency(dependency: Monitorable): void {
-    this.monitorableDependencies.push(dependency)
+    this.monitorables.push(dependency)
   }
 
   async getMonitorableDependencyStatuses(): Promise<MonitorableStatus[]> {
     const statusResults = await Promise.all(
-      this.monitorableDependencies.map(
+      this.monitorables.map(
         async (dependency): Promise<MonitorableStatus> => ({
           isConnected: await dependency.isConnected(),
           name: dependency.name,

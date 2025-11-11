@@ -31,7 +31,7 @@ const initApi = async (dependencies: Dependencies) => {
         server.close(() => {
           logger.info('✔️ Server closed.')
 
-          resolve(undefined)
+          resolve()
         }),
       )
     },

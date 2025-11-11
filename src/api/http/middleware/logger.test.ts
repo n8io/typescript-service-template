@@ -48,13 +48,19 @@ describe('onReqBindings', () => {
 
     const mockContext = {
       req: {
-        url: 'http://example.com/test?param1=value1&param2=value2',
+        header: vi.fn().mockReturnValue(null),
         method: 'GET',
+        raw: {
+          clone: vi.fn(),
+        },
+        url: 'http://example.com/test?param1=value1&param2=value2',
       },
-    } as Context
+      get: vi.fn().mockReturnValue(undefined),
+    } as unknown as Context
 
     const expectedBindings = {
       req: {
+        body: undefined,
         method: 'GET',
         search: {
           param1: 'value1',
@@ -68,5 +74,96 @@ describe('onReqBindings', () => {
 
     expect(result).toEqual(expectedBindings)
     expect(urlSearchParamsToObjectSpy).toHaveBeenCalledWith(new URL(mockContext.req.url).searchParams)
+    expect(mockContext.get).toHaveBeenCalledWith('requestBody')
+  })
+
+  it('should include request body for POST requests with JSON content', () => {
+    const urlSearchParamsToObjectSpy = vi.spyOn(Utils, 'urlSearchParamsToObject').mockReturnValue({})
+    const mockBody = { name: 'test', value: 123 }
+
+    const mockContext = {
+      req: {
+        header: vi.fn().mockReturnValue('application/json'),
+        method: 'POST',
+        raw: {
+          clone: vi.fn(),
+        },
+        url: 'http://example.com/test',
+      },
+      get: vi.fn().mockReturnValue(mockBody),
+    } as unknown as Context
+
+    const result = onReqBindings(mockContext)
+
+    expect(result.req.body).toEqual(mockBody)
+    expect(urlSearchParamsToObjectSpy).toHaveBeenCalled()
+    expect(mockContext.get).toHaveBeenCalledWith('requestBody')
+  })
+
+  it('should include request body for PUT requests with text content', () => {
+    const urlSearchParamsToObjectSpy = vi.spyOn(Utils, 'urlSearchParamsToObject').mockReturnValue({})
+    const mockBody = 'plain text body'
+
+    const mockContext = {
+      req: {
+        header: vi.fn().mockReturnValue('text/plain'),
+        method: 'PUT',
+        raw: {
+          clone: vi.fn(),
+        },
+        url: 'http://example.com/test',
+      },
+      get: vi.fn().mockReturnValue(mockBody),
+    } as unknown as Context
+
+    const result = onReqBindings(mockContext)
+
+    expect(result.req.body).toBe(mockBody)
+    expect(urlSearchParamsToObjectSpy).toHaveBeenCalled()
+    expect(mockContext.get).toHaveBeenCalledWith('requestBody')
+  })
+
+  it('should not include body for GET requests', () => {
+    const urlSearchParamsToObjectSpy = vi.spyOn(Utils, 'urlSearchParamsToObject').mockReturnValue({})
+
+    const mockContext = {
+      req: {
+        header: vi.fn().mockReturnValue(null),
+        method: 'GET',
+        raw: {
+          clone: vi.fn(),
+        },
+        url: 'http://example.com/test',
+      },
+      get: vi.fn().mockReturnValue(undefined),
+    } as unknown as Context
+
+    const result = onReqBindings(mockContext)
+
+    expect(result.req.body).toBeUndefined()
+    expect(urlSearchParamsToObjectSpy).toHaveBeenCalled()
+    expect(mockContext.get).toHaveBeenCalledWith('requestBody')
+  })
+
+  it('should handle missing body in context gracefully', () => {
+    const urlSearchParamsToObjectSpy = vi.spyOn(Utils, 'urlSearchParamsToObject').mockReturnValue({})
+
+    const mockContext = {
+      req: {
+        header: vi.fn().mockReturnValue('application/json'),
+        method: 'POST',
+        raw: {
+          clone: vi.fn(),
+        },
+        url: 'http://example.com/test',
+      },
+      get: vi.fn().mockReturnValue(undefined),
+    } as unknown as Context
+
+    const result = onReqBindings(mockContext)
+
+    expect(result.req.body).toBeUndefined()
+    expect(urlSearchParamsToObjectSpy).toHaveBeenCalled()
+    expect(mockContext.get).toHaveBeenCalledWith('requestBody')
   })
 })
