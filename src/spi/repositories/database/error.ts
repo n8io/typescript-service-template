@@ -1,7 +1,8 @@
+import { DrizzleError } from 'drizzle-orm'
 import pg from 'pg'
 import { PostgresError } from 'pg-error-enum'
 
-const isDatabaseError = (error: unknown) => error instanceof pg.DatabaseError
+const isDatabaseError = (error: unknown) => error instanceof pg.DatabaseError || error instanceof DrizzleError
 const isSpiDatabaseError = (error: unknown): boolean => isDatabaseError(error)
 
 const databaseErrorMessages = new Map<string, string>([

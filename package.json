@@ -36,6 +36,7 @@
   "cspell": {
     "words": [
       "biomejs",
+      "closeables",
       "commonmark",
       "EDITMSG",
       "gids",
@@ -44,6 +45,7 @@
       "knip",
       "lefthook",
       "Monitorable",
+      "monitorables",
       "remeda",
       "subshell",
       "transpiling",
@@ -69,6 +71,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1",
+    "@hono/otel": "^1.0.1",
     "@hono/zod-validator": "^0",
     "@opentelemetry/api": "^1",
     "@opentelemetry/auto-instrumentations-node": "^0",

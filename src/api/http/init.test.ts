@@ -93,6 +93,18 @@ describe('initHttp', () => {
           "path": "/*",
         },
         {
+          "basePath": "/",
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "basePath": "/",
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
           "basePath": "/api/v1/resources",
           "handler": [Function],
           "method": "POST",
@@ -181,6 +193,18 @@ describe('initHttp', () => {
           "handler": [Function],
           "method": "GET",
           "path": "/health",
+        },
+        {
+          "basePath": "/",
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
+        },
+        {
+          "basePath": "/",
+          "handler": [Function],
+          "method": "ALL",
+          "path": "/*",
         },
         {
           "basePath": "/",
