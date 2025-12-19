@@ -97,6 +97,9 @@ alwaysApply: false
 
 5. Avoid promise chaining
 6. Group variable definitions closely together and add empty lines before and after each variable definition group
+7. During refactors, never alphabetize the order of generic parameters on types for the sake of alphasorting. Doing so will most likely break their call sites.
+  - The only exception being when changing the functionality or design time type.
+  - Otherwise, do not sort the generic params
 
 ## Examples
 

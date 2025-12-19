@@ -185,10 +185,6 @@
                   "additionalProperties": false,
                   "example": {
                     "hasMore": false,
-                    "itemsTotal": 1,
-                    "page": 1,
-                    "pageSize": 10,
-                    "pagesTotal": 1,
                     "items": [
                       {
                         "gid": "999.00000000-0000-0000-0000-000000000000",
@@ -206,7 +202,11 @@
                           "type": "SYSTEM"
                         }
                       }
-                    ]
+                    ],
+                    "itemsTotal": 1,
+                    "page": 1,
+                    "pageSize": 10,
+                    "pagesTotal": 1
                   }
                 }
               }

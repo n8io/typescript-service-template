@@ -17,21 +17,21 @@ const toPaginatedResponseSchema = (itemSchema: ZodSchema, exampleItem?: Record<s
     .openapi({
       example: {
         hasMore: false,
+        items: exampleItem ? [exampleItem] : [],
         itemsTotal: exampleItem ? 1 : 0,
         page: 1,
         pageSize: 10,
         pagesTotal: exampleItem ? 1 : 0,
-        items: exampleItem ? [exampleItem] : [],
       },
     })
 
 type PaginatedResponse<T> = {
   hasMore: boolean
+  items: T[]
   itemsTotal: number
   page: number
   pageSize: number
   pagesTotal: number
-  items: T[]
 }
 
 export type { PaginatedResponse }

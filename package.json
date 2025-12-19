@@ -99,7 +99,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2",
     "@total-typescript/tsconfig": "^1",
-    "@types/node": "^22",
+    "@types/node": "^24",
     "@types/pg": "^8",
     "@typescript/native-preview": "^7.0.0-dev.20251220.1",
     "@vitest/coverage-v8": "^3",

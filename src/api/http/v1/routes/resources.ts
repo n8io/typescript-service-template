@@ -4,6 +4,7 @@ import { urlSearchParamsToFilters } from '../../../../utils/url-search-params/fi
 import { urlSearchParamsToPagination } from '../../../../utils/url-search-params/pagination.ts'
 import { urlSearchParamsToSort } from '../../../../utils/url-search-params/sorting.ts'
 import { OpenApiTag } from '../../models/openapi.ts'
+import { resultToNoContentResponse, resultToResponse } from '../../utils/result-to-response.ts'
 import { makeApp } from '../app.ts'
 import { appendOpenApiMetadata, RouteType } from '../openapi/append-open-api-metadata.ts'
 
@@ -29,9 +30,9 @@ resources.post(
   async (ctx) => {
     const services = ctx.get('services')
     const request = await ctx.req.json()
-    const resource = await services.resource.createOne(request)
+    const result = await services.resource.createOne(request)
 
-    return ctx.json(resource)
+    return resultToResponse(ctx, result)
   },
 )
 
@@ -50,10 +51,9 @@ resources.delete(
   async (ctx) => {
     const gid = ctx.req.param('gid')
     const services = ctx.get('services')
+    const result = await services.resource.deleteOne(gid)
 
-    await services.resource.deleteOne(gid)
-
-    return new Response(null, { status: 204 })
+    return resultToNoContentResponse(ctx, result)
   },
 )
 
@@ -90,9 +90,9 @@ resources.get(
       sorting: urlSearchParamsToSort(params, { sortableFields: ResourceService.propsMeta.sort }),
     }
 
-    const paginated = await services.resource.getMany(request)
+    const result = await services.resource.getMany(request)
 
-    return ctx.json(paginated)
+    return resultToResponse(ctx, result)
   },
 )
 
@@ -112,9 +112,9 @@ resources.get(
   async (ctx) => {
     const gid = ctx.req.param('gid')
     const services = ctx.get('services')
-    const resource = await services.resource.getOne(gid)
+    const result = await services.resource.getOne(gid)
 
-    return ctx.json(resource)
+    return resultToResponse(ctx, result)
   },
 )
 
@@ -138,9 +138,9 @@ resources.patch(
     const gid = ctx.req.param('gid')
     const services = ctx.get('services')
     const request = await ctx.req.json()
-    const resource = await services.resource.updateOne(gid, request)
+    const result = await services.resource.updateOne(gid, request)
 
-    return ctx.json(resource)
+    return resultToResponse(ctx, result)
   },
 )
 
