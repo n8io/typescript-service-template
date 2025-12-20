@@ -66,7 +66,7 @@
     "layout": "twopi"
   },
   "validate-branch-name": {
-    "pattern": "^(develop|candidate|main){1}$|^(?<type>feat|fix|hotfix|chore|test)[/](?<ticket>[A-Za-z]+-\\d+)(?<subject>(-[A-Za-z0-9]+)*)?$",
+    "pattern": "^(develop|candidate|main|master){1}$|^(?<type>chore|docs|feat|fix|hotfix|refactor|test)[/](?<ticket>[A-Za-z]+-\\d+)(?<subject>(-[A-Za-z0-9]+)*)?$",
     "errorMsg": "The current branch name does not match the required pattern. E.g. feat/abc-123"
   },
   "dependencies": {
