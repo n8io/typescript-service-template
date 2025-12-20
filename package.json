@@ -108,6 +108,7 @@
     "knip": "^5",
     "lefthook": "^1",
     "madge": "^8",
+    "typescript": "^5",
     "validate-branch-name": "^1",
     "vitest": "^3"
   },

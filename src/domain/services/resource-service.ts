@@ -1,6 +1,5 @@
 import type { z } from 'zod'
 import { pick } from '../../utils/fp.ts'
-import { validation } from '../../utils/validation.ts'
 import { toPaginatedResponseSchema } from '../models/pagination.ts'
 import { exampleResource, schemaResource } from '../models/resource.ts'
 import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
@@ -41,7 +40,7 @@ class ResourceService extends BaseService<Resource> {
           example: pick(exampleResource(), ResourceService.propsMeta.create) as ReturnType<typeof exampleResource>,
         }),
       getMany: schemaResource,
-      getOne: validation.gid,
+      getOne: schemaResource.shape.gid,
       updateOne: schemaResource
         .pick({
           name: true,

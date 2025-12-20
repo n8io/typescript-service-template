@@ -7,7 +7,7 @@ import { validation } from '../../utils/validation.ts'
 import 'zod-openapi/extend'
 
 const schemaResourceTemp = schemaEntity.extend({
-  gid: validation.string.openapi({
+  gid: validation.gid.openapi({
     example: exampleGid(false),
     description: 'The globally unique identifier for the resource',
   }),
