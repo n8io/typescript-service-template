@@ -2,6 +2,15 @@ import { REQUEST_HEADER_CLIENT_ID } from '../../models/request.ts'
 import { makeApp } from '../../v1/app.ts'
 import { clientId } from './client-id.ts'
 
+vi.mock('../../../../utils/logger.ts', () => ({
+  logger: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  },
+}))
+
 describe('clientId', () => {
   it('should return successfully when providing the client id header', async () => {
     const app = makeApp()

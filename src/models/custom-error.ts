@@ -37,7 +37,7 @@ class CustomError extends Error {
 class ApiRequestMissingRequiredHeader extends CustomError {
   constructor(header: string) {
     super(
-      'ApiMissingClientId',
+      'ApiRequestMissingRequiredHeader',
       `Request is missing the required "${header}" header`,
       'API_REQUEST_HEADER_MISSING',
       HttpStatus.BAD_REQUEST,
@@ -48,7 +48,7 @@ class ApiRequestMissingRequiredHeader extends CustomError {
 class ApiUnsupportedOperatorError extends CustomError {
   constructor(operator: string) {
     super(
-      'UnsupportedOperatorError',
+      'ApiUnsupportedOperatorError',
       `Unsupported operator: ${operator}`,
       'API_UNSUPPORTED_FILTER_OPERATOR',
       HttpStatus.BAD_REQUEST,
@@ -59,7 +59,7 @@ class ApiUnsupportedOperatorError extends CustomError {
 class ApiUnsupportedFieldError extends CustomError {
   constructor(field: string) {
     super(
-      'UnsupportedFieldError',
+      'ApiUnsupportedFieldError',
       `Unsupported field: ${field}`,
       'API_UNSUPPORTED_FILTER_FIELD',
       HttpStatus.BAD_REQUEST,
@@ -70,7 +70,7 @@ class ApiUnsupportedFieldError extends CustomError {
 class ApiUnsupportedFieldOperatorError extends CustomError {
   constructor(field: string, operator: string) {
     super(
-      'UnsupportedFieldOperatorError',
+      'ApiUnsupportedFieldOperatorError',
       `Unsupported operator "${operator}" for field "${field}"`,
       'API_UNSUPPORTED_FILTER_FIELD_OPERATOR',
       HttpStatus.BAD_REQUEST,
@@ -81,7 +81,7 @@ class ApiUnsupportedFieldOperatorError extends CustomError {
 class ApiUnsupportedMultipleValueOperatorError extends CustomError {
   constructor(operator: string) {
     super(
-      'UnsupportedMultipleValueOperatorError',
+      'ApiUnsupportedMultipleValueOperatorError',
       `The "${operator}" does not support multiple values`,
       'API_UNSUPPORTED_FILTER_MULTIPLE_VALUE_OPERATOR',
       HttpStatus.BAD_REQUEST,
@@ -92,7 +92,7 @@ class ApiUnsupportedMultipleValueOperatorError extends CustomError {
 class ApiUnsupportedSortFieldError extends CustomError {
   constructor(field: string) {
     super(
-      'UnsupportedSortFieldError',
+      'ApiUnsupportedSortFieldError',
       `The sorting by the field "${field}" is not supported`,
       'API_UNSUPPORTED_SORT_FIELD',
       HttpStatus.BAD_REQUEST,

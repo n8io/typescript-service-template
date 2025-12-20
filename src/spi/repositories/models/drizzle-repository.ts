@@ -67,7 +67,11 @@ abstract class DrizzleRepository<
   async deleteMany(gids: string[]): Promise<Result<void, SpiDatabaseError>> {
     try {
       // @ts-expect-error: TypeScript doesn't recognize gid as a property on the generic Table extends PgTable type
-      await this.dependencies.db.delete(this.table).where(inArray(this.table.gid, gids))
+      const result = await this.dependencies.db.delete(this.table).where(inArray(this.table.gid, gids))
+
+      if (result.rowCount === 0) {
+        return err(new SpiDbError(`No rows deleted for the provided GID(s): ${gids.join(', ')}`, HttpStatus.NOT_FOUND))
+      }
 
       return ok(undefined)
     } catch (error) {

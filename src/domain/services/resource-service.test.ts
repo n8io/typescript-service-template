@@ -1,6 +1,7 @@
 import { err, ok } from 'neverthrow'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { exampleAuditRecord } from '../../models/audit-record.ts'
+import { HttpStatus } from '../../models/http-status.ts'
 import { SpiDatabaseError } from '../../spi/models/spi-error.ts'
 import { gid, isGid } from '../../utils/factories/gid.ts'
 import { DomainNotFoundError, DomainValidationError } from '../models/domain-error.ts'
@@ -9,6 +10,15 @@ import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
 import { ResourceService } from './resource-service.ts'
 
 vi.mock('../../utils/factories/gid.ts')
+
+vi.mock('../../utils/logger.ts', () => ({
+  logger: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  },
+}))
 
 const createMockRepository = (): SpiResourceRepository => ({
   createOne: vi.fn(),
@@ -362,6 +372,23 @@ describe('ResourceService', () => {
       if (result.isErr()) {
         expect(result.error).toBeInstanceOf(DomainValidationError)
         expect(result.error.message).toContain('GID validation failed')
+      }
+    })
+
+    it('should return Err result when no rows are deleted', async () => {
+      const noRowsDeletedError = new SpiDatabaseError(
+        `No rows deleted for the provided GID(s): ${validGid}`,
+        HttpStatus.NOT_FOUND,
+      )
+      vi.mocked(mockRepository.deleteMany).mockResolvedValue(err(noRowsDeletedError))
+
+      const result = await service.deleteOne(validGid)
+
+      expect(result.isErr()).toBe(true)
+      if (result.isErr()) {
+        expect(result.error).toBeInstanceOf(SpiDatabaseError)
+        expect(result.error.message).toContain(`No rows deleted for the provided GID(s): ${validGid}`)
+        expect(result.error.httpStatusCode).toBe(HttpStatus.NOT_FOUND)
       }
     })
   })
