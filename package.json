@@ -6,8 +6,9 @@
   "scripts": {
     "db:generate": "drizzle-kit generate --config ./drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config ./drizzle.config.ts",
-    "docker:up": "NODE_VERSION=$(cat .nvmrc) docker compose up --build --no-log-prefix --watch service",
+    "dev": "NODE_VERSION=$(cat .nvmrc) docker compose up --no-log-prefix --watch service",
     "docker:build": "docker build --build-arg NODE_VERSION=$(cat .nvmrc) --no-cache -t \"$npm_package_name\" .",
+    "format": "biome check --write",
     "lint": "npm run lint:types && npm run lint:style && npm run lint:dead-code && npm run lint:spelling && npm run lint:circular-dependencies && npm run lint:db-migrations",
     "lint:circular-dependencies": "madge --circular ./src/index.ts",
     "lint:dead-code": "knip",
@@ -15,15 +16,12 @@
     "lint:spelling": "cspell --quiet .",
     "lint:style": "biome check --error-on-warnings",
     "lint:types": "tsgo --noEmit",
-    "format": "biome check --write",
-    "dev": "node --watch --env-file-if-exists=.env src/index.ts",
     "preinstall": "node ./.extras/preinstall.mjs",
     "postinstall": "node ./.extras/postinstall.mjs",
     "test": "vitest --coverage",
     "test:watch": "vitest --watch",
     "start": "node --env-file-if-exists=.env src/index.ts",
-    "clean": "rm -rf coverage dist node_modules/.cache",
-    "validate": "npm run lint"
+    "clean": "rm -rf coverage dist node_modules/"
   },
   "engines": {
     "node": "^24",
@@ -49,6 +47,7 @@
       "remeda",
       "subshell",
       "transpiling",
+      "tsgo",
       "unstub"
     ],
     "ignorePaths": [
@@ -71,7 +70,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1",
-    "@hono/otel": "^1.0.1",
+    "@hono/otel": "^1",
     "@hono/zod-validator": "^0",
     "@opentelemetry/api": "^1",
     "@opentelemetry/auto-instrumentations-node": "^0",
@@ -111,6 +110,8 @@
     "vitest": "^3"
   },
   "overrides": {
+    "glob": "^11",
+    "inflight": "npm:@isaacs/inflight@^1",
     "@esbuild-kit/esm-loader": "npm:tsx@^4",
     "@esbuild-kit/core-utils": "npm:tsx@^4"
   }

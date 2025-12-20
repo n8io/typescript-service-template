@@ -12,7 +12,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:${PORT:-3000}"
       - "9229:9229"
     volumes:
       - .:/app
@@ -27,14 +27,14 @@ services:
       - DATABASE_URL=postgres://username:password@db:5432/database
       - GENERATE_OPENAPI_SPEC=true
       - NODE_ENV=development
-      - PORT=3000
+      - PORT=${PORT:-3000}
     healthcheck:
       test:
         - CMD-SHELL
         - >
           node -e "
             require('http')
-              .get('http://localhost:3000/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))
+              .get('http://localhost:${PORT}/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))
               .on('error', () => process.exit(1))
           "
       interval: 1m
@@ -48,7 +48,7 @@ services:
       - src/index.ts
 
   db:
-    image: postgres:15-alpine
+    image: postgres:18-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: username
@@ -63,7 +63,7 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-  
+
 volumes:
   db_data:
     driver: local

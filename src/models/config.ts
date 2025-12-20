@@ -8,13 +8,13 @@ const Env = {
 } as const
 
 const schemaConfig = z.object({
+  APP_ENV: z.string().trim().optional().default('development').pipe(z.nativeEnum(Env)),
   DATABASE_URL: z.string().url(),
   LOG_LEVEL: z
     .string()
     .optional()
     .default('info')
     .pipe(z.enum(['debug', 'info', 'warn', 'error'])),
-  NODE_ENV: z.string().trim().optional().default('development').pipe(z.nativeEnum(Env)),
   PORT: z.string().optional().default('3000').pipe(z.coerce.number()),
 })
 

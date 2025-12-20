@@ -175,6 +175,19 @@ This template is designed to be cloned and customized for new services. See [TEM
    - API docs: http://localhost:3000/api/v1/docs
    - OpenAPI spec: http://localhost:3000/api/v1/openapi
 
+### Environment Variables
+
+The following environment variables can be configured in your `.env` file:
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `DATABASE_URL` | Yes | - | PostgreSQL connection string (e.g., `postgres://username:password@localhost:5432/database`) |
+| `LOG_LEVEL` | No | `info` | Logging level: `debug`, `info`, `warn`, or `error` |
+| `NODE_ENV` | No | `development` | Node environment: `development`, `staging`, `production`, or `test` |
+| `PORT` | No | `3000` | Port number the server will listen on |
+
+See `.env.example` for a template configuration file.
+
 ### Health Check Endpoint
 
 The `/health` endpoint provides application and dependency status:
@@ -208,14 +221,33 @@ The health check response is cached for 30 seconds to reduce database load.
 
 ### Available Scripts
 
+**Development:**
 - `npm run dev` - Start development server (without Docker)
 - `npm run docker:up` - Start services with Docker Compose (recommended)
 - `npm run docker:build` - Build Docker image
+- `npm run start` - Start production server
+
+**Testing:**
 - `npm run test` - Run tests with coverage
+- `npm run test:watch` - Run tests in watch mode
+
+**Code Quality:**
 - `npm run lint` - Run all linting checks
+- `npm run lint:types` - TypeScript type checking
+- `npm run lint:style` - Biome style checks
+- `npm run lint:dead-code` - Check for unused code
+- `npm run lint:spelling` - Spell checking
+- `npm run lint:circular-dependencies` - Check for circular dependencies
+- `npm run lint:db-migrations` - Check for database migration drift
 - `npm run format` - Format code with Biome
+- `npm run validate` - Run all validation checks
+
+**Database:**
 - `npm run db:generate` - Generate database migrations
 - `npm run db:migrate` - Apply database migrations
+
+**Utilities:**
+- `npm run clean` - Clean build artifacts and cache
 
 ### Code Quality
 
