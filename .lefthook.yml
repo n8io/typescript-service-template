@@ -23,7 +23,7 @@ pre-commit:
       skip: 
         - rebase
     types:
-      run: npx tsc-files --noEmit
+      run: npx tsgo --noEmit
       skip: 
         - rebase
 commit-msg:
