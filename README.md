@@ -5,8 +5,7 @@ A Hono service written in Typescript with best-in-class tooling.
 ## Getting Started
 
 ```sh
-# Create default environment vars
-cp -n .env.example .env
+# Create default environment vars (create .env file manually with required variables)
 
 # Ensure we're using the proper version of Node
 nvm install
@@ -155,7 +154,7 @@ This template is designed to be cloned and customized for new services. See [TEM
    ```sh
    git clone <repository-url>
    cd typescript-service-template
-   cp -n .env.example .env
+   # Create .env file with required environment variables (see Environment Variables section)
    nvm install
    npm install
    ```
@@ -183,10 +182,30 @@ The following environment variables can be configured in your `.env` file:
 |----------|----------|---------|-------------|
 | `DATABASE_URL` | Yes | - | PostgreSQL connection string (e.g., `postgres://username:password@localhost:5432/database`) |
 | `LOG_LEVEL` | No | `info` | Logging level: `debug`, `info`, `warn`, or `error` |
-| `NODE_ENV` | No | `development` | Node environment: `development`, `staging`, `production`, or `test` |
+| `APP_ENV` | No | `development` | Application environment: `development`, `staging`, `production`, or `test` |
 | `PORT` | No | `3000` | Port number the server will listen on |
 
-See `.env.example` for a template configuration file.
+### API Request Headers
+
+All API requests (except documentation endpoints) require the following headers:
+
+**Required Headers:**
+
+- `X-Request-Client-Id` (required) - A unique identifier for the client making the request. This header is enforced by middleware and requests without it will be rejected with a `400 Bad Request` error.
+
+**Optional Headers:**
+
+- `X-Request-Id` (optional) - A unique identifier for the request. If not provided, one will be automatically generated. This ID is used for request tracing and logging throughout the application lifecycle.
+
+**Example Request:**
+
+```bash
+curl -X GET http://localhost:3000/api/v1/resources \
+  -H "X-Request-Client-Id: my-client-app" \
+  -H "X-Request-Id: req-12345"
+```
+
+**Note:** Documentation endpoints (`/api/v1/docs` and `/api/v1/openapi`) do not require the `X-Request-Client-Id` header.
 
 ### Health Check Endpoint
 

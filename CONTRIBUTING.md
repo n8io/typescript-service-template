@@ -31,8 +31,11 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 4. **Set up environment:**
    ```sh
-   cp .env.example .env
-   # Edit .env with your configuration
+   # Create .env file with required environment variables:
+   # DATABASE_URL=postgres://username:password@localhost:5432/database
+   # LOG_LEVEL=info (optional, default: info)
+   # APP_ENV=development (optional, default: development)
+   # PORT=3000 (optional, default: 3000)
    ```
 
 5. **Start development environment:**

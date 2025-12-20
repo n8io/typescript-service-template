@@ -27,16 +27,20 @@ This guide walks you through customizing this template for your new service.
 
 ### 1.2 Environment Configuration
 
-1. Copy `.env.example` to `.env`:
+1. Create `.env` file with required environment variables:
    ```sh
-   cp .env.example .env
+   # Create .env file with the following variables:
+   APP_ENV=development
+   DATABASE_URL=postgres://username:password@localhost:5432/database
+   LOG_LEVEL=info
+   PORT=3000
    ```
 
 2. Update environment variables in `.env`:
-   - `DATABASE_URL` - Your PostgreSQL connection string
-   - `PORT` - Service port (default: 3000)
-   - `LOG_LEVEL` - Logging level (default: info)
-   - `NODE_ENV` - Environment (development/staging/production)
+   - `APP_ENV` - Environment (optional, default: development)
+   - `DATABASE_URL` - Your PostgreSQL connection string (required)
+   - `LOG_LEVEL` - Logging level (optional, default: info)
+   - `PORT` - Service port (optional, default: 3000)
 
 ## Step 2: Remove Example Code
 
@@ -464,9 +468,9 @@ const schemaConfig = z.object({
 })
 ```
 
-### 6.2 Update .env.example
+### 6.2 Update Documentation
 
-Add the new variable to `.env.example` with a comment explaining its purpose.
+Add the new variable to the README.md Environment Variables section and update your `.env` file with the new variable.
 
 ## Step 7: Testing Your Changes
 
