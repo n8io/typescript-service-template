@@ -166,4 +166,28 @@ describe('onReqBindings', () => {
     expect(urlSearchParamsToObjectSpy).toHaveBeenCalled()
     expect(mockContext.get).toHaveBeenCalledWith('requestBody')
   })
+
+  it('should include request body when set in context', () => {
+    const urlSearchParamsToObjectSpy = vi.spyOn(Utils, 'urlSearchParamsToObject').mockReturnValue({})
+
+    const requestBody = { name: 'Test', value: 123 }
+
+    const mockContext = {
+      req: {
+        url: 'http://example.com/test',
+        method: 'POST',
+      },
+      get: vi.fn((key: string) => {
+        if (key === 'requestBody') {
+          return requestBody
+        }
+        return undefined
+      }),
+    } as unknown as Context
+
+    const result = onReqBindings(mockContext)
+
+    expect(result.req.body).toEqual(requestBody)
+    expect(urlSearchParamsToObjectSpy).toHaveBeenCalled()
+  })
 })

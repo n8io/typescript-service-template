@@ -1,5 +1,6 @@
 import * as Fs from 'node:fs'
 import { Hono } from 'hono'
+import { exampleConfig } from '../../models/config.ts'
 import { generateAllOpenApiSpecs } from './generate-all-openapi-specs.ts'
 import type { Env } from './v1/models.ts'
 
@@ -8,6 +9,10 @@ vi.mock('node:fs', () => ({
   mkdirSync: vi.fn().mockReturnValue(undefined),
   readFileSync: vi.fn().mockReturnValue(undefined),
   writeFileSync: vi.fn().mockReturnValue(undefined),
+}))
+
+vi.mock('../../utils/config.ts', () => ({
+  config: exampleConfig(),
 }))
 
 vi.mock('../../utils/logger.ts', () => ({

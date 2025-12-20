@@ -15,8 +15,8 @@ class SpiError extends CustomError {
 }
 
 class SpiDatabaseError extends SpiError {
-  constructor(message: string, cause?: Error) {
-    super('SpiDatabaseError', message, 'SPI_DATABASE_ERROR', HttpStatus.INTERNAL_SERVER_ERROR, cause)
+  constructor(message: string, httpStatusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR, cause?: Error) {
+    super('SpiDatabaseError', message, 'SPI_DATABASE_ERROR', httpStatusCode, cause)
   }
 }
 

@@ -17,7 +17,7 @@ describe('createLogger', () => {
   })
 
   it('uses default level "info" and pretty transport in non-production', () => {
-    vi.stubEnv('NODE_ENV', 'development')
+    vi.stubEnv('APP_ENV', 'development')
 
     createLogger()
 
@@ -38,7 +38,7 @@ describe('createLogger', () => {
   })
 
   it('uses LOG_LEVEL if set', () => {
-    vi.stubEnv('NODE_ENV', 'test')
+    vi.stubEnv('APP_ENV', 'test')
     vi.stubEnv('LOG_LEVEL', 'debug')
 
     createLogger()
@@ -47,7 +47,7 @@ describe('createLogger', () => {
   })
 
   it('does not use transport in production', () => {
-    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('APP_ENV', 'production')
 
     createLogger()
 

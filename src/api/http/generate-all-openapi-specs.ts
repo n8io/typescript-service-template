@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { generateSpecs } from 'hono-openapi'
+import { config } from '../../utils/config.ts'
 import { logger } from '../../utils/logger.ts'
 import { OpenApiTag } from './models/openapi.ts'
 import type { makeApp } from './v1/app.ts'
@@ -44,7 +45,7 @@ const makeGenerateOpenApiSpec = (app: ReturnType<typeof makeApp>) => async (vers
         // Update the URLs to match your environments
         {
           description: 'Local',
-          url: 'http://localhost:3000',
+          url: `http://localhost:${config.PORT}`,
         },
         {
           description: 'Testing',

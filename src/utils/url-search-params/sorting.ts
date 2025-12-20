@@ -1,5 +1,7 @@
 import { z } from 'zod'
 import { ApiUnsupportedSortFieldError } from '../../models/custom-error.ts'
+import { formatErrorForLogging } from '../errors.ts'
+import { logger } from '../logger.ts'
 import { validation } from '../validation.ts'
 
 const schemaOptions = z.object({
@@ -61,7 +63,9 @@ const urlSearchParamsToSort = (
     }
 
     if (!uniqueSortableFields.has(field)) {
-      throw new ApiUnsupportedSortFieldError(field)
+      const error = new ApiUnsupportedSortFieldError(field)
+      logger.error(formatErrorForLogging(error))
+      throw error
     }
 
     if (sortFields.has(field)) {

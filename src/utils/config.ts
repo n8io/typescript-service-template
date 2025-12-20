@@ -44,5 +44,5 @@ if (!results.success) {
 
 const config = results.data
 
-export type { Config }
 export { config }
+export type { Config }

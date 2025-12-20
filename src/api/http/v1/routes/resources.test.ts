@@ -1,3 +1,4 @@
+import { HTTPException } from 'hono/http-exception'
 import { err, ok } from 'neverthrow'
 import { exampleResource } from '../../../../domain/models/resource.ts'
 import { DomainNotFoundError } from '../../../../models/custom-error.ts'
@@ -8,6 +9,19 @@ import { resources } from './resources.ts'
 
 // Mock the errorHandler
 const mockErrorHandler = vi.fn((error: Error, ctx: { json: (data: unknown, status?: number) => Response }) => {
+  // Handle HTTPException with DomainNotFoundError cause
+  if (error instanceof HTTPException && error.cause instanceof DomainNotFoundError) {
+    const customError = error.cause as DomainNotFoundError
+    return ctx.json(
+      {
+        code: customError.code,
+        message: customError.message,
+      },
+      error.status,
+    )
+  }
+
+  // Handle DomainNotFoundError directly
   if (error instanceof DomainNotFoundError) {
     return ctx.json(
       {
@@ -214,9 +228,7 @@ describe('resources', () => {
 
       const res = await app.request('/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(createRequest),
       })
 
@@ -257,9 +269,7 @@ describe('resources', () => {
 
       const res = await app.request('/', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(createRequest),
       })
 
@@ -301,9 +311,7 @@ describe('resources', () => {
 
       const res = await app.request(`/${gid}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateRequest),
       })
 
@@ -344,9 +352,7 @@ describe('resources', () => {
 
       const res = await app.request(`/${gid}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateRequest),
       })
 

@@ -8,7 +8,7 @@ import { exampleResource } from '../models/resource.ts'
 import type { SpiResourceRepository } from '../spi-ports/resource-repository.ts'
 import { ResourceService } from './resource-service.ts'
 
-vi.mock('../../utils/generators/gid.ts')
+vi.mock('../../utils/factories/gid.ts')
 
 const createMockRepository = (): SpiResourceRepository => ({
   createOne: vi.fn(),

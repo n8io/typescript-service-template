@@ -10,9 +10,7 @@ describe('clientId', () => {
     app.get('/', (c) => c.json(c.req.header(REQUEST_HEADER_CLIENT_ID)))
 
     const res = await app.request('/', {
-      headers: {
-        [REQUEST_HEADER_CLIENT_ID]: REQUEST_HEADER_CLIENT_ID,
-      },
+      headers: { [REQUEST_HEADER_CLIENT_ID]: REQUEST_HEADER_CLIENT_ID },
     })
 
     expect(res.status).toBe(200)

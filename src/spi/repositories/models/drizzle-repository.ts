@@ -2,13 +2,24 @@ import { getTableName, inArray } from 'drizzle-orm'
 import type { PgTable } from 'drizzle-orm/pg-core'
 import type { Result } from 'neverthrow'
 import { err, ok } from 'neverthrow'
+import { PostgresError } from 'pg-error-enum'
 import type { z } from 'zod'
 import type { SpiPaginatedResponse } from '../../../domain/spi-ports/paginated.ts'
 import type { SpiGetManyRequest } from '../../../domain/spi-ports/resource-repository.ts'
 import type { AuditRecord } from '../../../models/audit-record.ts'
+import { ErrorMessage } from '../../../models/error-messages.ts'
+import { HttpStatus } from '../../../models/http-status.ts'
+import { formatErrorForLogging } from '../../../utils/errors.ts'
+import { logger } from '../../../utils/logger.ts'
 import type { SpiDatabaseError } from '../../models/spi-error.ts'
 import { SpiDatabaseError as SpiDbError, SpiValidationError } from '../../models/spi-error.ts'
-import { isSpiDatabaseError } from '../database/error.ts'
+import {
+  databaseErrorMessages,
+  extractConstraintName,
+  extractFieldNameFromConstraint,
+  getDatabaseError,
+  getDatabaseErrorHttpStatus,
+} from '../database/error.ts'
 import type { initDatabase } from '../database/init.ts'
 import { schemaDbRecord } from '../models/db-record.ts'
 import type { UpdateByGid } from '../utils/domain-updates-to-drizzle-query.ts'
@@ -37,12 +48,15 @@ abstract class DrizzleRepository<
     this.table = table
   }
 
-  async createOne(resource: CreateRequest): Promise<Result<Entity, SpiDatabaseError | SpiValidationError>> {
+  async createOne(request: CreateRequest): Promise<Result<Entity, SpiDatabaseError | SpiValidationError>> {
     try {
-      const dbRecord = this.schemaDb.parse(resource)
+      const dbRecord = this.schemaDb.parse(request)
 
-      // @ts-expect-error - TODO: fix this generic typing issue
-      const [created] = await this.dependencies.db.insert(this.table).values(dbRecord).returning()
+      const [created] = await this.dependencies.db
+        .insert(this.table)
+        // @ts-expect-error: Zod parse result type doesn't match Drizzle's strict table types, but is validated at runtime
+        .values(dbRecord)
+        .returning()
 
       return this.validateSchema(created)
     } catch (error) {
@@ -52,7 +66,7 @@ abstract class DrizzleRepository<
 
   async deleteMany(gids: string[]): Promise<Result<void, SpiDatabaseError>> {
     try {
-      // @ts-expect-error - TODO: fix this generic typing issue
+      // @ts-expect-error: TypeScript doesn't recognize gid as a property on the generic Table extends PgTable type
       await this.dependencies.db.delete(this.table).where(inArray(this.table.gid, gids))
 
       return ok(undefined)
@@ -97,15 +111,47 @@ abstract class DrizzleRepository<
   }
 
   protected handleDatabaseError(error: unknown): SpiDatabaseError {
-    if (isSpiDatabaseError(error)) {
-      // biome-ignore lint/suspicious/noExplicitAny: ???
-      const dbError = error as any
+    const dbError = getDatabaseError(error)
 
-      return new SpiDbError(dbError.detail ?? 'Database operation failed', dbError)
+    if (dbError) {
+      const errorCode = dbError.code
+
+      // Determine the appropriate HTTP status code based on the error type
+      const httpStatusCode = getDatabaseErrorHttpStatus(errorCode)
+
+      // Use client-safe message for handled errors
+      let clientSafeMessage: string = ErrorMessage.DATABASE_OPERATION_FAILED
+      if (errorCode && databaseErrorMessages.has(errorCode)) {
+        const safeMessage = databaseErrorMessages.get(errorCode)
+        if (safeMessage) {
+          clientSafeMessage = safeMessage
+
+          // For unique constraint violations, extract and append the field name
+          if (errorCode === PostgresError.UNIQUE_VIOLATION) {
+            const constraintName = extractConstraintName(dbError, error)
+            const fieldName = extractFieldNameFromConstraint(constraintName)
+            if (fieldName) {
+              clientSafeMessage = `${safeMessage}: ${fieldName}`
+            }
+          }
+        }
+      }
+
+      // Log the db error
+      logger.error(formatErrorForLogging(dbError))
+
+      // Always use generic message for unhandled database errors to prevent leaking details
+      // Pass the original error (which may be wrapped) as the cause for logging
+      return new SpiDbError(clientSafeMessage, httpStatusCode, error instanceof Error ? error : dbError)
     }
 
+    // Log the unhandled error
+    logger.error(formatErrorForLogging(error))
+
+    // For non-database errors, always return generic message to prevent leaking any details
     return new SpiDbError(
-      error instanceof Error ? error.message : 'Unknown database error occurred',
+      ErrorMessage.DATABASE_OPERATION_FAILED,
+      HttpStatus.INTERNAL_SERVER_ERROR,
       error instanceof Error ? error : undefined,
     )
   }
@@ -116,12 +162,12 @@ abstract class DrizzleRepository<
 
       return ok(parsed as Entity)
     } catch (error) {
-      return err(
-        new SpiValidationError(
-          `Schema validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
-          error instanceof Error ? error : undefined,
-        ),
+      const validationError = new SpiValidationError(
+        `Schema validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
+        error instanceof Error ? error : undefined,
       )
+      logger.error(formatErrorForLogging(validationError))
+      return err(validationError)
     }
   }
 }

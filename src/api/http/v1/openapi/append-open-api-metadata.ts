@@ -155,7 +155,7 @@ const appendOpenApiMetadata = (config: RouteConfig) => {
 
       actualParameters = [
         ...OPEN_API_DEFAULT_HEADERS,
-        ...filterableFields.toSorted().map((field) => ({
+        ...[...filterableFields].sort().map((field) => ({
           in: 'query',
           name: field,
           ...resolver(requestSchema.shape[field]).builder(),

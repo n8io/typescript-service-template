@@ -7,6 +7,8 @@ import {
   ApiUnsupportedOperatorError,
 } from '../../models/custom-error.ts'
 import { Operator } from '../../models/filter.ts'
+import { formatErrorForLogging } from '../errors.ts'
+import { logger } from '../logger.ts'
 
 type Options = {
   // biome-ignore lint/suspicious/noExplicitAny: schema shape is dynamic
@@ -189,21 +191,27 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
     const operator = operatorRaw as Operator
 
     if (!Object.hasOwn(Operator, operator)) {
-      throw new ApiUnsupportedOperatorError(operator)
+      const error = new ApiUnsupportedOperatorError(operator)
+      logger.error(formatErrorForLogging(error))
+      throw error
     }
 
     const field = fieldRaw.trim()
     const isSupportedField = field in baseSchema.shape
 
     if (!isSupportedField) {
-      throw new ApiUnsupportedFieldError(field)
+      const error = new ApiUnsupportedFieldError(field)
+      logger.error(formatErrorForLogging(error))
+      throw error
     }
 
     const schema = baseSchema.shape[field]
     const schemaOperators = new Set(getOperatorsForSchema(schema))
 
     if (!schemaOperators.has(operator)) {
-      throw new ApiUnsupportedFieldOperatorError(field, operator)
+      const error = new ApiUnsupportedFieldOperatorError(field, operator)
+      logger.error(formatErrorForLogging(error))
+      throw error
     }
 
     const type = getBaseType(schema)
@@ -253,7 +261,9 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
       case 'lte':
       case 'search': {
         if (deduped.length > 1) {
-          throw new ApiUnsupportedMultipleValueOperatorError(operator)
+          const error = new ApiUnsupportedMultipleValueOperatorError(operator)
+          logger.error(formatErrorForLogging(error))
+          throw error
         }
 
         if (isDefined(deduped[0]) === false) {
@@ -268,7 +278,9 @@ const urlSearchParamsToFilters = (params: URLSearchParams, { baseSchema }: Optio
       default: {
         const _exhaustiveCheck: never = operator
 
-        throw new ApiUnsupportedOperatorError(operator)
+        const error = new ApiUnsupportedOperatorError(operator)
+        logger.error(formatErrorForLogging(error))
+        throw error
       }
     }
   }

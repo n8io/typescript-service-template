@@ -28,9 +28,9 @@ const getBindings = () => {
 
 const getPinoConfig = (): LoggerOptions => {
   // biome-ignore lint/style/noProcessEnv: Access process env directly because this is a top level, core utility
-  const { LOG_LEVEL: level = 'info', NODE_ENV } = process.env
-  const enabled = NODE_ENV !== 'test'
-  const areLogsPretty = NODE_ENV !== 'production'
+  const { LOG_LEVEL: level = 'info', APP_ENV } = process.env
+  const enabled = APP_ENV !== 'test'
+  const areLogsPretty = APP_ENV !== 'production'
 
   /* v8 ignore next 1 */
   const transport = areLogsPretty ? pretty : undefined

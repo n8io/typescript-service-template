@@ -62,17 +62,17 @@ class AppStateManager {
   }
 
   private initializeSignalHandlers() {
-    process.on('uncaughtException', (err) => logger.error({ err }, '💀 Fatal unhandled exception occurred'))
+    process.on('uncaughtException', (error) => logger.error({ err: error }, '💀 Fatal unhandled exception occurred'))
 
-    process.on('unhandledRejection', (err) => {
+    process.on('unhandledRejection', (error) => {
       this.isShuttingDown = true
 
       const message = '😱 Oh no, there was an unhandled rejection'
 
-      if (err instanceof Error) {
-        logger.error({ err }, message)
+      if (error instanceof Error) {
+        logger.error({ err: error }, message)
       } else {
-        logger.error({ reason: err }, message)
+        logger.error({ reason: error }, message)
       }
     })
 
@@ -104,5 +104,5 @@ class AppStateManager {
   }
 }
 
-export type { Closable, Monitorable, MonitorableStatus }
 export { AppStateManager }
+export type { Closable, Monitorable, MonitorableStatus }

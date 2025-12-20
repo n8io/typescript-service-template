@@ -24,6 +24,7 @@ services:
         - path: ./package.json
           action: restart
     environment:
+      - APP_ENV=${APP_ENV:-development}
       - DATABASE_URL=postgres://username:password@db:5432/database
       - GENERATE_OPENAPI_SPEC=true
       - NODE_ENV=development

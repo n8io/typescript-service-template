@@ -3,6 +3,7 @@ import { err, ok } from 'neverthrow'
 import { describe, expect, it } from 'vitest'
 import { DomainNotFoundError } from '../../../models/custom-error.ts'
 import { ErrorCode } from '../../../models/error-code.ts'
+import { errorHandler } from '../middleware/error-handler.ts'
 import { resultToNoContentResponse, resultToResponse } from './result-to-response.ts'
 
 describe('resultToResponse', () => {
@@ -13,6 +14,7 @@ describe('resultToResponse', () => {
       const result = ok(testData)
 
       app.get('/test', (ctx) => resultToResponse(ctx, result))
+      app.onError(errorHandler())
 
       const res = await app.request('/test')
       const data = await res.json()
@@ -21,12 +23,13 @@ describe('resultToResponse', () => {
       expect(data).toEqual(testData)
     })
 
-    it('should return error response when Result is Err with CustomError', async () => {
+    it('should throw HTTPException when Result is Err with CustomError', async () => {
       const app = new Hono()
       const error = new DomainNotFoundError('Resource not found')
       const result = err(error)
 
       app.get('/test-error', (ctx) => resultToResponse(ctx, result))
+      app.onError(errorHandler())
 
       const res = await app.request('/test-error')
       const data = await res.json()
@@ -38,12 +41,13 @@ describe('resultToResponse', () => {
       })
     })
 
-    it('should return 500 error for unknown error types', async () => {
+    it('should throw HTTPException for unknown error types', async () => {
       const app = new Hono()
       const unknownError = new Error('Unknown error')
       const result = err(unknownError)
 
       app.get('/test-unknown', (ctx) => resultToResponse(ctx, result))
+      app.onError(errorHandler())
 
       const res = await app.request('/test-unknown')
       const data = await res.json()
@@ -62,6 +66,7 @@ describe('resultToResponse', () => {
       const result = ok(undefined)
 
       app.delete('/test', (ctx) => resultToNoContentResponse(ctx, result))
+      app.onError(errorHandler())
 
       const res = await app.request('/test', { method: 'DELETE' })
 
@@ -69,12 +74,13 @@ describe('resultToResponse', () => {
       expect(await res.text()).toBe('')
     })
 
-    it('should return error response when Result is Err with CustomError', async () => {
+    it('should throw HTTPException when Result is Err with CustomError', async () => {
       const app = new Hono()
       const error = new DomainNotFoundError('Resource not found')
       const result = err(error)
 
       app.delete('/test-error', (ctx) => resultToNoContentResponse(ctx, result))
+      app.onError(errorHandler())
 
       const res = await app.request('/test-error', { method: 'DELETE' })
       const data = await res.json()
@@ -86,12 +92,13 @@ describe('resultToResponse', () => {
       })
     })
 
-    it('should return 500 error for unknown error types', async () => {
+    it('should throw HTTPException for unknown error types', async () => {
       const app = new Hono()
       const unknownError = new Error('Unknown error')
       const result = err(unknownError)
 
       app.delete('/test-unknown', (ctx) => resultToNoContentResponse(ctx, result))
+      app.onError(errorHandler())
 
       const res = await app.request('/test-unknown', { method: 'DELETE' })
       const data = await res.json()

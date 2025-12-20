@@ -1,5 +1,7 @@
 import { createMiddleware } from 'hono/factory'
 import { ApiRequestMissingRequiredHeader } from '../../../../models/custom-error.ts'
+import { formatErrorForLogging } from '../../../../utils/errors.ts'
+import { logger } from '../../../../utils/logger.ts'
 import { validation } from '../../../../utils/validation.ts'
 import { REQUEST_HEADER_CLIENT_ID } from '../../models/request.ts'
 import type { Env } from '../../v1/models.ts'
@@ -11,7 +13,9 @@ const clientId = () =>
     const results = schemaRequestHeaderClientId.safeParse(ctx.req.header(REQUEST_HEADER_CLIENT_ID))
 
     if (!results.success) {
-      throw new ApiRequestMissingRequiredHeader(REQUEST_HEADER_CLIENT_ID)
+      const error = new ApiRequestMissingRequiredHeader(REQUEST_HEADER_CLIENT_ID)
+      logger.error(formatErrorForLogging(error))
+      throw error
     }
 
     ctx.set('clientId', results.data)

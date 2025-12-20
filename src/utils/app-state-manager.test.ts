@@ -124,7 +124,7 @@ describe('AppState', () => {
   })
 
   describe('when error unhandled rejection is thrown', () => {
-    it('should log a message and the error', async () => {
+    it('should log a message and the formatted error', async () => {
       const mockError = new Error('MOCK_ERROR')
       const loggerErrorSpy = vi.spyOn(Logger.logger, 'error')
       // @ts-expect-error This will trigger the unhandled rejection handler

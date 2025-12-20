@@ -2,7 +2,9 @@ import { err, ok, Result } from 'neverthrow'
 import type { z } from 'zod'
 import type { AuditRecord } from '../../../models/audit-record.ts'
 import type { SpiDatabaseError, SpiValidationError } from '../../../spi/models/spi-error.ts'
+import { formatErrorForLogging } from '../../../utils/errors.ts'
 import { gid } from '../../../utils/factories/gid.ts'
+import { logger } from '../../../utils/logger.ts'
 import { DomainNotFoundError, DomainValidationError } from '../../models/domain-error.ts'
 import type { PaginatedResponse } from '../../models/pagination.ts'
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, schemaDomainGetManyRequest } from '../../models/request.ts'
@@ -145,6 +147,7 @@ abstract class BaseService<T extends { gid: string }> {
     } as unknown as T
 
     const createResult = await this.dependencies.repository.createOne(entityToCreate)
+
     if (createResult.isErr()) {
       return err(createResult.error)
     }
@@ -229,7 +232,9 @@ abstract class BaseService<T extends { gid: string }> {
     const [found] = getManyResult.value.items
 
     if (!found) {
-      return err(new DomainNotFoundError(`Entity with gid ${gid} not found`))
+      const notFoundError = new DomainNotFoundError(`Entity with gid ${gid} not found`)
+      logger.error(formatErrorForLogging(notFoundError))
+      return err(notFoundError)
     }
 
     return ok(found)
@@ -256,7 +261,6 @@ abstract class BaseService<T extends { gid: string }> {
   ): Promise<Result<Prettify<z.infer<typeof this.schemas.response.getOne>>, DomainServiceError>> {
     const gidValidationResult = this.validateGid(gid)
     const updateValidationResult = this.validateUpdateRequest(updates)
-
     const combinedValidation = Result.combine([gidValidationResult, updateValidationResult])
 
     if (combinedValidation.isErr()) {
@@ -290,12 +294,14 @@ abstract class BaseService<T extends { gid: string }> {
 
       return ok(validated)
     } catch (error) {
-      return err(
-        new DomainValidationError(
-          `Create request validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
-          error instanceof Error ? error : undefined,
-        ),
+      const validationError = new DomainValidationError(
+        `Create request validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
+        error instanceof Error ? error : undefined,
       )
+
+      logger.error(formatErrorForLogging(validationError))
+
+      return err(validationError)
     }
   }
 
@@ -307,12 +313,14 @@ abstract class BaseService<T extends { gid: string }> {
 
       return ok(validated)
     } catch (error) {
-      return err(
-        new DomainValidationError(
-          `Get many request validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
-          error instanceof Error ? error : undefined,
-        ),
+      const validationError = new DomainValidationError(
+        `Get many request validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
+        error instanceof Error ? error : undefined,
       )
+
+      logger.error(formatErrorForLogging(validationError))
+
+      return err(validationError)
     }
   }
 
@@ -322,12 +330,14 @@ abstract class BaseService<T extends { gid: string }> {
 
       return ok(validated)
     } catch (error) {
-      return err(
-        new DomainValidationError(
-          `GID validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
-          error instanceof Error ? error : undefined,
-        ),
+      const validationError = new DomainValidationError(
+        `GID validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
+        error instanceof Error ? error : undefined,
       )
+
+      logger.error(formatErrorForLogging(validationError))
+
+      return err(validationError)
     }
   }
 
@@ -339,15 +349,17 @@ abstract class BaseService<T extends { gid: string }> {
 
       return ok(validated)
     } catch (error) {
-      return err(
-        new DomainValidationError(
-          `Update request validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
-          error instanceof Error ? error : undefined,
-        ),
+      const validationError = new DomainValidationError(
+        `Update request validation failed: ${error instanceof Error ? error.message : 'Unknown validation error'}`,
+        error instanceof Error ? error : undefined,
       )
+
+      logger.error(formatErrorForLogging(validationError))
+
+      return err(validationError)
     }
   }
 }
 
-export type { BaseDependencies }
 export { BaseService }
+export type { BaseDependencies }

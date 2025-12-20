@@ -20,9 +20,9 @@ const schemaConfig = z.object({
 
 const exampleConfig = (overrides: Partial<z.infer<typeof schemaConfig>> = {}) =>
   schemaConfig.parse({
+    APP_ENV: Env.TEST,
     DATABASE_URL: 'postgres://localhost:5432/not-a-real-db',
     LOG_LEVEL: 'info',
-    NODE_ENV: Env.TEST,
     ...overrides,
   })
 
